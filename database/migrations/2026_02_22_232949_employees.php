@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
 
@@ -28,15 +27,22 @@ return new class extends Migration
             $table->decimal('salary', 12, 2);
 
             // Employment type (better name than status)
-            $table->enum('employment_type', ['permanent', 'contractual', 'job_order']);
+            $table->enum('employment_type', ['Permanent', 'Contractual', 'Job Order'])->default('Permanent');
+            
+            // Employee role
+            $table->enum('role', ['Admin', 'Employee'])->default('Employee');
 
             // Active flag
             $table->boolean('is_active')->default(true);
 
-            $table->timestamps(); // very important
+            // username and password
+            $table->string('username')->unique()->nullable();
+            $table->string('password')->nullable();
+
+            $table->timestamps();
+
         });
     }
-
     /**
      * Reverse the migrations.
      */
