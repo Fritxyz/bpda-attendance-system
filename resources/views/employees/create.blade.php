@@ -86,9 +86,23 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Bureau</label>
+                        <select name="bureau" required id="bureau-select"
+                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none transition appearance-none cursor-pointer">
+                            <option value="" disabled {{ old('bureau') ? '' : 'selected' }}>Select Bureau</option>
+                            <option value="PPB" {{ old('bureau') == 'PPB' ? 'selected' : '' }}>Planning and Policies Bureau(PPB)</option>
+                            <option value="RDSPB" {{ old('bureau') == 'RDSPB' ? 'selected' : '' }}>Research Development and Special Projects Bureau (RDPSB)</option>
+                            <option value="FASS" {{ old('bureau') == 'FASS' ? 'selected' : '' }}>Finance and Administrative Support Services (FASS)</option>
+                            <option value="FASS" {{ old('bureau') == 'Other' ? 'selected' : '' }}>Other</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Division</label>
-                        <input type="text" name="division" value="{{ old('division') }}" required
-                               class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <select id="division-select" name="division" required disabled
+                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
+                            <option value="" disabled selected>Select Bureau first</option>
+                        </select>
                     </div>
 
                     <div>
@@ -148,4 +162,51 @@
         </form>
     </div>
 </div>
+
+<script>
+    <script>
+    const divisionsByBureau = {
+        'PPB': [
+            'Macro-economic Planning Division',
+            'Economic Policy Division',
+            'Investment Programming Division'
+        ],
+        'RDSPB': [
+            'Regional Development Division',
+            'Project Monitoring & Evaluation Division',
+            'Special Projects Division'
+        ],
+        'FASS': [
+            'Finance Division',
+            'Administrative Division',
+            'Human Resource Section',
+            'General Services Section'
+        ]
+    };
+
+    const bureauSelect = document.getElementById('bureau-select');
+    const divisionSelect = document.getElementById('division-select');
+
+    bureauSelect.addEventListener('change', function() {
+        const selectedBureau = this.value;
+        const options = divisionsByBureau[selectedBureau] || [];
+
+        // 1. Linisin ang kasalukuyang options
+        divisionSelect.innerHTML = '<option value="" disabled selected>Select Division</option>';
+        
+        // 2. Enable ang Division select
+        divisionSelect.disabled = false;
+        divisionSelect.classList.remove('bg-gray-100');
+        divisionSelect.classList.add('bg-white');
+
+        // 3. Idagdag ang mga bagong options
+        options.forEach(division => {
+            const el = document.createElement('option');
+            el.value = division;
+            el.textContent = division;
+            divisionSelect.appendChild(el);
+        });
+    });
+</script>
+</script>
 @endsection

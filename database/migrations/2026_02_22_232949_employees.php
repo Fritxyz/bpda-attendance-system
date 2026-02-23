@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('middle_name')->nullable(); // not everyone has one
             $table->string('last_name');
 
-            $table->string('position');
+            $table->string('bureau');
             $table->string('division');
+            $table->string('position');
 
             // Money field
             $table->decimal('salary', 12, 2);
