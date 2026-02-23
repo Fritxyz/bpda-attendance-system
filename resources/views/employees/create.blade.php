@@ -90,10 +90,10 @@
                         <select name="bureau" required id="bureau-select"
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none transition appearance-none cursor-pointer">
                             <option value="" disabled {{ old('bureau') ? '' : 'selected' }}>Select Bureau</option>
-                            <option value="PPB" {{ old('bureau') == 'PPB' ? 'selected' : '' }}>Planning and Policies Bureau(PPB)</option>
+                            <option value="PPB" {{ old('bureau') == 'PPB' ? 'selected' : '' }}>Planning and Policies Bureau     (PPB)</option>
                             <option value="RDSPB" {{ old('bureau') == 'RDSPB' ? 'selected' : '' }}>Research Development and Special Projects Bureau (RDPSB)</option>
                             <option value="FASS" {{ old('bureau') == 'FASS' ? 'selected' : '' }}>Finance and Administrative Support Services (FASS)</option>
-                            <option value="FASS" {{ old('bureau') == 'Other' ? 'selected' : '' }}>Other</option>
+                            <option value="Other" {{ old('bureau') == 'Other' ? 'selected' : '' }}>Other</option>
                         </select>
                     </div>
 
@@ -164,28 +164,67 @@
 </div>
 
 <script>
-    <script>
     const divisionsByBureau = {
         'PPB': [
-            'Macro-economic Planning Division',
-            'Economic Policy Division',
-            'Investment Programming Division'
+            'Macro-Economic Planning Division (MEPD)',
+            'Economic Policy Division (EPD)',
+            'Social Planning Division (SPD)',
+            'Local Planning and Coordinating Division (LPCD)',
+            'Infrastructure Planning Division (IPD)',
+            'Peace, Public Order, Safety and Security Division (PPOSSD)',
+            'Monitoring and Evaluation Division (MED)',
         ],
         'RDSPB': [
-            'Regional Development Division',
-            'Project Monitoring & Evaluation Division',
-            'Special Projects Division'
+            'Information and Knowledge Management Division (IKMD)',
+            'Research and Development Division (RDD)',
+            'ODA/Nationally Funded Programs and Projects Coordination Division (ODA/NFPPCD)',
+            'Economic Intelligence Division (EID)'
         ],
         'FASS': [
             'Finance Division',
             'Administrative Division',
-            'Human Resource Section',
-            'General Services Section'
+        ],
+        'Other': [
+            'Other'
+        ]
+    };
+
+    const positionsByDivision = {
+        'MEPD': [
+            'Chief Economic Development Specialist',
+            'Socio Economic Development Specialist',
+            'Economic Development Specialist II',
+            'Economic Development Analyst',
+        ],
+        'EPD': [
+            'Chief Economic Development Specialist',
+            'Senior Economic Development Specialist',
+            'Economic Development Specialist III',
+            'Economic Development Analyst',
+        ],
+        'SPD': [
+            'Planning Officer V',
+            'Planning Officer III',
+            'Planning Officer II',
+            'Planning Officer I',
+        ],
+        'IPD': [
+            'Planning Officer V',
+            'Engineer III',
+            'Engineer II',
+            'Planning Officer I',
+        ],
+        'PPOSSD': [
+            'Planning Officer V',
+            'Development Management Officer III',
+            'Development'
         ]
     };
 
     const bureauSelect = document.getElementById('bureau-select');
     const divisionSelect = document.getElementById('division-select');
+
+    const getAcronym = text => (text.match(/\(([^)]+)\)/) || [, ''])[1].trim();
 
     bureauSelect.addEventListener('change', function() {
         const selectedBureau = this.value;
@@ -203,10 +242,13 @@
         options.forEach(division => {
             const el = document.createElement('option');
             el.value = division;
+            console.log(getAcronym(division));
             el.textContent = division;
             divisionSelect.appendChild(el);
         });
     });
-</script>
+
+
+
 </script>
 @endsection
