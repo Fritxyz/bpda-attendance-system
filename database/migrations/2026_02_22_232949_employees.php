@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('position');
 
             // Money field
-            $table->decimal('salary', 12, 2);
+            $table->decimal('salary', 12, 2)->nullable();
 
             // Employment type (better name than status)
             $table->enum('employment_type', ['Permanent', 'Contractual', 'Job Order'])->default('Permanent');

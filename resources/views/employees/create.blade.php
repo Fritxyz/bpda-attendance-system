@@ -105,29 +105,31 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Position</label>
-                        <input type="text" name="position" value="{{ old('position') }}" placeholder="e.g. Planning Officer" required
-                               class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Monthly Salary</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-2 text-gray-400 font-bold">₱</span>
-                            <input type="number" step="0.01" name="salary" value="{{ old('salary') }}" required
-                                   class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        </div>
+                     <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Current Position</label>
+                        <select id="position-select" name="position" required disabled
+                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
+                            <option value="" disabled selected>Select Division first</option>
+                        </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Employment Type</label>
-                        <select name="employment_type" required
+                        <select name="employment_type" required id="employment-type-select"
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
                             <option value="Permanent">Permanent</option>
                             <option value="Contractual">Contractual</option>
                             <option value="Job Order">Job Order</option>
                         </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Monthly Salary (Only if the employment type is not Permanent)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2 text-gray-400 font-bold">₱</span>
+                            <input type="number" step="0.01" name="salary" value="{{ old('salary') }}" id="salary-id"
+                                   class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        </div>
                     </div>
 
                     <div>
@@ -138,6 +140,9 @@
                             <option value="Admin">Admin (Full Access)</option>
                         </select>
                     </div>
+
+
+                     
                 </div>
             </div>
 
@@ -190,6 +195,7 @@
     };
 
     const positionsByDivision = {
+        // Planning and Policies Bureau (PPB)
         'MEPD': [
             'Chief Economic Development Specialist',
             'Socio Economic Development Specialist',
@@ -217,12 +223,76 @@
         'PPOSSD': [
             'Planning Officer V',
             'Development Management Officer III',
-            'Development'
-        ]
+            'Development Management Officer II',
+            'Planning Officer I',
+        ],
+        'MED': [
+            'Planning Officer V',
+            'Engineer III',
+            'Engineer II',
+            'Project Evaluation Officer I',
+        ],
+        'LPCD': [
+            'Planning Officer V',
+            'Planning Officer IV',
+            'Development Management Officer II',
+            'Developement Management Officer I',
+        ],
+        // Reseach Development and Special Projects Bureau (RDSPB)
+        'RDD': [
+            'Development Management Officer V',
+            'Development Management Officer III',
+            'Statistician II',
+            'Development Management Officer I',
+        ],
+        'IKMD': [
+            'Information Technology Officer III',
+            'Supervision Administrative Officer',
+            'Information Technology Officer I',
+            'Administrative Officer I',
+            'Computer Programmer',
+        ],
+        'ODA/NFPPCD': [
+            'Project Development Officer V',
+            'Project Developement Officer III',
+            'Project Development Officer II',
+            'Project Development Officer I',
+        ],
+        'EID': [
+            'Chief Economic Development Specialist',
+            'Senior Economic Development Specialist',
+            'Economic Development Specialist II',
+            'Economic Development Analyst',
+        ],
+        'Finance Division': [
+            'Chief Accountant',
+            'Accountant III',
+            'Budget Officer III',
+            'Cashier III',
+            'Senior Bookkeeper',
+            'Disbursing Officer II',
+        ],
+        'Administrative Division': [
+            'Chief Administrative Officer',
+            'HRMO II',
+            'Supply Officer II',
+            'Records Officer II',
+            'Clerk III',
+        ],
+        'Other': [
+            'Bangsamoro Director General',
+            'Attorney IV',
+            'Internal Auditor II',
+            'Administrative Aide IV',
+            'Deputy Director General',
+            'Executive Assistant I',
+        ],
     };
 
     const bureauSelect = document.getElementById('bureau-select');
     const divisionSelect = document.getElementById('division-select');
+    const positionSelect = document.getElementById('position-select');
+    const employmentTypeSelect = document.getElementById('employment-type-select');
 
     const getAcronym = text => (text.match(/\(([^)]+)\)/) || [, ''])[1].trim();
 
@@ -240,15 +310,101 @@
 
         // 3. Idagdag ang mga bagong options
         options.forEach(division => {
+            const acronym = getAcronym(division);           // '' kung wala
             const el = document.createElement('option');
-            el.value = division;
-            console.log(getAcronym(division));
-            el.textContent = division;
+            
+            el.value = acronym || division;                 // acronym kung meron, full name kung wala
+            el.textContent = division;                      // palaging full name ang nakikita
+            
+            // Optional: idagdag ang acronym sa display para makita (hal. "Division Name (ACR)")
+            // el.textContent = acronym ? `${division} (${acronym})` : division;
+            
+            console.log(`Acronym for "${division}": ${acronym}`);
             divisionSelect.appendChild(el);
         });
     });
 
+    divisionSelect.addEventListener('change', function() {
+        const selectDivision = this.value;
+        const options = positionsByDivision[selectDivision] || [];
 
+        // 1. Linisin ang kasalukuyang options
+        positionSelect.innerHTML = '<option value="" disabled selected>Select Current Position</option>';
+        
+        // 2. Enable ang Division select
+        positionSelect.disabled = false;
+        positionSelect.classList.remove('bg-gray-100');
+        positionSelect.classList.add('bg-white');
+
+        // 3. Idagdag ang mga bagong options
+        options.forEach(position => {
+            const el = document.createElement('option');
+            
+            el.value = position;                // acronym kung meron, full name kung wala
+            el.textContent = position;                      // palaging full name ang nakikita
+            
+            // Optional: idagdag ang acronym sa display para makita (hal. "Division Name (ACR)")
+            // el.textContent = acronym ? `${division} (${acronym})` : division;
+            
+            console.log(position);
+            positionSelect.appendChild(el);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const employmentTypeSelect = document.getElementById('employment-type-select');
+        const salaryInput = document.getElementById('salary-id');
+
+        // 1. Gawa tayo ng function para reusable
+        function toggleSalary() {
+            if (employmentTypeSelect.value === "Permanent") {
+                salaryInput.disabled = true;
+                salaryInput.value = ''; // Linisin ang value
+                salaryInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+                salaryInput.removeAttribute('required');
+            } else {
+                salaryInput.disabled = false;
+                salaryInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                salaryInput.setAttribute('required', 'required');
+            }
+        }
+
+        // 2. Patakbuhin agad pag-load ng page (Initial Check)
+        toggleSalary();
+
+        // 3. Patakbuhin tuwing binabago ang dropdown
+        employmentTypeSelect.addEventListener('change', toggleSalary);
+    });
+
+
+
+    employmentTypeSelect.addEventListener('change', function() {
+        const employmentTypeSelect = document.getElementById('employment-type-select');
+        // Siguraduhing 'salary-id' ang gamit dahil ito ang nasa HTML mo
+        const salaryInput = document.getElementById('salary-id');
+
+        function toggleSalary() {
+            if (employmentTypeSelect.value === "Permanent") {
+                salaryInput.disabled = true;
+                salaryInput.value = ''; // Nililinis ang value pag disabled
+                salaryInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+                salaryInput.removeAttribute('required');
+            } else {
+                salaryInput.disabled = false;
+                salaryInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                salaryInput.setAttribute('required', 'required');
+            }
+        }
+
+        // Patakbuhin kapag nagbago ang selection
+        employmentTypeSelect.addEventListener('change', toggleSalary);
+
+        // Patakbuhin sa simula (initial load)
+        toggleSalary();
+});
+
+// todo: ayusin ang salary according sa employment type
+// tapos mag-example ng value 
 
 </script>
 @endsection
