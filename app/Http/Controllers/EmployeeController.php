@@ -44,6 +44,11 @@ class EmployeeController extends Controller
         // Flash a message and redirect instead of just returning a string
         return redirect()->route('employees.index')
         ->with('success', "Employee saved! Username: {$employee->username}");
+
+        // logger($request->all());
+
+        // return redirect()->route('employees.index')
+        // ->with('success', "Employee saved!");
     }
 
     /**

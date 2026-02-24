@@ -124,7 +124,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Monthly Salary (Only if the employment type is not Permanent)</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Monthly Salary</label>
                         <div class="relative">
                             <span class="absolute left-3 top-2 text-gray-400 font-bold">₱</span>
                             <input type="number" step="0.01" name="salary" value="{{ old('salary') }}" id="salary-id"
