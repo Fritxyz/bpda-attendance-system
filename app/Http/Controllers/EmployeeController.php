@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Employee;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpKernel\Log\Logger;
 
 class EmployeeController extends Controller
 {
@@ -15,8 +13,22 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
-        return view('employees.index');
+        // fetch all employee records
+        $employees = Employee::select(
+            'employee_id',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'bureau',
+            'division',
+            'position',
+            'salary',
+            'employment_type',
+            'role',
+            'is_active',
+        )->get();
+
+        return view('employees.index', compact('employees'));
     }
 
     /**

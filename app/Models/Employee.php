@@ -10,14 +10,12 @@ use Illuminate\Support\Str;
 
 class Employee extends Model
 {
-    //
-    use HasFactory, SoftDeletes;
-
     protected $fillable = [
         'employee_id',
         'first_name',
         'middle_name',
         'last_name',
+        'bureau',
         'position',
         'division',
         'salary',

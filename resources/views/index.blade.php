@@ -108,33 +108,49 @@
             </div>
         </div>
 
-        <div class="flex-1 p-6 overflow-y-auto bg-gray-100/50">
-            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                @foreach($employees as $employee)
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                    <div class="relative aspect-[4/3] bg-emerald-950 overflow-hidden">
-                        <img src="{{ $employee->photo }}" class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition duration-500">
-                        <div class="absolute bottom-2 right-2">
-                             <span class="{{ $employee->status == 'In' ? 'bg-green-600' : 'bg-red-600' }} text-white text-[8px] px-2 py-0.5 rounded-full font-bold uppercase shadow-sm border border-white">
-                                {{ $employee->status }}
-                            </span>
+        {{-- // start --}}
+        <div class="flex-1 p-6 overflow-y-auto bg-gray-100/50 space-y-4 snap-y snap-mandatory">
+            @foreach($employees as $employee)
+            <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-800 overflow-hidden flex h-[30%] min-h-[180px] snap-start hover:shadow-xl transition-all duration-300">
+                
+                <div class="w-1/3 bg-emerald-950 relative">
+                    <img src="{{ $employee->photo }}" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent"></div>
+                    <div class="absolute bottom-3 left-3">
+                        <span class="{{ $employee->status == 'In' ? 'bg-green-500' : 'bg-red-500' }} text-white text-[10px] px-3 py-1 rounded-full font-black uppercase border border-white/50 shadow-lg">
+                            {{ $employee->status }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex-1 p-6 flex flex-col justify-between relative bg-white">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50"></div>
+
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-black text-emerald-900 uppercase tracking-tight leading-tight">
+                            {{ $employee->name }}
+                        </h3>
+                        <p class="text-emerald-700 font-bold text-sm tracking-wide">{{ $employee->position }}</p>
+                        <p class="text-gray-400 text-xs italic mt-1">{{ $employee->division }}</p>
+                    </div>
+
+                    <div class="relative z-10 flex justify-between items-end border-t border-gray-100 pt-4">
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Recent Activity</p>
+                            <p class="text-lg font-black text-emerald-900 font-mono">{{ $employee->time_logged }}</p>
+                        </div>
+                        
+                        <div class="text-emerald-100">
+                            <svg class="w-12 h-12 fill-current" viewBox="0 0 24 24">
+                                <path d="M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z" />
+                            </svg>
                         </div>
                     </div>
 
-                    <div class="p-2 flex-1 flex flex-col justify-between">
-                        <div class="text-center">
-                            <h3 class="text-[11px] font-black text-emerald-900 truncate leading-tight uppercase">{{ $employee->name }}</h3>
-                            <p class="text-[9px] text-gray-400 truncate">{{ $employee->position }}</p>
-                        </div>
-                        <div class="mt-2 pt-1 border-t border-gray-50 flex justify-between items-center px-1">
-                            <span class="text-[8px] font-bold text-gray-400 uppercase tracking-tighter">Logged:</span>
-                            <span class="text-[10px] font-black text-emerald-800 font-mono">{{ $employee->time_logged }}</span>
-                        </div>
-                    </div>
-                    <div class="h-1 bg-yellow-400 w-full"></div>
+                    <div class="absolute bottom-0 left-0 h-1 bg-yellow-400 w-full"></div>
                 </div>
-                @endforeach
             </div>
+            @endforeach
         </div>
 
     </div>

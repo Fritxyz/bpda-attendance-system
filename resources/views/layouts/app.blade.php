@@ -3,55 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee System Dashboard</title>
+    <title>BPDA Attendance System</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <style>
-        body { overflow-x: hidden; }
-        #sidebar {
-            min-width: 250px;
-            max-width: 250px;
-            min-height: 100vh;
-            transition: all 0.3s;
-        }
-        .nav-link { color: white; margin-bottom: 10px; }
-        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.1); border-radius: 5px; }
+        body { font-family: 'Inter', sans-serif; overflow: hidden; }
+        /* Para hindi mag-overlap ang content sa sidebar */
+        .main-wrapper { height: 100vh; display: flex; }
+        .sidebar-container { min-width: 260px; max-width: 260px; }
+        .content-container { flex-grow: 1; overflow-y: auto; background-color: #f8fafc; }
     </style>
 </head>
 <body>
-    <div class="d-flex">
-        <nav id="sidebar" class="bg-dark p-3">
-            <h3 class="text-white text-center mb-4">BPDA System</h3>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+
+    <div class="main-wrapper" x-data="{ workforceOpen: true, timekeepingOpen: false }">
+        
+        <nav id="sidebar" class="sidebar-container bg-emerald-950 text-white flex flex-col border-r-4 border-yellow-500 shadow-2xl">
+            
+            <div class="p-6 border-b border-emerald-800/50 flex flex-col items-center">
+                <div class="w-20 h-20 bg-white rounded-2xl p-1 shadow-lg mb-3">
+                    <img src="{{ asset('images/bpda-logo.jpg') }}" alt="BPDA Logo" class="w-full h-full object-contain rounded-xl">
+                </div>
+                <h3 class="text-sm font-black tracking-widest uppercase text-center leading-tight">
+                    BPDA <span class="text-yellow-400 font-sans">Attendance</span>
+                </h3>
+                <p class="text-[10px] text-emerald-300 font-medium mt-1 uppercase tracking-tighter">Bangsamoro Government</p>
+            </div>
+
+            <div class="flex-1 overflow-y-auto py-4 px-3">
+                
+                <div class="mb-4 px-2">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800 transition text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-emerald-800 border-r-4 border-yellow-400' : '' }}">
+                        <i class="bi bi-speedometer2 text-yellow-500"></i> Dashboard
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.index') ? 'active' : '' }}">
-                        <i class="bi bi-people me-2"></i> Employees
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('employees.create') }}" class="nav-link {{ request()->routeIs('employees.create') ? 'active' : '' }}">
-                        <i class="bi bi-person-plus me-2"></i> Add Employee
-                    </a>
-                </li>
-            </ul>
+                </div>
+
+                <div class="mb-2">
+                    <p class="px-4 text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Workforce</p>
+                    
+                    <button @click="workforceOpen = !workforceOpen" class="w-full flex items-center justify-between px-4 py-3 bg-emerald-900/30 rounded-xl text-sm font-bold hover:bg-emerald-800 transition">
+                        <span class="flex items-center gap-3">
+                            <i class="bi bi-people-fill text-yellow-500"></i> Employees
+                        </span>
+                        <i class="bi bi-chevron-down text-[10px] transition-transform" :class="workforceOpen ? 'rotate-180' : ''"></i>
+                    </button>
+
+                    <div x-show="workforceOpen" x-collapse class="mt-2 space-y-1">
+                        <a href="{{ route('employees.index') }}" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition {{ request()->routeIs('employees.index') ? 'text-yellow-400 font-bold' : '' }}">
+                            View All Employees
+                        </a>
+                        <a href="{{ route('employees.create') }}" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition {{ request()->routeIs('employees.create') ? 'text-yellow-400 font-bold' : '' }}">
+                            + Add New Employee
+                        </a>
+                        <a href="#" class="block pl-12 py-2 text-xs text-emerald-600 cursor-not-allowed italic">
+                            Department Records
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mb-2 pt-4">
+                    <p class="px-4 text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Reports</p>
+                    
+                    <button @click="timekeepingOpen = !timekeepingOpen" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800 transition">
+                        <span class="flex items-center gap-3">
+                            <i class="bi bi-calendar-check text-yellow-500"></i> Timekeeping
+                        </span>
+                        <i class="bi bi-chevron-down text-[10px] transition-transform" :class="timekeepingOpen ? 'rotate-180' : ''"></i>
+                    </button>
+
+                    <div x-show="timekeepingOpen" x-collapse class="mt-2 space-y-1">
+                        <a href="#" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition">Daily Time Record</a>
+                        <a href="#" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition">Overtime Logs</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-emerald-950/80 border-t border-emerald-900 shadow-inner">
+                <div class="flex items-center gap-3 px-2 py-2">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-500 flex items-center justify-center font-black text-emerald-950 shadow-lg">
+                        A
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-xs font-bold truncate">Admin User</p>
+                        <p class="text-[9px] text-emerald-400 uppercase font-black tracking-tighter italic">Super Admin</p>
+                    </div>
+                    <form action="#" method="POST">
+                        <button type="submit" class="text-emerald-400 hover:text-red-400 transition">
+                            <i class="bi bi-box-arrow-right text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </nav>
 
-        <div class="flex-fill">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom p-3">
-                <span class="navbar-brand mb-0 h1">@yield('header', 'Dashboard')</span>
-            </nav>
+        <div class="content-container flex flex-col">
             
-            <div class="p-4">
+            <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+                <div class="px-8 py-4 flex justify-between items-center">
+                    <h1 class="text-lg font-black text-emerald-900 tracking-tight">
+                        @yield('header', 'System Overview')
+                    </h1>
+                    
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase italic">
+                            {{ now()->format('l, F d, Y') }}
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8">
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show">
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-6 bg-emerald-600 text-white">
+                        <i class="bi bi-check-circle-fill me-2"></i>
                         {!! session('success') !!}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
 
