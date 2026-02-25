@@ -91,7 +91,7 @@
                             View All Employees
                         </a>
                         <a href="{{ route('employees.create') }}" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition {{ request()->routeIs('employees.create') ? 'text-yellow-400 font-bold' : '' }}">
-                            + Add New Employee
+                            Add New Employee
                         </a>
                         {{-- <a href="#" class="block pl-12 py-2 text-xs text-emerald-600 cursor-not-allowed italic">
                             Department Records

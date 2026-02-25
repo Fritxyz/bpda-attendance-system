@@ -9,13 +9,13 @@ Route::get('/', function () {
 
 
 // employee route
-Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+Route::get('/admin/employee/create', [EmployeeController::class, 'create'])->name('employees.create');
 Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-Route::get('/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
+Route::get('/admin/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
 
 
 // dashboard route (admin)
-Route::get('/dashboard', function () {
+Route::get('/admin/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 

@@ -13,6 +13,9 @@ class EmployeeController extends Controller
      */
     public function index()
     {
+        // 1. Simulan ang query
+        $query = Employee::query();
+        
         // fetch all employee records
         $employees = Employee::select(
             'employee_id',
@@ -31,12 +34,16 @@ class EmployeeController extends Controller
         return view('employees.index', compact('employees'));
     }
 
+    public function filter() 
+    {
+
+    }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
         return view('employees.create');
     }
 

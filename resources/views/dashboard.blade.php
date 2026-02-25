@@ -15,7 +15,6 @@
         <div class="card bg-success text-white mb-4">
             <div class="card-body">
                 <h5>Active Permanent</h5>
-               
             </div>
         </div>
     </div>
