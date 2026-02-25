@@ -21,9 +21,16 @@
 </head>
 <body>
 
-    <div class="main-wrapper" x-data="{ workforceOpen: true, timekeepingOpen: false }">
+    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: false }">
         
-        <nav id="sidebar" class="sidebar-container bg-emerald-950 text-white flex flex-col border-r-4 border-yellow-500 shadow-2xl">
+        <div x-show="sidebarOpen" 
+            @click="sidebarOpen = false" 
+            class="fixed inset-0 z-40 bg-emerald-950/60 backdrop-blur-sm lg:hidden transition-opacity">
+        </div>
+
+       <nav id="sidebar" 
+         class="sidebar-container fixed inset-y-0 left-0 z-50 w-64 bg-emerald-950 text-white flex flex-col border-r-4 border-yellow-500 shadow-2xl transform transition-transform duration-300 lg:relative lg:translate-x-0"
+         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
             
             <div class="p-6 border-b border-emerald-800/50 flex flex-col items-center">
                 <div class="w-20 h-20 bg-white rounded-2xl p-1 shadow-lg mb-3">
@@ -60,9 +67,9 @@
                         <a href="{{ route('employees.create') }}" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition {{ request()->routeIs('employees.create') ? 'text-yellow-400 font-bold' : '' }}">
                             + Add New Employee
                         </a>
-                        <a href="#" class="block pl-12 py-2 text-xs text-emerald-600 cursor-not-allowed italic">
+                        {{-- <a href="#" class="block pl-12 py-2 text-xs text-emerald-600 cursor-not-allowed italic">
                             Department Records
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
 
@@ -101,34 +108,31 @@
             </div>
         </nav>
 
-        <div class="content-container flex flex-col">
-            
-            <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
-                <div class="px-8 py-4 flex justify-between items-center">
-                    <h1 class="text-lg font-black text-emerald-900 tracking-tight">
+<div class="content-container flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
+        
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div class="px-4 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <button @click="sidebarOpen = true" class="lg:hidden p-2 text-emerald-900 bg-emerald-50 rounded-lg">
+                        <i class="bi bi-list text-2xl"></i>
+                    </button>
+                    <h1 class="text-base lg:text-lg font-black text-emerald-900 tracking-tight truncate">
                         @yield('header', 'System Overview')
                     </h1>
-                    
-                    <div class="flex items-center gap-4">
-                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase italic">
-                            {{ now()->format('l, F d, Y') }}
-                        </span>
-                    </div>
                 </div>
-            </header>
-
-            <div class="p-8">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-6 bg-emerald-600 text-white">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        {!! session('success') !!}
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @yield('content')
+                
+                <div class="hidden sm:flex items-center gap-4">
+                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase italic">
+                        {{ now()->format('l, F d, Y') }}
+                    </span>
+                </div>
             </div>
-        </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+            @yield('content')
+        </main>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
