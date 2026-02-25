@@ -40,13 +40,6 @@
             <button class="p-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition shadow-sm">
                 <i class="bi bi-funnel"></i>
             </button>
-
-            {{-- Add Button --}}
-            <a href="{{ route('employees.create') }}" 
-               class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-200 transition active:scale-95">
-                <i class="bi bi-person-plus-fill"></i>
-                Add Employee
-            </a>
         </div>
     </div>
 
