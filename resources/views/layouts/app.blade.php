@@ -17,6 +17,33 @@
         .main-wrapper { height: 100vh; display: flex; }
         .sidebar-container { min-width: 260px; max-width: 260px; }
         .content-container { flex-grow: 1; overflow-y: auto; background-color: #f8fafc; }
+
+        /* Custom Scrollbar para sa Sidebar */
+    #sidebar .flex-1::-webkit-scrollbar {
+        width: 5px; /* Gawing manipis */
+    }
+
+    #sidebar .flex-1::-webkit-scrollbar-track {
+        background: transparent; 
+    }
+
+    #sidebar .flex-1::-webkit-scrollbar-thumb {
+        background: rgba(251, 191, 36, 0.3); /* Kulay Yellow (Yellow-400) na medyo transparent */
+        border-radius: 10px;
+    }
+
+    #sidebar .flex-1:hover::-webkit-scrollbar-thumb {
+        background: rgba(251, 191, 36, 0.6); /* Mas matingkad kapag naka-hover */
+    }
+
+    /* Para sa Firefox */
+    #sidebar .flex-1 {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
+    }
+
+    /* Iwasan ang layout shift */
+    [x-cloak] { display: none !important; }
     </style>
 </head>
 <body>
@@ -42,8 +69,7 @@
                 <p class="text-[10px] text-emerald-300 font-medium mt-1 uppercase tracking-tighter">Bangsamoro Government</p>
             </div>
 
-            <div class="flex-1 overflow-y-auto py-4 px-3">
-                
+            <div class="flex-1 overflow-y-auto py-4 px-3">    
                 <div class="mb-4 px-2">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800 transition text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-emerald-800 border-r-4 border-yellow-400' : '' }}">
                         <i class="bi bi-speedometer2 text-yellow-500"></i> Dashboard
@@ -108,33 +134,34 @@
             </div>
         </nav>
 
-<div class="content-container flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
+        <div class="content-container flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
         
-        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
-            <div class="px-4 lg:px-8 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <button @click="sidebarOpen = true" class="lg:hidden p-2 text-emerald-900 bg-emerald-50 rounded-lg">
-                        <i class="bi bi-list text-2xl"></i>
-                    </button>
-                    <h1 class="text-base lg:text-lg font-black text-emerald-900 tracking-tight truncate">
-                        @yield('header', 'System Overview')
-                    </h1>
+            <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+                <div class="px-4 lg:px-8 py-4 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <button @click="sidebarOpen = true" class="lg:hidden p-2 text-emerald-900 bg-emerald-50 rounded-lg">
+                            <i class="bi bi-list text-2xl"></i>
+                        </button>
+                        <h1 class="text-base lg:text-lg font-black text-emerald-900 tracking-tight truncate">
+                            @yield('header', 'System Overview')
+                        </h1>
+                    </div>
+                    
+                    <div class="hidden sm:flex items-center gap-4">
+                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase italic" id="live-clock">
+                            {{ now()->setTimezone('Asia/Manila')->format('l, F d, Y | h:i:ss A') }}
+                        </span>
+                    </div>
                 </div>
-                
-                <div class="hidden sm:flex items-center gap-4">
-                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase italic">
-                        {{ now()->format('l, F d, Y') }}
-                    </span>
-                </div>
-            </div>
-        </header>
+            </header>
 
-        <main class="flex-1 overflow-y-auto p-4 lg:p-8">
-            @yield('content')
-        </main>
-    </div>
+            <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+                @yield('content')
+            </main>
+        </div>
     </div>
 
+    <script src="{{ asset('js/admin/sidebar-clock.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
