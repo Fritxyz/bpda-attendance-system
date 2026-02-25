@@ -57,11 +57,21 @@
                             {{-- Bureau Filter --}}
                             <div>
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Bureau</label>
-                                <select name="bureau" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                <select name="bureau" id="bureau-select" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
                                     <option value="">All Bureaus</option>
-                                    <option value="PPB" {{ request('bureau') == 'PPB' ? 'selected' : '' }}>Finance</option>
-                                    <option value="Admin" {{ request('bureau') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="PPB" {{ request('bureau') == 'PPB' ? 'selected' : '' }}>PPB</option>
+                                    <option value="RDSPB" {{ request('bureau') == 'RDSPB' ? 'selected' : '' }}>RDSPB</option>
+                                    <option value="FASS" {{ request('bureau') == 'FASS' ? 'selected' : '' }}>FASS</option>
+                                    <option value="Other" {{ request('bureau') == 'Other' ? 'selected' : '' }}>Other</option>
                                     {{-- Idagdag dito ang ibang Bureaus ng BPDA --}}
+                                </select>
+                            </div>
+
+                            {{-- Division Filter --}}
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Division</label>
+                                <select name="division" id="division-select" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                    <option value="" disabled selected>Select Division</option>
                                 </select>
                             </div>
 
@@ -72,7 +82,7 @@
                                     <option value="">All Types</option>
                                     <option value="Permanent" {{ request('type') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
                                     <option value="Contractual" {{ request('type') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                                    <option value="Coterminous" {{ request('type') == 'Coterminous' ? 'selected' : '' }}>Coterminous</option>
+                                    <option value="Job Order" {{ request('type') == 'Job Order' ? 'selected' : '' }}>Job Order</option>
                                 </select>
                             </div>
 
@@ -212,4 +222,6 @@
         <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Bangsamoro Planning and Development Authority</p>
     </div>
 </div>
+
+<script src="{{ asset('js/admin/employee-filter.js') }}"></script>
 @endsection
