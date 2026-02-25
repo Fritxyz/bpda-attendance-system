@@ -85,7 +85,7 @@
                                     {{ substr($employee->first_name, 0, 1) }}{{ substr($employee->last_name, 0, 1) }}
                                 </div>
                                 <div>
-                                    <p class="text-[10px] font-black text-emerald-600 leading-none mb-1">BPDA-{{ $employee->employee_id }}</p>
+                                    <p class="text-[10px] font-black text-emerald-600 leading-none mb-1">{{ $employee->employee_id }}</p>
                                     <p class="text-sm font-black text-slate-900 uppercase tracking-tight">{{ $employee->last_name }}, {{ $employee->first_name }}</p>
                                     <p class="text-[11px] text-slate-500 font-medium italic mt-0.5">{{ $employee->position }}</p>
                                 </div>
@@ -116,11 +116,13 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                            {{-- Flex container to center the button --}}
+                            <div class="flex items-center justify-center gap-2">
                                 <a href="{{ route('employees.create', $employee->id) }}" 
-                                   class="p-2.5 bg-white border border-slate-200 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white hover:border-blue-600 transition shadow-sm"
-                                   title="Edit Profile">
-                                    <i class="bi bi-pencil-square"></i>
+                                class="group/btn relative flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-200 transition-all duration-300 active:scale-90"
+                                title="Edit Profile">
+                                    {{-- Icon stays centered --}}
+                                    <i class="bi bi-pencil-square text-lg transition-transform duration-300 group-hover/btn:scale-110"></i>
                                 </a>
                             </div>
                         </td>
