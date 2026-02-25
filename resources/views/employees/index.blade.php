@@ -35,11 +35,70 @@
                 <input type="text" placeholder="Search by name or ID..." 
                        class="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none w-full sm:w-72 shadow-sm transition-all">
             </div>
+            {{-- // --}}
+            {{-- Filter Section --}}
+                <div class="relative" x-data="{ filterOpen: false }">
+                    <button @click="filterOpen = !filterOpen" 
+                            :class="filterOpen ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200'"
+                            class="p-2.5 border rounded-xl hover:shadow-md transition-all flex items-center gap-2 shadow-sm">
+                        <i class="bi bi-funnel"></i>
+                        <span class="text-xs font-bold px-1">Filters</span>
+                    </button>
 
-            {{-- Filter Button (Optional but looks good) --}}
-            <button class="p-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition shadow-sm">
-                <i class="bi bi-funnel"></i>
-            </button>
+                    {{-- Filter Dropdown Menu --}}
+                    <div x-show="filterOpen" 
+                        @click.away="filterOpen = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                        class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 p-4">
+                        
+                        <form action="{{ route('employees.index') }}" method="GET" class="space-y-4">
+                            {{-- Bureau Filter --}}
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Bureau</label>
+                                <select name="bureau" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                    <option value="">All Bureaus</option>
+                                    <option value="PPB" {{ request('bureau') == 'PPB' ? 'selected' : '' }}>Finance</option>
+                                    <option value="Admin" {{ request('bureau') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    {{-- Idagdag dito ang ibang Bureaus ng BPDA --}}
+                                </select>
+                            </div>
+
+                            {{-- Employment Type Filter --}}
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Employment Type</label>
+                                <select name="type" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                    <option value="">All Types</option>
+                                    <option value="Permanent" {{ request('type') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                                    <option value="Contractual" {{ request('type') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
+                                    <option value="Coterminous" {{ request('type') == 'Coterminous' ? 'selected' : '' }}>Coterminous</option>
+                                </select>
+                            </div>
+
+                            {{-- Status Filter --}}
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Status</label>
+                                <div class="flex gap-2">
+                                    <label class="flex-1">
+                                        <input type="radio" name="status" value="1" class="hidden peer" {{ request('status') == '1' ? 'checked' : '' }}>
+                                        <div class="text-center p-2 rounded-lg border border-slate-100 text-[10px] font-bold uppercase peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:text-emerald-700 cursor-pointer hover:bg-slate-50">Active</div>
+                                    </label>
+                                    <label class="flex-1">
+                                        <input type="radio" name="status" value="0" class="hidden peer" {{ request('status') == '0' ? 'checked' : '' }}>
+                                        <div class="text-center p-2 rounded-lg border border-slate-100 text-[10px] font-bold uppercase peer-checked:bg-rose-50 peer-checked:border-rose-500 peer-checked:text-rose-700 cursor-pointer hover:bg-slate-50">Inactive</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-50 flex gap-2">
+                                <a href="{{ route('employees.index') }}" class="flex-1 text-center py-2 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600 transition">Clear</a>
+                                <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-100">Apply</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+           {{-- // --}}
         </div>
     </div>
 
