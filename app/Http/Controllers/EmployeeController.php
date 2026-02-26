@@ -53,6 +53,7 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $validated = $request->validated();
+        
         // Handle checkbox
         $validated['is_active'] = $request->has('is_active');
         // Prepend BPDA- to the input number
@@ -63,11 +64,6 @@ class EmployeeController extends Controller
         // Flash a message and redirect instead of just returning a string
         return redirect()->route('employees.index')
         ->with('success', "Employee saved! Username: {$employee->username}");
-
-        // logger($request->all());
-
-        // return redirect()->route('employees.index')
-        // ->with('success', "Employee saved!");
     }
 
     /**
