@@ -53,30 +53,44 @@
                             <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold text-sm">
                                 BPDA-
                             </span>
-                            <input type="number" name="employee_id" value="{{ old('employee_id') }}" placeholder="1234567890" required
-                                   class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            <input type="text" name="employee_id" value="{{ old('employee_id') }}" 
+                                placeholder="e.g. 123456789012345" required maxlength="15" pattern="\d{15}"
+                                title="Employee ID must be exactly 15 digits."
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 15)"
+                                class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                         </div>
                     </div>
-
-                    
                 </div>
 
                 {{-- Full Name Grid --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">First Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name') }}" required
-                               class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1 text-gray-400">Middle Name</label>
-                        <input type="text" name="middle_name" value="{{ old('middle_name') }}"
-                               class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="text" name="middle_name" value="{{ old('middle_name') }}" required
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Last Name</label>
+                        
                         <input type="text" name="last_name" value="{{ old('last_name') }}" required
-                               class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Suffix</label>
+                        {{-- Suffix: Jr, Sr, and Roman Numerals (I, V, X) --}}
+                        <input type="text" name="suffix" value="{{ old('suffix') }}"
+                            placeholder="Jr, Sr, III"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                 </div>
             </div>
@@ -404,4 +418,5 @@
 // tapos mag-example ng value 
 
 </script>
+<script src="{{ asset('js/admin/add-employee-validation.js') }}"></script>
 @endsection
