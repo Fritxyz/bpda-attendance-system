@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable(); // not everyone has one
             $table->string('last_name');
+            $table->string('suffix')->nullable();
 
             $table->string('bureau')->nullable();
             $table->string('division')->nullable();

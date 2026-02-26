@@ -21,6 +21,21 @@
         </ol>
     </nav>
 
+    {{-- Success Message Alert --}}
+    @if (session('success'))
+        <div id="success-alert" class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg flex justify-between items-center shadow-sm">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <p class="text-sm font-bold">{{ session('success') }}</p>
+            </div>
+            <button onclick="document.getElementById('success-alert').remove()" class="text-green-500 hover:text-green-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
     {{-- Header Section --}}
     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
         <div>
@@ -130,11 +145,11 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest">Employee Information</th>
-                        <th class="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Bureau / Division</th>
-                        <th class="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Type & Salary</th>
-                        <th class="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
-                        <th class="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-right">Action</th>
+                        <th class="w=1/3 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest">Employee Information</th>
+                        <th class="w=1/4 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Bureau / Division</th>
+                        <th class="w=1/5 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Type & Salary</th>
+                        <th class="w=1/6 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
+                        <th class="w=1/6 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -178,13 +193,20 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            {{-- Flex container to center the button --}}
+                            {{-- Action Buttons Alignment --}}
                             <div class="flex items-center justify-center gap-2">
+                                {{-- Edit Button --}}
                                 <a href="{{ route('employees.create', $employee->id) }}" 
-                                class="group/btn relative flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-200 transition-all duration-300 active:scale-90"
-                                title="Edit Profile">
-                                    {{-- Icon stays centered --}}
-                                    <i class="bi bi-pencil-square text-lg transition-transform duration-300 group-hover/btn:scale-110"></i>
+                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-100 transition-all duration-200 group/btn"
+                                title="Edit Record">
+                                    <i class="bi bi-pencil-square text-sm"></i>
+                                </a>
+
+                                {{-- View/Details Button --}}
+                                <a href="{{ route('employees.index', $employee->id) }}" 
+                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 transition-all duration-200 group/btn"
+                                title="View Details">
+                                    <i class="bi bi-eye text-sm"></i>
                                 </a>
                             </div>
                         </td>
