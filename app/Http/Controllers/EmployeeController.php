@@ -43,8 +43,8 @@ class EmployeeController extends Controller
         $query = Employee::query();
         
         // 2. Search Filter (Name o ID)
-        if ($request->filled('search')) {
-            $search = $request->search;
+        if ($request->filled('search-input')) {
+            $search = $request->input('search-input');
             $query->where(function($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
                 ->orWhere('last_name', 'like', "%{$search}%")
@@ -65,14 +65,14 @@ class EmployeeController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('is_Active', $request->status);
         }
 
         $employees = $query->latest()->paginate(10);
 
-        // Eto ang trick:
-        if ($request->ajax()) {
-            return view('employees.index', compact('employees'))->render();
+        // Eto ang trick: Kapag AJAX, table partial lang ang ibabalik
+        if ($request->ajax() || $request->has('ajax')) {
+            return view('employees.partials.table', compact('employees'))->render();
         }
 
         return view('employees.index', compact('employees'));

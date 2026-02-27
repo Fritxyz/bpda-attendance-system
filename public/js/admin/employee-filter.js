@@ -118,3 +118,64 @@ document.addEventListener('DOMContentLoaded', function () {
         employmentTypeSelect.addEventListener('change', toggleSalary);
     }
 });
+
+// --- AJAX SEARCH LOGIC ---
+
+const searchInput = document.getElementById('search-input');
+const tableContainer = document.getElementById('employee-table-container');
+
+let debounceTimer;
+
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            fetchEmployees();
+        }, 500); // Maghihintay ng 0.5 seconds pagkatapos tumigil mag-type
+    });
+}
+
+function fetchEmployees() {
+    // Kunin lahat ng values mula sa Search at Filters
+    const searchInputEl = document.getElementById('search-input');
+    const search = searchInputEl.value;
+    const bureau = document.getElementById('bureau-select').value;
+    const division = document.getElementById('division-select').value;
+    const type = document.querySelector('select[name="type"]').value;
+    const status = document.querySelector('input[name="status"]:checked')?.value || '';
+
+    // Buuin ang URL na may query strings
+    const params = new URLSearchParams({
+        'search-input': searchInputEl.value,
+        bureau: bureau,
+        division: division,
+        type: type,
+        status: status,
+        ajax: 1 // Flag para malaman ng Controller na AJAX ito
+    });
+
+    // Lagyan ng loading effect (optional)
+    tableContainer.classList.add('opacity-50', 'pointer-events-none');
+
+    fetch(`${window.location.pathname}?${params.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        tableContainer.innerHTML = html;
+        tableContainer.classList.remove('opacity-50', 'pointer-events-none');
+        
+        // Update URL sa browser nang hindi nagre-refresh (optional)
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+    })
+    .catch(error => console.error('Error fetching employees:', error));
+}
+
+// I-update rin ang Apply button ng filter para AJAX na rin
+document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetchEmployees();
+});
