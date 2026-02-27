@@ -11,32 +11,71 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // public function index()
+    // {
+    //     // 1. Simulan ang query
+    //     $query = Employee::query();
+        
+    //     // fetch all employee records
+    //     $employees = Employee::select(
+    //         'employee_id',
+    //         'first_name',
+    //         'middle_name',
+    //         'last_name',
+    //         'bureau',
+    //         'division',
+    //         'position',
+    //         'salary',
+    //         'employment_type',
+    //         'role',
+    //         'is_active',
+    //     )->get();
+
+    //     return view('employees.index', compact('employees'));
+    // }
+
+    /**
+     * Display a flitered listing of the resource.
+     */
+    public function index(Request $request)
     {
         // 1. Simulan ang query
         $query = Employee::query();
         
-        // fetch all employee records
-        $employees = Employee::select(
-            'employee_id',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'bureau',
-            'division',
-            'position',
-            'salary',
-            'employment_type',
-            'role',
-            'is_active',
-        )->get();
+        // 2. Search Filter (Name o ID)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                ->orWhere('last_name', 'like', "%{$search}%")
+                ->orWhere('employee_id', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('bureau')) {
+            $query->where('bureau', $request->bureau);
+        }
+
+        if ($request->filled('division')) {
+            $query->where('division', $request->division);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('employment_type', $request->type);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $employees = $query->latest()->paginate(10);
+
+        // Eto ang trick:
+        if ($request->ajax()) {
+            return view('employees.index', compact('employees'))->render();
+        }
 
         return view('employees.index', compact('employees'));
-    }
-
-    public function filter() 
-    {
-
     }
 
     /**
@@ -53,7 +92,7 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $validated = $request->validated();
-        
+
         // Handle checkbox
         $validated['is_active'] = $request->has('is_active');
         // Prepend BPDA- to the input number

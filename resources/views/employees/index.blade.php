@@ -47,7 +47,7 @@
             {{-- Search --}}
             <div class="relative group">
                 <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-500 transition-colors"></i>
-                <input type="text" placeholder="Search by name or ID..." 
+                <input type="text" placeholder="Search by name or ID..."  name="search"
                        class="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none w-full sm:w-72 shadow-sm transition-all">
             </div>
             {{-- // --}}
@@ -197,14 +197,14 @@
                             <div class="flex items-center justify-center gap-2">
                                 {{-- Edit Button --}}
                                 <a href="{{ route('employees.create', $employee->id) }}" 
-                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-100 transition-all duration-200 group/btn"
+                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-emerald-600 hover:text-black hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-100 transition-all duration-200 group/btn"
                                 title="Edit Record">
                                     <i class="bi bi-pencil-square text-sm"></i>
                                 </a>
 
                                 {{-- View/Details Button --}}
                                 <a href="{{ route('employees.index', $employee->id) }}" 
-                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 transition-all duration-200 group/btn"
+                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-black hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 transition-all duration-200 group/btn"
                                 title="View Details">
                                     <i class="bi bi-eye text-sm"></i>
                                 </a>
