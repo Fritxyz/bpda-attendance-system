@@ -87,3 +87,9 @@
         </tbody>
     </table>
 </div>
+
+@if($employees->hasPages())
+    <div id="pagination-container" class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
+        {{ $employees->links() }}
+    </div>
+@endif

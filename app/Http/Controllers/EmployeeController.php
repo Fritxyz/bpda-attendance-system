@@ -68,7 +68,7 @@ class EmployeeController extends Controller
             $query->where('is_Active', $request->status);
         }
 
-        $employees = $query->latest()->paginate(10);
+        $employees = $query->latest()->paginate(1)->appends($request->all( ));
 
         // Eto ang trick: Kapag AJAX, table partial lang ang ibabalik
         if ($request->ajax() || $request->has('ajax')) {

@@ -75,11 +75,13 @@ function updatePositions(selectedDivision, selectedValue = '') {
 
 bureauSelect.addEventListener('change', function() {
     updateDivisions(this.value);
-    updatePositions(''); // Reset position kung nagbago ang bureau
+    updatePositions(''); // Correct
+    fetchEmployees();
 });
 
 divisionSelect.addEventListener('change', function() {
     updatePositions(this.value);
+
 });
 
 // --- INITIAL LOAD (Fixes the Bug) ---
@@ -117,6 +119,21 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleSalary();
         employmentTypeSelect.addEventListener('change', toggleSalary);
     }
+
+    
+});
+
+document.addEventListener('click', function (e) {
+    // Hanapin kung ang cliniclick ay link sa loob ng pagination-container
+    if (e.target.closest('#pagination-container a')) {
+        e.preventDefault();
+        
+        // Kunin ang URL (halimbawa: employees?page=2)
+        const url = e.target.closest('a').href;
+        
+        // Tawagin ang fetch function gamit ang page URL
+        fetchEmployees(url);
+    }
 });
 
 // --- AJAX SEARCH LOGIC ---
@@ -135,43 +152,53 @@ if (searchInput) {
     });
 }
 
-function fetchEmployees() {
-    // Kunin lahat ng values mula sa Search at Filters
+// I-update ang fetchEmployees function para tumanggap ng URL
+function fetchEmployees(pageUrl = null) {
     const searchInputEl = document.getElementById('search-input');
-    const search = searchInputEl.value;
-    const bureau = document.getElementById('bureau-select').value;
-    const division = document.getElementById('division-select').value;
-    const type = document.querySelector('select[name="type"]').value;
-    const status = document.querySelector('input[name="status"]:checked')?.value || '';
 
-    // Buuin ang URL na may query strings
+    // 1. Kunin ang base path (halimbawa: /admin/employee/all)
+    let baseUrl = pageUrl ? pageUrl.split('?')[0] : window.location.pathname;
+    
+    // 1. Kunin ang base params
     const params = new URLSearchParams({
-        'search-input': searchInputEl.value,
-        bureau: bureau,
-        division: division,
-        type: type,
-        status: status,
-        ajax: 1 // Flag para malaman ng Controller na AJAX ito
+        'search-input': searchInputEl.value || '',
+        bureau: document.getElementById('bureau-select').value || '',
+        division: document.getElementById('division-select').value || '',
+        type: document.querySelector('select[name="type"]').value || '',
+        status: document.querySelector('input[name="status"]:checked')?.value || '',
+        ajax: 1
     });
 
-    // Lagyan ng loading effect (optional)
+    let fetchUrl;
+
+    // 3. Kung galing sa pagination link, kunin ang 'page' number nito
+    if (pageUrl) {
+        const urlObj = new URL(pageUrl);
+        const page = urlObj.searchParams.get('page');
+        if (page) params.set('page', page);
+    }
+
+    // 4. BUUIN ANG TAMANG URL (Dito tayo nagka-error)
+    // Pinagsasama nito ang baseUrl + ? + lahat ng params
+    fetchUrl = `${baseUrl}?${params.toString()}`;
     tableContainer.classList.add('opacity-50', 'pointer-events-none');
 
-    fetch(`${window.location.pathname}?${params.toString()}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+    fetch(fetchUrl, {
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        
     })
     .then(response => response.text())
     .then(html => {
         tableContainer.innerHTML = html;
         tableContainer.classList.remove('opacity-50', 'pointer-events-none');
         
-        // Update URL sa browser nang hindi nagre-refresh (optional)
-        const newUrl = `${window.location.pathname}?${params.toString()}`;
-        window.history.pushState({ path: newUrl }, '', newUrl);
+        // I-update ang URL sa browser para kung i-refresh, nasa tamang page pa rin
+        window.history.pushState({}, '', fetchUrl.replace('&ajax=1', '').replace('?ajax=1', ''));
     })
-    .catch(error => console.error('Error fetching employees:', error));
+    .catch(error => console.error('Error:', error));
 }
 
 // I-update rin ang Apply button ng filter para AJAX na rin
