@@ -1,16 +1,11 @@
-# 🏢 BPDA Personnel Directory
+# 🏢 BPDA Attendance System
 
-A modern **Workforce Management System** developed for the **Bangsamoro Planning and Development Authority (BPDA)**. This system is designed to streamline the management, filtering, and monitoring of all personnel across various Bureaus and Divisions.
+A modern **Attendance Management System** developed for the **Bangsamoro Planning and Development Authority (BPDA)**. This system is designed to streamline the management, filtering, and monitoring of all personnel's attendance across various Bureaus and Divisions of the **Bangsamoro Planning and Developement Authority (BPDA)**.
 
 
 
 ## 🌟 Key Features
 
-* **Real-time AJAX Filtering:** Fast "Search-as-you-type" functionality and filtering for employees by ID, Name, Bureau, and Status without page reloads.
-* **Dynamic Cascading Dropdowns:** Intelligent selection logic where *Division* and *Position* options automatically update based on the selected *Bureau*.
-* **Smart Salary Logic:** Automatically disables the salary input when the Employment Type is set to "Permanent" (adhering to standard scales) and enables it for other types.
-* **Responsive UI:** Built with **Tailwind CSS** and **Alpine.js** for a clean, professional interface that works seamlessly on both desktop and mobile devices.
-* **Visual Status Indicators:** Easily identify Active and Inactive personnel using color-coded badges and pulse animations.
 
 ## 🛠️ Tech Stack
 
@@ -34,5 +29,5 @@ Follow these steps to set up the project on your local machine:
 
 ### 2. Clone the Repository
 ```bash
-git clone [https://github.com/username/bpda-personnel-directory.git](https://github.com/username/bpda-personnel-directory.git)
-cd bpda-personnel-directory
+git clone [https://github.com/Fritxyz/bpda-attendance-system.git](https://github.com/Fritxyz/bpda-attendance-system.git)
+cd bpda-attedance-system
