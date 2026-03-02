@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
@@ -7,15 +8,21 @@ Route::get('/', function () {
     return view('index');
 });
 
+// auth (login and logout)
+Route::get('/signin', [AuthenticatedSessionController::class, 'create'])->name('auth.login');
 
-// employee route
+
+
+
+// ADMIN ROUTES
+// dashboard route
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
+// employee section/route
 Route::get('/admin/employee/create', [EmployeeController::class, 'create'])->name('employees.create');
 Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 Route::get('/admin/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
 
-
-// dashboard route (admin)
-Route::get('/admin/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
 

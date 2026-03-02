@@ -9,33 +9,7 @@ use Illuminate\Http\Request;
 class EmployeeController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    // public function index()
-    // {
-    //     // 1. Simulan ang query
-    //     $query = Employee::query();
-        
-    //     // fetch all employee records
-    //     $employees = Employee::select(
-    //         'employee_id',
-    //         'first_name',
-    //         'middle_name',
-    //         'last_name',
-    //         'bureau',
-    //         'division',
-    //         'position',
-    //         'salary',
-    //         'employment_type',
-    //         'role',
-    //         'is_active',
-    //     )->get();
-
-    //     return view('employees.index', compact('employees'));
-    // }
-
-    /**
-     * Display a flitered listing of the resource.
+     * Display a (filtered/unfiltered) listing of the resource.
      */
     public function index(Request $request)
     {
@@ -68,7 +42,7 @@ class EmployeeController extends Controller
             $query->where('is_Active', $request->status);
         }
 
-        $employees = $query->latest()->paginate(1)->appends($request->all( ));
+        $employees = $query->latest()->paginate(10)->appends($request->all( ));
 
         // Eto ang trick: Kapag AJAX, table partial lang ang ibabalik
         if ($request->ajax() || $request->has('ajax')) {

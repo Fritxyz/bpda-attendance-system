@@ -72,7 +72,7 @@
 
             <div class="flex-1 overflow-y-auto py-4 px-3">    
                 <div class="mb-4 px-2">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800 transition text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-emerald-800 border-r-4 border-yellow-400' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800 transition text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-emerald-800 border-r-4 border-yellow-400' : '' }}">
                         <i class="bi bi-speedometer2 text-yellow-500"></i> Dashboard
                     </a>
                 </div>
