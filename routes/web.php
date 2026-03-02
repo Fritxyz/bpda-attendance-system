@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\Admin\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,9 +10,6 @@ Route::get('/', function () {
 
 // auth (login and logout)
 Route::get('/signin', [AuthenticatedSessionController::class, 'create'])->name('auth.login');
-
-
-
 
 // ADMIN ROUTES
 // dashboard route
@@ -24,5 +21,6 @@ Route::get('/admin/dashboard', function () {
 Route::get('/admin/employee/create', [EmployeeController::class, 'create'])->name('employees.create');
 Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 Route::get('/admin/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
+Route::get('/admin/dashboard/employee/{employee}', [EmployeeController::class, 'edit'])->name('employees.edit');
 
 

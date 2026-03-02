@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -46,10 +47,10 @@ class EmployeeController extends Controller
 
         // Eto ang trick: Kapag AJAX, table partial lang ang ibabalik
         if ($request->ajax() || $request->has('ajax')) {
-            return view('employees.partials.table', compact('employees'))->render();
+            return view('partials.admin.employees.table', compact('employees'))->render();
         }
 
-        return view('employees.index', compact('employees'));
+        return view('admin.employees.index', compact('employees'));
     }
 
     /**
@@ -57,7 +58,7 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employees.create');
+        return view('admin.employees.create');
     }
 
     /**
@@ -90,9 +91,14 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Employee $employee)
     {
-        //
+        // Mas maikli ito (ganun din ang resulta):
+        $employee->employee_id = substr($employee->employee_id, 5);
+
+        return view('admin.employees.edit', [
+            'employee' => $employee
+        ]);
     }
 
     /**

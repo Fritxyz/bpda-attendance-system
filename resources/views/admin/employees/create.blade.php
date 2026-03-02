@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin.top-and-side-bar')
 
 @section('header', 'Employee Management')
 
@@ -8,7 +8,7 @@
     <nav class="flex mb-6 text-sm text-gray-500" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1">
             <li class="inline-flex items-center">
-                <a href="{{ route('dashboard') }}" class="hover:text-blue-600 transition">Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition">Dashboard</a>
             </li>
             <li class="flex items-center">
                 <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin.top-and-side-bar')
 
 @section('header', 'Employee Management')
 
@@ -9,7 +9,7 @@
     <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-2">
             <li>
-                <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">
+                <a href="{{ route('admin.dashboard') }}" class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">
                     <i class="bi bi-house-door text-xs"></i>
                     Dashboard
                 </a>
@@ -141,15 +141,7 @@
 
     {{-- Main Table Card --}}
     <div id="employee-table-container" class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden">
-        
-        @include('employees.partials.table')
-
-        {{-- Pagination --}}
-        {{-- @if($employees->hasPages())
-        <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
-            {{ $employees->links() }}
-        </div>
-        @endif --}}
+        @include('partials.admin.employees.table')
     </div>
 
     {{-- Footer Branding --}}
