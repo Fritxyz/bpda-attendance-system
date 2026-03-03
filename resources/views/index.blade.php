@@ -1,43 +1,5 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
-@php
-    // ITO ANG DUMP DATA MO
-    $employees = [
-        (object)[
-            'name' => 'Ahmad Al-Rashid',
-            'position' => 'Senior Developer',
-            'division' => 'Information Technology',
-            'photo' => 'https://i.pravatar.cc/300?u=ahmad',
-            'status' => 'In',
-            'time_logged' => '07:45 AM'
-        ],
-        (object)[
-            'name' => 'Sitti Fatima',
-            'position' => 'Administrative Officer',
-            'division' => 'Human Resources',
-            'photo' => 'https://i.pravatar.cc/300?u=fatima',
-            'status' => 'In',
-            'time_logged' => '08:02 AM'
-        ],
-        (object)[
-            'name' => 'Mohammad Hassan',
-            'position' => 'Project Manager',
-            'division' => 'Planning & Dev',
-            'photo' => 'https://i.pravatar.cc/300?u=mohammad',
-            'status' => 'Out',
-            'time_logged' => '--:--'
-        ],
-        (object)[
-            'name' => 'Zubair Kareem',
-            'position' => 'Security Analyst',
-            'division' => 'Cybersecurity',
-            'photo' => 'https://i.pravatar.cc/300?u=zubair',
-            'status' => 'In',
-            'time_logged' => '08:15 AM'
-        ],
-    ];
-@endphp
-
 <div class="h-screen w-full bg-gray-50 flex flex-col font-sans overflow-hidden" style="background-image: url('https://www.transparenttextures.com/patterns/islamic-exercise.png');">
     
     <div class="w-full bg-emerald-900 shadow-lg border-b-4 border-yellow-500 z-10">
@@ -72,7 +34,7 @@
                 <p class="text-gray-500 text-xs mt-1 italic">Enter ID and select log type below.</p>
             </div>
 
-            <form action="#" method="POST" class="space-y-6">
+            <form action="{{ route('attendance.store') }}" method="POST" class="space-y-6">
                 @csrf
                 <div class="space-y-2">
                     <label class="text-emerald-900 font-bold uppercase text-xs">Employee ID Number</label>
@@ -110,46 +72,70 @@
 
         {{-- // start --}}
         <div class="flex-1 p-6 overflow-y-auto bg-gray-100/50 space-y-4 snap-y snap-mandatory">
+            {{-- // Simula ng Loop --}}
             @foreach($employees as $employee)
-            <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-800 overflow-hidden flex h-[30%] min-h-[180px] snap-start hover:shadow-xl transition-all duration-300">
-                
-                <div class="w-1/3 bg-emerald-950 relative">
-                    <img src="{{ $employee->photo }}" class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent"></div>
-                    <div class="absolute bottom-3 left-3">
-                        <span class="{{ $employee->status == 'In' ? 'bg-green-500' : 'bg-red-500' }} text-white text-[10px] px-3 py-1 rounded-full font-black uppercase border border-white/50 shadow-lg">
-                            {{ $employee->status }}
-                        </span>
-                    </div>
-                </div>
+                @php
+                    // Kunin ang attendance record ngayong araw
+                    $todayLog = $employee->attendances->first();
+                    
+                    // Logic para malaman kung "In" o "Out"
+                    // I-assume natin na kung may PM OUT na, "Out" na siya. Kung may AM IN pa lang, "In".
+                    $isOut = $todayLog && $todayLog->pm_out ? true : false;
+                    $statusText = $todayLog ? ($isOut ? 'Out' : 'In') : 'No Log';
+                    
+                    // Kunin ang pinakahuling time column na may laman
+                    $lastTime = '--:--';
+                    if($todayLog) {
+                        $lastTime = $todayLog->ot_out ?? $todayLog->ot_in ?? 
+                                    $todayLog->pm_out ?? $todayLog->pm_in ?? 
+                                    $todayLog->am_out ?? $todayLog->am_in ?? '--:--';
+                    }
+                @endphp
 
-                <div class="flex-1 p-6 flex flex-col justify-between relative bg-white">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50"></div>
-
-                    <div class="relative z-10">
-                        <h3 class="text-2xl font-black text-emerald-900 uppercase tracking-tight leading-tight">
-                            {{ $employee->name }}
-                        </h3>
-                        <p class="text-emerald-700 font-bold text-sm tracking-wide">{{ $employee->position }}</p>
-                        <p class="text-gray-400 text-xs italic mt-1">{{ $employee->division }}</p>
-                    </div>
-
-                    <div class="relative z-10 flex justify-between items-end border-t border-gray-100 pt-4">
-                        <div>
-                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Recent Activity</p>
-                            <p class="text-lg font-black text-emerald-900 font-mono">{{ $employee->time_logged }}</p>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-800 overflow-hidden flex h-[30%] min-h-[180px] snap-start hover:shadow-xl transition-all duration-300">
+                    
+                    <div class="w-1/3 bg-emerald-950 relative">
+                        {{-- Photo from DB --}}
+                        <img src="{{ $employee->photo ? asset('storage/' . $employee->photo) : 'https://i.pravatar.cc/300?u=' . $employee->id }}" 
+                            class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0">
                         
-                        <div class="text-emerald-100">
-                            <svg class="w-12 h-12 fill-current" viewBox="0 0 24 24">
-                                <path d="M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z" />
-                            </svg>
+                        <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent"></div>
+                        <div class="absolute bottom-3 left-3">
+                            <span class="{{ $statusText == 'In' ? 'bg-green-500' : ($statusText == 'Out' ? 'bg-red-500' : 'bg-gray-500') }} text-white text-[10px] px-3 py-1 rounded-full font-black uppercase border border-white/50 shadow-lg">
+                                {{ $statusText }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="absolute bottom-0 left-0 h-1 bg-yellow-400 w-full"></div>
+                    <div class="flex-1 p-6 flex flex-col justify-between relative bg-white">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50"></div>
+
+                        <div class="relative z-10">
+                            <h3 class="text-2xl font-black text-emerald-900 uppercase tracking-tight leading-tight">
+                                {{ $employee->first_name }} {{ $employee->last_name }}
+                            </h3>
+                            <p class="text-emerald-700 font-bold text-sm tracking-wide">{{ $employee->position }}</p>
+                            <p class="text-gray-400 text-xs italic mt-1">{{ $employee->division }}</p>
+                        </div>
+
+                        <div class="relative z-10 flex justify-between items-end border-t border-gray-100 pt-4">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Recent Activity Today</p>
+                                <p class="text-lg font-black text-emerald-900 font-mono">
+                                    {{ $lastTime != '--:--' ? \Carbon\Carbon::parse($lastTime)->format('h:i A') : '--:--' }}
+                                </p>
+                            </div>
+                            
+                            <div class="text-emerald-100">
+                                <svg class="w-12 h-12 fill-current" viewBox="0 0 24 24">
+                                    <path d="M12,2L14.5,9.5L22,12L14.5,14.5L12,22L9.5,14.5L2,12L9.5,9.5L12,2Z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-0 left-0 h-1 bg-yellow-400 w-full"></div>
+                    </div>
                 </div>
-            </div>
             @endforeach
         </div>
 

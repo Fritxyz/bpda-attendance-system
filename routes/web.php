@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
+Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
 
 // auth (login and logout)
 Route::get('/signin', [AuthenticatedSessionController::class, 'create'])->name('auth.login');

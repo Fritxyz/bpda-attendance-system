@@ -27,7 +27,7 @@
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Employment Registration Form</p>
         </div>
 
-        <form method="POST" action="{{ route('employees.store') }}" class="p-8">
+        <form method="POST" action="{{ route('employees.store') }}" class="p-8" enctype="multipart/form-data">
             @csrf
 
             {{-- Error Summary --}}
@@ -174,19 +174,7 @@
             <div class="mt-10 space-y-6">
                 <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest border-b pb-2">Account Creation</h3>
 
-                <div class="grid grid-cols-2 gap-4">
-                    {{-- Employee ID --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Employee ID</label>
-                        <div class="flex">
-                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold text-sm">
-                                BPDA-
-                            </span>
-                            <input type="text" name="employee_id_account" readonly id="display-employee-id"
-                                class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg bg-gray-50 font-mono text-blue-600 font-bold outline-none cursor-not-allowed transition">
-                        </div>
-                    </div>
-
+                <div class="grid  gap-4">
                     {{-- Password with Regenerate Button --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
@@ -203,6 +191,31 @@
                                 </svg>
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                {{-- Profile Picture Upload --}}
+                <div class="flex flex-col items-center md:flex-row md:space-x-8 space-y-4 md:space-y-0 bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-200">
+                            <img id="profile-preview" src="{{ asset("images/bpda-logo.jpg") }}" 
+                                class="w-full h-full object-cover" alt="Profile Preview">
+                        </div>
+                        <label for="profile_picture" class="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white cursor-pointer hover:bg-blue-700 shadow-md transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </label>
+                        <input type="file" name="profile_picture" id="profile_picture" class="hidden" accept=".jpeg,.jpg,.png" onchange="previewImage(this)">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-700">Employee Photo</h4>
+                        <p class="text-xs text-gray-500 mt-1">Upload a professional headshot. JPEG, PNG, or WebP (Max: 2MB).</p>
+                        <button type="button" onclick="document.getElementById('profile_picture').click()" 
+                                class="mt-3 text-xs font-bold text-blue-600 hover:text-blue-800 transition">
+                            Browse Files
+                        </button>
                     </div>
                 </div>
             </div>
@@ -230,6 +243,19 @@
 </div>
 
 <script>
+    function previewImage(input) {
+        const preview = document.getElementById('profile-preview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     function regeneratePassword() {
         const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
         let password = "";

@@ -34,6 +34,8 @@ return new class extends Migration
             // Active flag
             $table->boolean('is_active')->default(true);
 
+            $table->string('profile_picture')->nullable();
+
             $table->timestamps();
 
         });

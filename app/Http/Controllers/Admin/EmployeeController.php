@@ -8,7 +8,6 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\In;
 
 class EmployeeController extends Controller
 {
@@ -72,12 +71,24 @@ class EmployeeController extends Controller
         // 1. Kunin ang validated data mula sa Request class
         $validated = $request->validated();
 
+        
+
         // 2. Simulan ang Transaction para siguradong LIGTAS ang data
         return DB::transaction(function () use ($request, $validated) {
             
             // 3. I-prepare ang data para sa Employee table
             $validated['is_active'] = $request->has('is_active');
             $validated['employee_id'] = 'BPDA-' . $request->input('employee_id');
+
+            $imagePath = null;
+            if ($request->hasFile('profile_picture')) {
+                // I-save sa storage/app/public/profiles
+                // Gagamit tayo ng custom name para madaling hanapin: BPDA-12345.jpg
+                $extension = $request->file('profile_picture')->getClientOriginalExtension();
+                $fileName = 'BPDA-' . $request->employee_id . '.' . $extension;
+                
+                $imagePath = $request->file('profile_picture')->storeAs('profiles', $fileName, 'public');
+            }
 
             // 4. I-save ang Employee Profile (Profile table)
             $employee = Employee::create($validated);
@@ -92,7 +103,7 @@ class EmployeeController extends Controller
 
             // 6. Isang Redirect lang sa dulo
             return redirect()->route('employees.index')
-                ->with('success', "Employee and Account saved! Username: {$user->username}");
+                ->with('success', "Employee and Account created! \nEmployee ID: {$user->employee_id}");
         });
     }
 

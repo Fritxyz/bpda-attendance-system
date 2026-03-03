@@ -18,6 +18,7 @@ class Employee extends Model
         'salary',
         'employment_type',
         'is_active',
+        'profile_picture'
     ];
 
     protected $hidden = [

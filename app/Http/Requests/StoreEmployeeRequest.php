@@ -37,6 +37,7 @@ class StoreEmployeeRequest extends FormRequest
             'is_active' => 'sometimes|boolean',
             'username' => 'sometimes|string|unique:employees,username',
             'password' => 'required|string',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2040',
         ];
     }
 }
