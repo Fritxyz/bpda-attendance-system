@@ -33,9 +33,14 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::creating(function ($user) {
-            
-            // Gawa ng random password at i-hash
-            $user->password = Hash::make(Str::random(12));
+            // Kung walang nilagay na password sa form, tsaka lang tayo gagawa ng random
+            if (!$user->password) {
+                $user->password = Hash::make(Str::random(12));
+            } else {
+                // Kung may nilagay sa form (halimbawa Admin ang nag-set), i-hash natin ito
+                // Pero siguraduhin na hindi pa ito naka-hash para hindi ma-double hash
+                $user->password = Hash::make($user->password);
+            }
         });
     }
 }

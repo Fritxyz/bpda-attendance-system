@@ -26,7 +26,7 @@
         <div class="p-8">
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
-            <form method="POST" action="{{ route('auth.login') }}">
+            <form method="POST" action="{{ route('auth.store') }}">
                 @csrf
 
                 <div>
@@ -34,12 +34,12 @@
                         {{ __('ID NUMBER') }}
                     </label>
                     <div class="relative">
-                        <x-text-input id="email" 
+                        <x-text-input id="employee_id" 
                             class="block w-full border-slate-300 focus:border-indigo-600 focus:ring-indigo-600 rounded-lg pl-3 bg-slate-50 text-sm" 
-                            type="text" name="id" :value="old('email')" required autofocus 
+                            type="text" name="employee_id" :value="old('employee_id')" required autofocus 
                             placeholder="BPDA-###############" />
                     </div>
-                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-xs" />
+                    <x-input-error :messages="$errors->get('enployee_id')" class="mt-2 text-xs" />
                 </div>
 
                 <div class="mt-5">

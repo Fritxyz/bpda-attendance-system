@@ -10,9 +10,19 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $employees = Employee::with(['attendances' => function($query) {
+        // Kukunin lang ang employees na may record sa attendances table para sa araw na ito
+        $employees = Employee::whereHas('attendances', function($query) {
             $query->where('attendance_date', now()->toDateString());
-        }])->get();
+        })
+        ->with(['attendances' => function($query) {
+            // I-load lang din ang attendance record for today para sa loop
+            $query->where('attendance_date', now()->toDateString());
+        }])
+        ->get()
+        ->sortByDesc(function($employee) {
+            // OPTIONAL: I-sort para yung pinaka-latest mag-log ang nasa itaas
+            return $employee->attendances->first()->updated_at;
+        });
 
         return view('index', compact('employees'));
     }
@@ -21,7 +31,7 @@ class AttendanceController extends Controller
     {
         $employee_id = 'BPDA-' . $request->employee_id;
         $employee = Employee::where('employee_id', $employee_id)->firstOrFail();
-        
+
         $dateToday = now()->toDateString();
         $mode = strtolower(str_replace(' ', '_', $request->attendance_mode)); // 'am_in', 'pm_out', etc.
 
@@ -35,6 +45,6 @@ class AttendanceController extends Controller
         $attendance->$mode = now()->toTimeString();
         $attendance->save();
 
-        return back()->with('success', "Logged $request->attendance_mode for $employee->first_name");
+        return redirect()->route('attendance.index')->with('success', "Logged $request->attendance_mode for $employee->first_name");
     }
 }

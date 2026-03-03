@@ -68,40 +68,37 @@ class EmployeeController extends Controller
      */
     public function store(StoreEmployeeRequest $request)
     {
-        // 1. Kunin ang validated data mula sa Request class
         $validated = $request->validated();
 
-        
-
-        // 2. Simulan ang Transaction para siguradong LIGTAS ang data
         return DB::transaction(function () use ($request, $validated) {
             
-            // 3. I-prepare ang data para sa Employee table
+            // 1. I-prepare ang basic data
             $validated['is_active'] = $request->has('is_active');
             $validated['employee_id'] = 'BPDA-' . $request->input('employee_id');
 
-            $imagePath = null;
+            // 2. Handle Image Upload
             if ($request->hasFile('profile_picture')) {
-                // I-save sa storage/app/public/profiles
-                // Gagamit tayo ng custom name para madaling hanapin: BPDA-12345.jpg
                 $extension = $request->file('profile_picture')->getClientOriginalExtension();
-                $fileName = 'BPDA-' . $request->employee_id . '.' . $extension;
+                // Mas maganda kung ang ID ang filename para unique
+                $fileName = 'BPDA-' . $request->input('employee_id') . '.' . $extension;
                 
+                // I-store ang file
                 $imagePath = $request->file('profile_picture')->storeAs('profiles', $fileName, 'public');
+                
+                // Eto ang kulang mo: I-update ang validated array para ang path ang ma-save, hindi yung file object
+                $validated['profile_picture'] = $imagePath; 
             }
 
-            // 4. I-save ang Employee Profile (Profile table)
+            // 3. I-save ang Employee Profile
             $employee = Employee::create($validated);
 
-            // 5. I-create ang User Account (Login table)
-            // Dahil may 'booted' method ka sa User model, kusa na itong gagawa ng username/pass
+            // 4. I-create ang User Account
             $user = User::create([
                 'employee_id' => $employee->employee_id,
-                'password' => $request->input('password'),
-                'role'        => $request->input('role', 'Employee'), // Kinukuha ang role mula sa form
+                'password'    => $request->input('password'),
+                'role'        => $request->input('role', 'Employee'),
             ]);
 
-            // 6. Isang Redirect lang sa dulo
             return redirect()->route('employees.index')
                 ->with('success', "Employee and Account created! \nEmployee ID: {$user->employee_id}");
         });

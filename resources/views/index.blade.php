@@ -96,7 +96,7 @@
                     
                     <div class="w-1/3 bg-emerald-950 relative">
                         {{-- Photo from DB --}}
-                        <img src="{{ $employee->photo ? asset('storage/' . $employee->photo) : 'https://i.pravatar.cc/300?u=' . $employee->id }}" 
+                        <img src="{{ $employee->profile_picture ? asset('storage/' . $employee->profile_picture) : asset('images/bpda-logo.jpg') }}" 
                             class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0">
                         
                         <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent"></div>
