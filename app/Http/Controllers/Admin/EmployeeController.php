@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\In;
 
 class EmployeeController extends Controller
 {
@@ -66,18 +69,31 @@ class EmployeeController extends Controller
      */
     public function store(StoreEmployeeRequest $request)
     {
+        // 1. Kunin ang validated data mula sa Request class
         $validated = $request->validated();
 
-        // Handle checkbox
-        $validated['is_active'] = $request->has('is_active');
-        // Prepend BPDA- to the input number
-        $validated['employee_id'] = 'BPDA-' . $request->input('employee_id');
-        
-        $employee = Employee::create($validated);
+        // 2. Simulan ang Transaction para siguradong LIGTAS ang data
+        return DB::transaction(function () use ($request, $validated) {
+            
+            // 3. I-prepare ang data para sa Employee table
+            $validated['is_active'] = $request->has('is_active');
+            $validated['employee_id'] = 'BPDA-' . $request->input('employee_id');
 
-        // Flash a message and redirect instead of just returning a string
-        return redirect()->route('employees.index')
-        ->with('success', "Employee saved! Username: {$employee->username}");
+            // 4. I-save ang Employee Profile (Profile table)
+            $employee = Employee::create($validated);
+
+            // 5. I-create ang User Account (Login table)
+            // Dahil may 'booted' method ka sa User model, kusa na itong gagawa ng username/pass
+            $user = User::create([
+                'employee_id' => $employee->employee_id,
+                'password' => $request->input('password'),
+                'role'        => $request->input('role', 'Employee'), // Kinukuha ang role mula sa form
+            ]);
+
+            // 6. Isang Redirect lang sa dulo
+            return redirect()->route('employees.index')
+                ->with('success', "Employee and Account saved! Username: {$user->username}");
+        });
     }
 
     /**

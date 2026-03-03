@@ -36,7 +36,7 @@ class StoreEmployeeRequest extends FormRequest
             'role' => 'required|in:Admin,Employee',
             'is_active' => 'sometimes|boolean',
             'username' => 'sometimes|string|unique:employees,username',
-            'password' => 'sometimes|string',
+            'password' => 'required|string',
         ];
     }
 }

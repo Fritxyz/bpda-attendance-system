@@ -53,10 +53,10 @@
                             <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold text-sm">
                                 BPDA-
                             </span>
-                            <input type="text" name="employee_id" value="{{ old('employee_id') }}" 
+                            <input type="text" name="employee_id" value="{{ old('employee_id') }}" id="main-employee-id"
                                 placeholder="e.g. 123456789012345" required maxlength="15" pattern="\d{15}"
                                 title="Employee ID must be exactly 15 digits."
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 15)"
+                                oninput="syncEmployeeId(this.value)"
                                 class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                         </div>
                     </div>
@@ -114,16 +114,26 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Division</label>
                         <select id="division-select" name="division" required disabled
-                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
+                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400
+                                {{ old('division') ? 'bg-white' : 'bg-gray-50' }}"
+                                {{ old('division') ? '' : 'disabled' }}>
                             <option value="" disabled selected>Select Bureau first</option>
+                            @if(old('division'))
+                                <option value="{{ old('division') }}" selected>{{ old('division') }}</option>
+                            @endif
                         </select>
                     </div>
 
-                     <div>
+                    <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Current Position</label>
                         <select id="position-select" name="position" required disabled
-                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
+                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400 
+                                {{ old('position') ? 'bg-white' : 'bg-gray-50' }}"
+                                {{ old('position') ? '' : 'disabled' }}>
                             <option value="" disabled selected>Select Division first</option>
+                            @if(old('position'))
+                                <option value="{{ old('position') }}" selected>{{ old('position') }}</option>
+                            @endif
                         </select>
                     </div>
 
@@ -139,10 +149,14 @@
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Monthly Salary</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-2 text-gray-400 font-bold">₱</span>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-4 z-10 text-gray-500 font-bold pointer-events-none">
+                                ₱
+                            </span>
+                            
                             <input type="number" step="0.01" name="salary" value="{{ old('salary') }}" id="salary-id"
-                                   class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                placeholder="0.00"
+                                class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                         </div>
                     </div>
 
@@ -154,6 +168,42 @@
                             <option value="Admin">Admin (Full Access)</option>
                         </select>
                     </div>            
+                </div>
+            </div>
+
+            <div class="mt-10 space-y-6">
+                <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest border-b pb-2">Account Creation</h3>
+
+                <div class="grid grid-cols-2 gap-4">
+                    {{-- Employee ID --}}
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Employee ID</label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold text-sm">
+                                BPDA-
+                            </span>
+                            <input type="text" name="employee_id_account" readonly id="display-employee-id"
+                                class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg bg-gray-50 font-mono text-blue-600 font-bold outline-none cursor-not-allowed transition">
+                        </div>
+                    </div>
+
+                    {{-- Password with Regenerate Button --}}
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
+                        <div class="relative flex items-center">
+                            <input type="text" name="password" id="password-input"
+                                class="w-full pl-5 pr-12 py-2.5 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-not-allowed transition" readonly required>
+                            
+                            {{-- Regenerate Button (Icon Only) --}}
+                            <button type="button" onclick="regeneratePassword()" 
+                                class="absolute right-2 p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition"
+                                title="Generate New Password">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -180,6 +230,23 @@
 </div>
 
 <script>
+    function regeneratePassword() {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+        let password = "";
+        for (let i = 0; i < 10; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        const input = document.getElementById('password-input');
+        if(input) {
+            input.value = password;
+            
+            // Visual feedback na nag-change ang value
+            input.classList.add('ring-2', 'ring-blue-400');
+            setTimeout(() => input.classList.remove('ring-2', 'ring-blue-400'), 500);
+        }
+    }
+
     const divisionsByBureau = {
         'PPB': [
             'Macro-Economic Planning Division (MEPD)',
@@ -387,8 +454,6 @@
         employmentTypeSelect.addEventListener('change', toggleSalary);
     });
 
-
-
     employmentTypeSelect.addEventListener('change', function() {
         const employmentTypeSelect = document.getElementById('employment-type-select');
         // Siguraduhing 'salary-id' ang gamit dahil ito ang nasa HTML mo
@@ -412,10 +477,33 @@
 
         // Patakbuhin sa simula (initial load)
         toggleSalary();
-});
+    });
 
-// todo: ayusin ang salary according sa employment type
-// tapos mag-example ng value 
+    function syncEmployeeId(value) {
+        // 1. Linisin muna ang input (numbers only lang base sa pattern mo)
+        const cleanValue = value.replace(/[^0-9]/g, '').substring(0, 15);
+        
+        // 2. I-update ang main input para mawala ang tinype na letter agad
+        const mainInput = document.getElementById('main-employee-id');
+        if (mainInput) {
+            mainInput.value = cleanValue;
+        }
+
+        // 3. I-sync sa "Account Creation" input sa baba
+        const displayInput = document.getElementById('display-employee-id');
+        if (displayInput) {
+            displayInput.value = cleanValue;
+            
+            // Visual feedback (Optional)
+            if (cleanValue.length === 15) {
+                displayInput.classList.add('text-green-600');
+                displayInput.classList.remove('text-blue-600');
+            } else {
+                displayInput.classList.add('text-blue-600');
+                displayInput.classList.remove('text-green-600');
+            }
+        }
+    }
 
 </script>
 <script src="{{ asset('js/admin/add-employee-validation.js') }}"></script>

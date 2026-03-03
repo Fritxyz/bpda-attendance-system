@@ -30,16 +30,9 @@ return new class extends Migration
 
             // Employment type (better name than status)
             $table->enum('employment_type', ['Permanent', 'Contractual', 'Job Order'])->default('Permanent');
-            
-            // Employee role
-            $table->enum('role', ['Admin', 'Employee'])->default('Employee');
 
             // Active flag
             $table->boolean('is_active')->default(true);
-
-            // username and password
-            $table->string('username')->unique()->nullable();
-            $table->string('password')->nullable();
 
             $table->timestamps();
 

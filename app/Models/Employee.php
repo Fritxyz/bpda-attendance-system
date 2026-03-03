@@ -2,11 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class Employee extends Model
 {
@@ -21,14 +17,10 @@ class Employee extends Model
         'division',
         'salary',
         'employment_type',
-        'role',
         'is_active',
-        'username',
-        'password',
     ];
 
     protected $hidden = [
-        'password',
     ];
 
     protected $casts = [
@@ -43,11 +35,5 @@ class Employee extends Model
 
     protected static function booted()
     {
-         static::creating(function ($employee) {
-            $employee->username = str_replace('-', '', $employee->employee_id);
-
-            $password_plain = Str::random(12);
-            $employee->password = Hash::make($password_plain);
-        });
     }
 }
