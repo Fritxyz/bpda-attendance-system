@@ -24,7 +24,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        Logger($request->all());
         $request->authenticate();
 
         $request->session()->regenerate();
@@ -32,9 +31,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        // ────────────────────────────────────────────────
-        // Add these debug lines
-            \Illuminate\Support\Facades\Log::debug('=== LOGIN DEBUG ===', [
+        \Illuminate\Support\Facades\Log::debug('=== LOGIN DEBUG ===', [
             'auth_id'          => $user?->id,
             'auth_employee_id' => $user?->employee_id,
             'auth_role_raw'    => $user?->role,
@@ -44,7 +41,6 @@ class AuthenticatedSessionController extends Controller
             'intended'         => $request->session()->get('url.intended'),
         ]);
 
-        // Role-based Redirect
         if ($request->user()->role === 'Admin') {
             return redirect()->route('admin.dashboard');
         }

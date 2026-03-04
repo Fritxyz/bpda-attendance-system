@@ -55,8 +55,6 @@ Route::middleware(['auth'])->group(function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
 
-
-
         // Employee Management
         Route::get('/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
         Route::get('/employee/create', [EmployeeController::class, 'create'])->name('employees.create');
