@@ -127,7 +127,7 @@
                         <p class="text-xs font-bold truncate">Admin User</p>
                         <p class="text-[9px] text-emerald-400 uppercase font-black tracking-tighter italic">Super Admin</p>
                     </div>
-                    <form action="{{ route('logout') }}" method="POST">
+                    <form action="{{ route('auth.logout') }}" method="POST">
                         @csrf {{-- NAPAKAHALAGA NITO --}}
                         <button type="submit" class="text-emerald-400 hover:text-red-400 transition">
                             <i class="bi bi-box-arrow-right text-lg"></i>

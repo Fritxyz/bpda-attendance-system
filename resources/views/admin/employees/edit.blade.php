@@ -72,7 +72,7 @@
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1 text-gray-400">Middle Name</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name') }}" required
                             oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">

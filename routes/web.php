@@ -12,17 +12,8 @@ Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('at
 // auth (login and logout)
 Route::get('/signin', [AuthenticatedSessionController::class, 'index'])->name('auth.login');
 Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('auth.logout');
 
-
-Route::middleware('auth')->group(function () {
-    // Pansamantalang ganito muna para ma-test kung gagana
-    Route::post('/logout', function (Illuminate\Http\Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('auth.login');
-    })->name('logout');
-});
 
 // // ADMIN ROUTES
 // // dashboard route

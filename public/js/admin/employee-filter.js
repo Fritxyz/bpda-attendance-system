@@ -201,8 +201,19 @@ function fetchEmployees(pageUrl = null) {
     .catch(error => console.error('Error:', error));
 }
 
-// I-update rin ang Apply button ng filter para AJAX na rin
-document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchEmployees();
-});
+// // I-update rin ang Apply button ng filter para AJAX na rin
+// document.querySelector('form').addEventListener('submit', function(e) {
+//     e.preventDefault();
+//     fetchEmployees();
+// });
+
+// Much better: target the specific filter form
+const filterForm = document.querySelector('.relative[x-data="{ filterOpen: false }"] form');
+// or give your filter form an ID in Blade: <form id="filter-form" ...>
+
+if (filterForm) {
+    filterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetchEmployees();
+    });
+}
