@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
 {
+    protected $primaryKey = 'employee_id';   // importante 'to
+    public $incrementing = false;            // dahil string, hindi auto-increment
+    protected $keyType = 'string';           // string ang key
+
     protected $fillable = [
         'employee_id',
         'first_name',
@@ -41,6 +45,8 @@ class Employee extends Model
 
     public function attendances(): HasMany
     {
-        return $this->hasMany(Attendance::class);
+        // return $this->hasMany(Attendance::class);
+        // The format is: hasMany(RelatedModel, foreign_key, local_key)
+    return $this->hasMany(Attendance::class, 'employee_id', 'employee_id');
     }
 }

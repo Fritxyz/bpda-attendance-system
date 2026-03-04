@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable; //
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -11,7 +10,6 @@ class User extends Authenticatable
 {
     protected $fillable = [
         'employee_id',
-        'username',
         'role',
         'password',
     ];
@@ -24,10 +22,19 @@ class User extends Authenticatable
     protected $casts = [
     ];
 
-    // IMPORTANTE: Ito ang magko-connect sa employees table
-    public function employee(): BelongsTo
+    public function employee()
     {
-        return $this->belongsTo(Employee::class, 'employee_id');
+        return $this->hasOne(Employee::class, 'employee_id', 'employee_id');
+        // o belongsTo kung mas gusto mong i-treat as "belongs to"
+        // return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
+    }
+
+    // Optional: para mas madaling gamitin sa Blade
+    public function getFullNameAttribute()
+    {
+        return $this->employee 
+            ? trim("{$this->employee->first_name} {$this->employee->middle_name} {$this->employee->suffix}")
+            : 'Unknown Employee';
     }
 
     protected static function booted()

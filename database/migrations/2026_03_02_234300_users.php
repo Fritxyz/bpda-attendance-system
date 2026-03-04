@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
 
             $table->id();
-
             $table->string('employee_id')->nullable()->unique(); // prevent duplicates
             $table->string('password')->nullable();
 

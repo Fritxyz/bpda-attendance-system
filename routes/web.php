@@ -6,13 +6,30 @@ use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
-Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
+// Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
+// Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
 
-// auth (login and logout)
-Route::get('/signin', [AuthenticatedSessionController::class, 'index'])->name('auth.login');
-Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
+// // auth (login and logout)
+// Route::get('/signin', [AuthenticatedSessionController::class, 'index'])->name('auth.login');
+// Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
+
+// Public routes (hindi dapat makita kapag logged in na)
+Route::middleware('guest')->group(function () {
+    // Attendance kiosk (kung public-facing)
+    Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
+
+    // Login routes
+    Route::get('/signin', [AuthenticatedSessionController::class, 'index'])->name('auth.login');
+    Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
+});
+
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('auth.logout');
+
+// employee route
+Route::get('/employee/dashboard/', function() {
+    return view('employee.dashboard');
+})->name('employee.dashboard');
 
 
 // // ADMIN ROUTES

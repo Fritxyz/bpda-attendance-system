@@ -41,14 +41,16 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // PALITAN: Gamitin ang $this->employee_id sa halip na $this->id
         if (! Auth::attempt(['employee_id' => $this->employee_id, 'password' => $this->password], $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'employee_id' => trans('auth.failed'), // I-match ang key dito
-            ]);
-        }
+        throw ValidationException::withMessages([
+            'employee_id' => 'The ID number or password you entered is incorrect.',
+            // o pwede ring:
+            // 'employee_id' => __('auth.failed'), 
+            // 'password'    => 'Invalid password.',  (pero mas maganda iisa lang para hindi ma-detect kung alin mali)
+        ]);
+    }
 
         RateLimiter::clear($this->throttleKey());
     }

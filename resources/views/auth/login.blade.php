@@ -13,17 +13,19 @@
             <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 BPDA - BARMM
             </p>
+            
             <span class="h-[1px] w-8 bg-emerald-600"></span>
         </div>
     </div>
 
     <div class="bg-white overflow-hidden shadow-2xl rounded-xl border border-slate-200">
         <div class="flex h-1.5">
-            <div class="flex-1 bg-indigo-900"></div>
+            <div class="flex-1 bg-yellow-500"></div>     <!-- mas bright → dapat makita agad kung gumagana -->
             <div class="flex-1 bg-emerald-600"></div>
         </div>
 
         <div class="p-8">
+
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
             <form method="POST" action="{{ route('auth.store') }}">
@@ -39,7 +41,7 @@
                             type="text" name="employee_id" :value="old('employee_id')" required autofocus 
                             placeholder="BPDA-###############" />
                     </div>
-                    <x-input-error :messages="$errors->get('enployee_id')" class="mt-2 text-xs" />
+                    
                 </div>
 
                 <div class="mt-5">
@@ -50,7 +52,7 @@
                         class="block w-full border-slate-300 focus:border-indigo-600 focus:ring-indigo-600 rounded-lg pl-3 bg-slate-50 text-sm"
                         type="password" name="password" required autocomplete="current-password"
                         placeholder="••••••••" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs" />
+                    <x-input-error :messages="$errors->get('employee_id')" class="mt-2 text-xs" />
                 </div>
 
                 <div class="flex items-center justify-between mt-6">
