@@ -338,7 +338,7 @@
             'Planning Officer V',
             'Planning Officer IV',
             'Development Management Officer II',
-            'Developement Management Officer I',
+            'Development Management Officer I',
         ],
         // Reseach Development and Special Projects Bureau (RDSPB)
         'RDD': [
@@ -356,7 +356,7 @@
         ],
         'ODA/NFPPCD': [
             'Project Development Officer V',
-            'Project Developement Officer III',
+            'Project Development Officer III',
             'Project Development Officer II',
             'Project Development Officer I',
         ],
