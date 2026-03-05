@@ -53,7 +53,7 @@
                     {{-- Action Buttons Alignment --}}
                     <div class="flex items-center justify-center gap-2">
                         {{-- Edit Button --}}
-                        <a href="{{ route('employees.edit', $employee->id) }}" 
+                        <a href="{{ route('employees.edit', $employee->employee_id) }}" 
                         class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-emerald-600 hover:text-black hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-100 transition-all duration-200 group/btn"
                         title="Edit Record">
                             <i class="bi bi-pencil-square text-sm"></i>

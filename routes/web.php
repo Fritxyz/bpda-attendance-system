@@ -3,7 +3,6 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\AttendanceController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes (hindi dapat makita kapag logged in na)
 Route::middleware('guest')->group(function () {
-    // Attendance kiosk (kung public-facing)
     Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
 
@@ -24,25 +22,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
 });
 
+
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('auth.logout');
 
 // employee route
 Route::get('/employee/dashboard/', function() {
     return view('employee.dashboard');
 })->name('employee.dashboard');
-
-
-// // ADMIN ROUTES
-// // dashboard route
-// Route::get('/admin/dashboard', function () {
-//     return view('admin.dashboard');
-// })->name('admin.dashboard');
-
-// // employee section/route
-// Route::get('/admin/employee/create', [EmployeeController::class, 'create'])->name('employees.create');
-// Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-// Route::get('/admin/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
-// Route::get('/admin/dashboard/employee/{employee}', [EmployeeController::class, 'edit'])->name('employees.edit');
 
 
 // PROTECTED ADMIN ROUTES (Dapat naka-login)

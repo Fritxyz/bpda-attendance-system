@@ -117,11 +117,14 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        // Mas maikli ito (ganun din ang resulta):
+        // dd($employee->all());
+        $user = User::where("employee_id", '=', $employee->employee_id)->first();
         $employee->employee_id = substr($employee->employee_id, 5);
 
         return view('admin.employees.edit', [
-            'employee' => $employee
+            'employee_id'=> $employee->employee_id,
+            'employee' => $employee,
+            'user_role' => $user->role,
         ]);
     }
 
