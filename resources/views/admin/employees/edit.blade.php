@@ -27,8 +27,9 @@
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Updating record for: {{ $employee->first_name }} {{ $employee->last_name }}</p>
         </div>
 
-        <form method="POST" action="#" class="p-8" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('employees.update', $employee->employee_id) }}" class="p-8" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
 
             {{-- Error Summary --}}
             @if ($errors->any())
@@ -115,7 +116,7 @@
                         <label class="block text-sm font-bold text-gray-700 mb-1">Division</label>
                         <select id="division-select" name="division" required
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
-                            <option value="" selecteds disabled>Select Bureau first</option>
+                            <option value="" selected disabled>Select Bureau first</option>
                             {{-- @if(old('bureau', $employee->bureau === "PPB"))
                                 <option value="MEPD" {{ old('division', $employee->division) === 'MEPD' ? 'selected' : '' }}>Macro-Economic Planning Division (MEPD)</option>
                                 <option value="EPD" {{ old('division', $employee->division) === 'EPD' ? 'selected' : '' }}>Economic Planning Division (EPD)</option>
@@ -287,8 +288,8 @@
                         <label class="block text-sm font-bold text-gray-700 mb-1">System Role</label>
                         <select name="role" required
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
-                            <option value="Employee">Employee (Standard)</option>
-                            <option value="Admin">Admin (Full Access)</option>
+                            <option value="Employee" {{ $user_role === "Employee" ? 'selected' : '' }}>Employee (Standard)</option>
+                            <option value="Admin" {{ $user_role === "Admin" ? 'selected' : '' }}>Admin (Full Access)</option>
                         </select>
                     </div>            
                 </div>
@@ -302,8 +303,8 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
                         <div class="relative flex items-center">
-                            <input type="text" name="password" id="password-input" value={{ $user }}
-                                class="w-full pl-5 pr-12 py-2.5 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-not-allowed transition" readonly required>
+                            <input type="text" name="password" id="password-input" 
+                                class="w-full pl-5 pr-12 py-2.5 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-not-allowed transition" readonly>
                             
                             {{-- Regenerate Button (Icon Only) --}}
                             <button type="button" onclick="regeneratePassword()" 
@@ -321,7 +322,7 @@
                 <div class="flex flex-col items-center md:flex-row md:space-x-8 space-y-4 md:space-y-0 bg-blue-50/50 p-6 rounded-xl border border-blue-100">
                     <div class="relative">
                         <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-200">
-                            <img id="profile-preview" src="{{ asset("images/bpda-logo.jpg") }}" 
+                            <img id="profile-preview" src="{{ $employee->profile_picture ? asset('storage/' . $employee->profile_picture) : asset('images/bpda-logo.jpg') }}" 
                                 class="w-full h-full object-cover" alt="Profile Preview">
                         </div>
                         <label for="profile_picture" class="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white cursor-pointer hover:bg-blue-700 shadow-md transition">

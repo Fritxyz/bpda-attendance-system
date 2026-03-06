@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEmployeeRequest extends FormRequest
+class UpdateEmployeeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,21 +21,23 @@ class StoreEmployeeRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Kunin ang ID mula sa route parameter
+        $employeeId = $this->route('employee');
+
         return [
-            // columns that needs a rules
-            'employee_id' => 'required|unique:employees,employee_id',
+            // 'unique:table,column,except_id,id_column'
+            'employee_id' => 'required|unique:employees,employee_id,' . $employeeId . ',employee_id',
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
             'bureau' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'division' => 'required|string|max:255',
-            'salary' => 'sometimes|numeric|min:0',
+            'salary' => 'sometimes|numeric|min:0|nullable',
             'employment_type' => 'required|in:Permanent,Contractual,Job Order',
             'role' => 'required|in:Admin,Employee',
             'is_active' => 'sometimes|boolean',
-            'username' => 'sometimes|string|unique:employees,username',
-            'password' => 'required|string',
+            'password' => 'sometimes|string|nullable',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2040',
         ];
     }

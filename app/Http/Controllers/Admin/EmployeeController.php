@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
@@ -131,9 +135,42 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateEmployeeRequest $request, $employee) 
     {
-        //
+        // todo: ayusin ang update logic haha
+        // 1. Hanapin ang record (Dito natin kukunin ang Object)
+        $formattedId = str_starts_with($employee, 'BPDA-') ? $employee : 'BPDA-' . $employee;
+        $employeeRecord = Employee::where('employee_id', $formattedId)->firstOrFail();
+
+        $validated = $request->validated();
+
+        $validated['employee_id'] = 'BPDA-' . $request->employee_id;
+
+        // 2. Handle Profile Picture (Same logic mo)
+        if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
+            if ($employeeRecord->profile_picture && !str_contains($employeeRecord->profile_picture, 'bpda-logo.jpg')) {
+                Storage::disk('public')->delete($employeeRecord->profile_picture);
+            }
+            $path = $request->file('profile_picture')->store('employees/profiles', 'public');
+            $validated['profile_picture'] = $path;
+        }
+
+        // 3. Handle Password & User logic
+        if ($request->filled('password')) {
+            $user = User::where('employee_id', $employeeRecord->employee_id)->first();
+            if ($user) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                ]);
+            }
+        }
+
+        // 4. Eto ang importante: Gamitin ang Object ($employeeRecord), hindi yung parameter string
+        $employeeRecord->update($validated);
+
+        return redirect()
+            ->route('employees.index')
+            ->with('success', "Employee {$employeeRecord->first_name} successfully updated.");
     }
 
     /**
