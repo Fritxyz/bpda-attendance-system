@@ -302,7 +302,7 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
                         <div class="relative flex items-center">
-                            <input type="text" name="password" id="password-input"
+                            <input type="text" name="password" id="password-input" value={{ $user }}
                                 class="w-full pl-5 pr-12 py-2.5 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-not-allowed transition" readonly required>
                             
                             {{-- Regenerate Button (Icon Only) --}}
