@@ -26,6 +26,37 @@
         </div>
     </div>
 
+    @if(session('error'))
+        <div class="mx-6 mt-4 bg-red-700 border-l-8 border-yellow-400 text-white rounded-xl shadow-lg p-4 flex items-center gap-3 animate-pulse alert-message" id="error-message">
+            
+            <svg class="w-6 h-6 text-yellow-300 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L1 21h22L12 2zm0 6l1 7h-2l1-7zm0 9h2v2h-2v-2z"/>
+            </svg>
+
+            <div>
+                <p class="font-black uppercase text-sm tracking-wide">Transaction Failed</p>
+                <p class="text-xs text-red-100">{{ session('error') }}</p>
+            </div>
+
+        </div>
+    @endif
+
+
+    @if(session('success'))
+        <div class="mx-6 mt-4 bg-emerald-800 border-l-8 border-yellow-400 text-white rounded-xl shadow-lg p-4 flex items-center gap-3 animate-fade-in alert-message">
+            
+            <svg class="w-6 h-6 text-yellow-300 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.2l-3.5-3.5L4 14.2 9 19l12-12-1.5-1.5z"/>
+            </svg>
+
+            <div>
+                <p class="font-black uppercase text-sm tracking-wide">Attendance Recorded</p>
+                <p class="text-xs text-emerald-100">{{ session('success') }}</p>
+            </div>
+
+        </div>
+    @endif
+
     <div class="flex-1 flex overflow-hidden">
         
         <div class="w-1/3 min-w-[350px] bg-white border-r border-emerald-100 p-6 flex flex-col shadow-inner">
@@ -40,7 +71,7 @@
                     <label class="text-emerald-900 font-bold uppercase text-xs">Employee ID Number</label>
                     <div class="flex shadow-sm">
                         <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 bg-emerald-50 text-emerald-800 font-bold text-sm">BPDA-</span>
-                        <input type="number" name="employee_id" autofocus
+                        <input type="number" name="employee_id" autofocus onkeydown="if(['e', 'E', '.', '-'].includes(event.key)) event.preventDefault();"
                             class="w-full px-4 py-4 rounded-r-xl border-2 border-emerald-100 focus:border-emerald-600 focus:outline-none text-2xl font-black text-emerald-900 placeholder-gray-200">
                     </div>
                 </div>
@@ -150,4 +181,14 @@
     }
     setInterval(updateClock, 1000); 
     updateClock();
+
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert-message');
+        alerts.forEach(alert => {
+            alert.style.transition = "opacity 0.5s";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 3000);
+    
 </script>

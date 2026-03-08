@@ -20,7 +20,8 @@
                         </div>
                         <div>
                             <p class="text-[10px] font-black text-emerald-600 leading-none mb-1">{{ $employee->employee_id }}</p>
-                            <p class="text-sm font-black text-slate-900 uppercase tracking-tight">{{ $employee->last_name }}, {{ $employee->first_name }}</p>
+                            <p class="text-sm font-black text-slate-900 uppercase tracking-tight">
+                                {{ $employee->last_name }}@if($employee->suffix) {{ $employee->suffix }}@endif, {{ $employee->first_name }}</p>
                             <p class="text-[11px] text-slate-500 font-medium italic mt-0.5">{{ $employee->position }}</p>
                         </div>
                     </div>

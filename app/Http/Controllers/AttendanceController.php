@@ -10,19 +10,20 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        // Kukunin lang ang employees na may record sa attendances table para sa araw na ito
-        $employees = Employee::whereHas('attendances', function($query) {
-            $query->where('attendance_date', now()->toDateString());
+        // Kunin ang kasalukuyang petsa sa Manila
+        $todayInManila = now()->timezone('Asia/Manila')->toDateString();
+
+        $employees = Employee::whereHas('attendances', function ($query) use ($todayInManila) {
+            $query->where('attendance_date', $todayInManila);
         })
-        ->with(['attendances' => function($query) {
-            // I-load lang din ang attendance record for today para sa loop
-            $query->where('attendance_date', now()->toDateString());
+        ->with(['attendances' => function ($query) use ($todayInManila) {
+            $query->where('attendance_date', $todayInManila);
         }])
-        ->get()
-        ->sortByDesc(function($employee) {
-            // OPTIONAL: I-sort para yung pinaka-latest mag-log ang nasa itaas
-            return $employee->attendances->first()->updated_at;
-        });
+        ->get();
+
+        
+
+        // dd($employees);
 
         return view('index', compact('employees'));
     }
@@ -30,21 +31,30 @@ class AttendanceController extends Controller
     public function store(Request $request)
     {
         $employee_id = 'BPDA-' . $request->employee_id;
-        $employee = Employee::where('employee_id', $employee_id)->firstOrFail();
+        // dd($employee_id);
+        $employee = Employee::where('employee_id', $employee_id)->first();
 
-        $dateToday = now()->toDateString();
-        $mode = strtolower(str_replace(' ', '_', $request->attendance_mode)); // 'am_in', 'pm_out', etc.
+        if (!$employee) {
+            return redirect()->back()->with('error', 'Employee ID not found.');
+        }
 
-        // Hanapin kung may record na siya ngayong araw, kung wala, gawa ng bago
+        // I-set ang Manila timezone dito
+        $nowInManila = now()->timezone('Asia/Manila');
+
+        $dateToday = $nowInManila->toDateString();
+        $mode = strtolower(str_replace(' ', '_', $request->attendance_mode)); 
+
+        // Hanapin o gumawa ng bagong record
         $attendance = Attendance::firstOrNew([
-            'employee_id' => $employee->id,
+            'employee_id' => $employee_id,
             'attendance_date' => $dateToday
         ]);
 
-        // I-set ang oras sa column na pinili sa radio button
-        $attendance->$mode = now()->toTimeString();
+        // I-save ang oras base sa Manila time
+        $attendance->$mode = $nowInManila->toTimeString();
         $attendance->save();
 
-        return redirect()->route('attendance.index')->with('success', "Logged $request->attendance_mode for $employee->first_name");
+        return redirect()->route('attendance.index')
+            ->with('success', "Logged $request->attendance_mode for $employee->first_name at " . $nowInManila->format('h:i A'));
     }
 }

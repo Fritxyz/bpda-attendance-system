@@ -23,8 +23,11 @@ class Attendance extends Model
     /**
      * Ang attendance record ay pag-aari ng isang Employee.
      */
-    public function employee(): BelongsTo
+    public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
     }
+
+    // todo: fix validation sa attendance
+    // also hingiin lahat kay maam ya ang lahat ng positions na meron sa bpda
 }

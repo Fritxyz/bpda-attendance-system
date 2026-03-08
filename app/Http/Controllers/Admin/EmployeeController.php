@@ -104,7 +104,7 @@ class EmployeeController extends Controller
             ]);
 
             return redirect()->route('employees.index')
-                ->with('success', "Employee and Account created! \nEmployee ID: {$user->employee_id}");
+                ->with('success', "Employee and Account created! Employee ID: {$user->employee_id}");
         });
     }
 
@@ -137,7 +137,7 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeRequest $request, $employee) 
     {
-        // todo: ayusin ang update logic haha
+        // todo: ayusin ang update logic haha and test rigidly hahaha
         // 1. Hanapin ang record (Dito natin kukunin ang Object)
         $formattedId = str_starts_with($employee, 'BPDA-') ? $employee : 'BPDA-' . $employee;
         $employeeRecord = Employee::where('employee_id', $formattedId)->firstOrFail();
@@ -145,6 +145,13 @@ class EmployeeController extends Controller
         $validated = $request->validated();
 
         $validated['employee_id'] = 'BPDA-' . $request->employee_id;
+        $validated['is_active'] = $request->has('is_active');
+
+        if ($request->employment_type === 'Permanent') {
+            $validated['salary'] = null;
+        }
+
+        // dd($validated);
 
         // 2. Handle Profile Picture (Same logic mo)
         if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
@@ -156,12 +163,21 @@ class EmployeeController extends Controller
         }
 
         // 3. Handle Password & User logic
-        if ($request->filled('password')) {
-            $user = User::where('employee_id', $employeeRecord->employee_id)->first();
+        if ($request->filled('password') || $request->filled('role') || $request->filled('employee_id')) {
+            $user = User::where('employee_id', $employeeRecord->getOriginal('employee_id'))->first();
+            
             if ($user) {
-                $user->update([
-                    'password' => Hash::make($request->password),
-                ]);
+                $userData = [];
+                
+                if ($request->filled('password')) {
+                    $userData['password'] = Hash::make($request->password);
+                }
+                
+                // I-sync ang employee_id at role sa User account
+                $userData['employee_id'] = $validated['employee_id'];
+                $userData['role'] = $validated['role'];
+
+                $user->update($userData);
             }
         }
 

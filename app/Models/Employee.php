@@ -48,10 +48,8 @@ class Employee extends Model
     {
     }
 
-    public function attendances(): HasMany
+    public function attendances()
     {
-        // return $this->hasMany(Attendance::class);
-        // The format is: hasMany(RelatedModel, foreign_key, local_key)
-    return $this->hasMany(Attendance::class, 'employee_id', 'employee_id');
+        return $this->hasMany(Attendance::class, 'employee_id', 'employee_id');
     }
 }

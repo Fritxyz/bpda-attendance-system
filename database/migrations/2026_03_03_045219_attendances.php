@@ -14,7 +14,7 @@ return new class extends Migration
         //
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
+            $table->string('employee_id');
             $table->date('attendance_date'); // Para madaling i-filter ang records per day
             
             // Naka-nullable ang mga ito dahil hindi sabay-sabay mafi-fill up

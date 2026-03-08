@@ -27,6 +27,7 @@ class StoreEmployeeRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
+            'suffix' => 'sometimes|string|max:10|nullable',
             'bureau' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'division' => 'required|string|max:255',
