@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DTRController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\AttendanceController;
@@ -47,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/employee/store', [EmployeeController::class, 'store'])->name('employees.store');
         Route::get('/employee/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('/employee/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view');
     });
 });
 

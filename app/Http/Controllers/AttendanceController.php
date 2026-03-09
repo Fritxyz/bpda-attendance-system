@@ -21,10 +21,6 @@ class AttendanceController extends Controller
         }])
         ->get();
 
-        
-
-        // dd($employees);
-
         return view('index', compact('employees'));
     }
 
@@ -44,6 +40,17 @@ class AttendanceController extends Controller
         $dateToday = $nowInManila->toDateString();
         $mode = strtolower(str_replace(' ', '_', $request->attendance_mode)); 
 
+        // dd($mode);
+
+        $has_a_record = Attendance::where('employee_id', $employee_id)
+            ->where('attendance_date', $dateToday)
+            ->whereNotNull($mode)
+            ->exists();
+
+        if($has_a_record) {
+            return redirect()->back()->with('error', "Employee {$employee_id} has already logged {$request->attendance_mode}.");
+        }
+            
         // Hanapin o gumawa ng bagong record
         $attendance = Attendance::firstOrNew([
             'employee_id' => $employee_id,

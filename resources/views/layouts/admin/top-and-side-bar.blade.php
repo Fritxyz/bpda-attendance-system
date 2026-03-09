@@ -50,7 +50,7 @@
 </head>
 <body>
 
-    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: false }">
+    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: true }">
         
         <div x-show="sidebarOpen" 
             @click="sidebarOpen = false" 
@@ -72,7 +72,7 @@
             </div>
 
             <div class="flex-1 overflow-y-auto py-4 px-3">    
-                <div class="mb-4 px-2">
+                <div class="mb-4">
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800 transition text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-emerald-800 border-r-4 border-yellow-400' : '' }}">
                         <i class="bi bi-speedometer2 text-yellow-500"></i> Dashboard
                     </a>
@@ -112,7 +112,7 @@
                     </button>
 
                     <div x-show="timekeepingOpen" x-collapse class="mt-2 space-y-1">
-                        <a href="#" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition">Daily Time Record</a>
+                        <a href="{{ route('dtr.view') }}" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition">Daily Time Record</a>
                         <a href="#" class="block pl-12 py-2 text-xs text-emerald-200 hover:text-white transition">Overtime Logs</a>
                     </div>
                 </div>
