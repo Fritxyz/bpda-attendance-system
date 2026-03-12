@@ -32,7 +32,7 @@
             {{-- Search Group --}}
             <div class="relative">
                 <i class="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
-                <input type="text" 
+                <input type="text" id="dtrSearchInput"
                     placeholder="Search name or ID..." 
                     class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none w-full sm:w-60 shadow-sm transition-all placeholder:text-slate-400 font-medium">
             </div>
@@ -40,8 +40,8 @@
             {{-- Date Filter with Label --}}
             <div class="flex items-center bg-white border border-slate-200 rounded-xl shadow-sm px-2 focus-within:ring-4 focus-within:ring-emerald-500/10 focus-within:border-emerald-500 transition-all">
                 <span class="text-[9px] font-black text-slate-400 uppercase px-2 border-r border-slate-100 mr-2">Date</span>
-                <input type="date" 
-                    value="{{ now()->toDateString() }}" 
+                <input type="date" id="dtrDateFilter"
+                    value="{{ request('date', now()->toDateString()) }}" 
                     class="py-2 pr-1 bg-transparent text-xs font-bold outline-none text-slate-600 cursor-pointer uppercase">
             </div>
             
@@ -148,10 +148,12 @@
 
                         <td class="px-6 py-4">
                             <div class="flex justify-end items-center gap-1">
-                                {{-- Edit Button --}}
-                                <button class="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group/btn" title="Edit Record">
+                                {{-- Edit Button (Redirect Version) --}}
+                                <a href="{{ route('dtr.edit', ['employee' => $record->employee->employee_id, 'date' => $record->attendance_date]) }}" 
+                                class="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group/btn" 
+                                    title="Edit Record">
                                     <i class="bi bi-pencil-square text-sm"></i>
-                                </button>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -174,3 +176,34 @@
     </div>
 </div>
 @endsection
+
+{{-- JavaScript sa pinakababa ng file --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('dtrDateFilter');
+        const searchInput = document.getElementById('dtrSearchInput');
+
+        function updateFilters() {
+            const date = dateInput.value;
+            const search = searchInput.value;
+            const url = new URL(window.location.href);
+            
+            if (date) url.searchParams.set('date', date);
+            if (search) url.searchParams.set('search', search);
+            else url.searchParams.delete('search');
+
+            window.location.href = url.toString();
+        }
+
+        // Trigger on date change
+        dateInput.addEventListener('change', updateFilters);
+
+        // Trigger on search enter key
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updateFilters();
+            }
+        });
+    });
+</script>
+

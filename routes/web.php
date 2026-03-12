@@ -48,7 +48,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/employee/store', [EmployeeController::class, 'store'])->name('employees.store');
         Route::get('/employee/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('/employee/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
-        Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view');
+
+        // timekeeping management
+        Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view'); // - daily time record
+        Route::get('/dtr/edit/{employee}/{date}', [DTRController::class, 'edit'])->name('dtr.edit'); // - edit the daily time record
+        Route::put('/dtr/edit/{employee}/{date}/update', [DTRController::class, 'update'])->name('dtr.update');
     });
 });
 
