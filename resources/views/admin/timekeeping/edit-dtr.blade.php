@@ -66,12 +66,14 @@
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time In (AM)</label>
                         <input type="time" name="am_in" value="{{ $attendance->am_in ? date('H:i', strtotime($attendance->am_in)) : '' }}"
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                            min="04:00" max="11:59">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time Out (AM)</label>
                         <input type="time" name="am_out" value="{{ $attendance->am_out ? date('H:i', strtotime($attendance->am_out)) : '' }}"
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                            min="04:00" max="13:00">
                     </div>
                 </div>
 
@@ -84,12 +86,14 @@
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time In (PM)</label>
                         <input type="time" name="pm_in" value="{{ $attendance->pm_in ? date('H:i', strtotime($attendance->pm_in)) : '' }}"
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                            min="12:00" max="18:00">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time Out (PM)</label>
                         <input type="time" name="pm_out" value="{{ $attendance->pm_out ? date('H:i', strtotime($attendance->pm_out)) : '' }}" 
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                            min="12:00" max="21:00">
                     </div>
                 </div>
                 

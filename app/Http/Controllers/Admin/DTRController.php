@@ -21,7 +21,6 @@ class DTRController extends Controller
         $query = Attendance::with('employee')
             ->whereDate('attendance_date', $targetDate);
 
-        // Idagdag ang Search Filter kung may input
         if ($search) {
             $query->whereHas('employee', function($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
@@ -31,7 +30,6 @@ class DTRController extends Controller
         }
 
         $today_records = $query->get()->map(function ($record) {
-            // --- PANATILIHIN ANG IYONG COMPUTATION LOGIC DITO ---
             $amIn = $record->am_in ? Carbon::parse($record->am_in) : null;
             $amOut = $record->am_out ? Carbon::parse($record->am_out) : null;
             $pmIn = $record->pm_in ? Carbon::parse($record->pm_in) : null;
@@ -100,11 +98,8 @@ class DTRController extends Controller
         $attendance = Attendance::with('employee')
             ->where('employee_id', $employee)
             ->where('attendance_date', $date)
-            ->firstOrFail(); // Mag-e-error ng 404 kapag walang nahanap
+            ->firstOrFail(); 
 
-        // dd($attendance);
-
-        // 2. I-pasa ang data sa view
         return view('admin.timekeeping.edit-dtr', compact('attendance'));
     }
 
@@ -113,8 +108,17 @@ class DTRController extends Controller
      */
     public function update(UpdateAttendanceRequest $request, $employee, $date)
     {
-        dd($request, $employee, $date);
-        $attendance = Attendance::findOrFail($id);
+        // dd($request, $employee, $date);
+        $attendance = Attendance::where('employee_id', $employee)
+                            ->where('attendance_date', $date)
+                            ->firstOrFail();
+
+        // dd($attendance);
+
+        $attendance->update($request->validated());
+
+        return redirect()->route('dtr.view')
+                     ->with('success', "Attendance record for {$employee} on {$date} has been updated.");
     }
 
     /**
