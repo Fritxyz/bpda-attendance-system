@@ -3,6 +3,33 @@
 @section('header', 'Edit Daily Time Record')
 
 @section('content')
+
+<style>
+    /* Hide the clock icon in Webkit browsers (Chrome, Edge, Safari) */
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        display: none !important;
+        -webkit-appearance: none;
+        opacity: 0;
+    }
+
+    /* Hide spinner/clear buttons if any */
+    input[type="time"]::-webkit-inner-spin-button,
+    input[type="time"]::-webkit-clear-button {
+        display: none !important;
+    }
+
+    /* For Firefox - hide the spinner */
+    input[type="time"] {
+        -moz-appearance: textfield !important;
+    }
+
+    /* Optional: Make it look more like a normal text input */
+    input[type="time"] {
+        appearance: textfield;
+        -webkit-appearance: textfield;
+    }
+</style>
+
 <div class="max-w-4xl mx-auto px-4 py-6">
 
     {{-- Breadcrumb --}}
@@ -10,7 +37,7 @@
         <ol class="inline-flex items-center space-x-2">
             <li>
                 <a href="{{ route('dtr.view') }}" class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">
-                    <i class="bi bi-house-door text-xs"></i>
+                    <i class="bi bi-calendar2-date text-xs"></i>
                     Daily Time Record
                 </a>
             </li>
@@ -36,7 +63,7 @@
         <div class="flex items-center gap-4">
             {{-- Avatar Placeholder --}}
             <div class="h-14 w-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-xl shadow-lg uppercase">
-                ID
+                {{ substr($attendance->employee->first_name, 0, 1) }}{{ substr($attendance->employee->last_name, 0, 1) }}
             </div>
             <div>
                 <h2 class="text-xl font-black text-slate-900 uppercase tracking-tight">{{ $attendance->employee->first_name }} {{ $attendance->employee->last_name }}</h2>
@@ -63,17 +90,29 @@
                         <i class="bi bi-sun text-amber-500"></i>
                         <h4 class="text-[11px] font-black uppercase text-slate-900 tracking-wider">Morning Session</h4>
                     </div>
-                    <div>
+                    <div class="relative" x-data="{ am_in: '{{ old('pm_in', $attendance->am_in ? date('H:i', strtotime($attendance->am_in)) : '') }}' }">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time In (AM)</label>
-                        <input type="time" name="am_in" value="{{ $attendance->am_in ? date('H:i', strtotime($attendance->am_in)) : '' }}"
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                        <input type="time" name="am_in" id="am_in"
+                            x-model="am_in"
+                            class="w-full bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none pr-10"
                             min="04:00" max="11:59">
+
+                        <button type="button" x-show="am_in" x-on:click="am_in=''" style="display: none;"
+                                class="absolute right-4 top-10 -translate-y-1/2 text-slate-400 hover:text-red-500 text-lg">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </button>
                     </div>
-                    <div>
+                    <div class="relative" x-data="{ am_out: '{{ old('pm_in', $attendance->am_out ? date('H:i', strtotime($attendance->am_out)) : '') }}' }">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time Out (AM)</label>
-                        <input type="time" name="am_out" value="{{ $attendance->am_out ? date('H:i', strtotime($attendance->am_out)) : '' }}"
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                        <input type="time" name="am_out" id="am_out" x-model="am_out"
+                            class="w-full bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
                             min="04:00" max="13:00">
+
+                            <button type="button" x-show="am_out" x-on:click="am_out=''"
+                                    class="absolute right-4 top-10 -translate-y-1/2 text-slate-400 hover:text-red-500 text-lg"
+                                    style="display:none;">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
                     </div>
                 </div>
 
@@ -83,17 +122,33 @@
                         <i class="bi bi-cloud-sun text-blue-500"></i>
                         <h4 class="text-[11px] font-black uppercase text-slate-900 tracking-wider">Afternoon Session</h4>
                     </div>
-                    <div>
+                    <div class="relative" x-data="{ pm_in: '{{ old('pm_in', $attendance->pm_in ? date('H:i', strtotime($attendance->pm_in)) : '') }}' }">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time In (PM)</label>
-                        <input type="time" name="pm_in" value="{{ $attendance->pm_in ? date('H:i', strtotime($attendance->pm_in)) : '' }}"
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+                        
+                        <input type="time" name="pm_in" id="pm_in" 
+                            x-model="pm_in"
+                            class="w-full bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
                             min="12:00" max="18:00">
+
+                        <button type="button" 
+                            x-show="pm_in" 
+                            x-on:click="pm_in = ''"
+                            class="absolute right-4 top-10 -translate-y-1/2 text-slate-400 hover:text-red-500 text-lg transition-all"
+                            style="display: none;"> <i class="bi bi-x-circle-fill"></i>
+                        </button>
                     </div>
-                    <div>
+                    <div class="relative" x-data="{ pm_out: '{{ old('pm_out', $attendance->pm_out ? date('H:i', strtotime($attendance->pm_out)) : '') }}'}">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time Out (PM)</label>
-                        <input type="time" name="pm_out" value="{{ $attendance->pm_out ? date('H:i', strtotime($attendance->pm_out)) : '' }}" 
-                            class="w-full bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
+
+                        <input type="time" name="pm_out" id="pm_out" x-model="pm_out"
+                            class="w-full bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"
                             min="12:00" max="21:00">
+
+                        <button type="button" x-show="pm_out" x-on:click="pm_out = ''"
+                                class="absolute right-4 top-10 -translate-y-1/2 text-slate-400 hover:text-red-500 text-lg transition-all"
+                                style="display: none;">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </button>
                     </div>
                 </div>
                 
@@ -104,15 +159,27 @@
                         <h4 class="text-[11px] font-black uppercase text-emerald-600 tracking-wider">Overtime (OT)</h4>
                     </div>
                     <div class="grid grid-cols-2 gap-6">
-                        <div>
+                        <div class="relative" x-data="{ ot_in: '{{ old('ot_in', $attendance->ot_in ? date('H:i', strtotime($attendance->ot_in)) : '') }}'}">
                             <label class="block text-[10px] font-black text-emerald-700/50 uppercase mb-1.5 ml-1">OT In</label>
-                            <input type="time" name="ot_in" value="{{ $attendance->ot_in ? date('H:i', strtotime($attendance->ot_in)) : '' }}"
-                                class="w-full bg-white border border-emerald-100 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+                            <input type="time" name="ot_in" x-model="ot_in"
+                                class="w-full bg-white border border-emerald-100 px-4 py-2 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+
+                            <button type="button" x-show="ot_in" x-on:click="ot_in = ''"
+                                class="absolute right-4 top-10 -translate-y-1/2 text-slate-400 hover:text-red-500 text-lg transition-all"
+                                style="display: none;">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
                         </div>
-                        <div>
+                        <div class="relative" x-data="{ ot_out: '{{ old('ot_out', $attendance->ot_out ? date('H:i', strtotime($attendance->ot_out)) : '') }}'}"">
                             <label class="block text-[10px] font-black text-emerald-700/50 uppercase mb-1.5 ml-1">OT Out</label>
-                            <input type="time" name="ot_out" value="{{ $attendance->ot_out ? date('H:i', strtotime($attendance->ot_out)) : '' }}"
+                            <input type="time" name="ot_out" x-model="ot_out"
                                 class="w-full bg-white border border-emerald-100 px-4 py-2.5 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none">
+
+                            <button type="button" x-show="ot_out" x-on:click="ot_out = ''"
+                                class="absolute right-4 top-10 -translate-y-1/2 text-slate-400 hover:text-red-500 text-lg transition-all"
+                                style="display: none;">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
