@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DTRController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\EmployeeController;
@@ -38,9 +39,7 @@ Route::middleware(['auth'])->group(function () {
     // Dito mo ilalagay lahat ng pang-admin
     Route::prefix('admin')->group(function () {
         
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
         // Employee Management
         Route::get('/employee/all', [EmployeeController::class, 'index'])->name('employees.index');
@@ -48,11 +47,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/employee/store', [EmployeeController::class, 'store'])->name('employees.store');
         Route::get('/employee/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('/employee/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::get('/employee/{employee}/view', [EmployeeController::class, 'show'])->name('employees.show');
 
         // timekeeping management
         Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view'); // - daily time record
         Route::get('/dtr/edit/{employee}/{date}', [DTRController::class, 'edit'])->name('dtr.edit'); // - edit the daily time record
         Route::put('/dtr/edit/{employee}/{date}/update', [DTRController::class, 'update'])->name('dtr.update');
+
+        // 
     });
 });
 

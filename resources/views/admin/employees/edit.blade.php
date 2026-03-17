@@ -47,7 +47,6 @@
                 <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest border-b pb-2">Identification</h3>
                 
                 <div class="grid grid-cols-1 ">
-                    {{-- Employee ID with BPDA- Prefix --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Employee ID</label>
                         <div class="flex">
@@ -87,7 +86,6 @@
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Suffix</label>
-                        {{-- Suffix: Jr, Sr, and Roman Numerals (I, V, X) --}}
                         <input type="text" name="suffix" value="{{ old('suffix', $employee->suffix) }}"
                             placeholder="Jr, Sr, III"
                             oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')"
@@ -117,34 +115,6 @@
                         <select id="division-select" name="division" required
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
                             <option value="" selected disabled>Select Bureau first</option>
-                            {{-- @if(old('bureau', $employee->bureau === "PPB"))
-                                <option value="MEPD" {{ old('division', $employee->division) === 'MEPD' ? 'selected' : '' }}>Macro-Economic Planning Division (MEPD)</option>
-                                <option value="EPD" {{ old('division', $employee->division) === 'EPD' ? 'selected' : '' }}>Economic Planning Division (EPD)</option>
-                                <option value="SPD" {{ old('division', $employee->division) === 'SPD' ? 'selected' : '' }}>Social Planning Division (EPD)</option>
-                                <option value="LPCD" {{ old('division', $employee->division) === 'LPCD' ? 'selected' : '' }}>Local Planning and Coordinating Division (EPD)</option>
-                                <option value="IPD" {{ old('division', $employee->division) === 'IPD' ? 'selected' : '' }}>Insfrastructure Planning and Coordinating Division (EPD)</option>
-                                <option value="PPOSSD" {{ old('division', $employee->division) === 'PPOSSD' ? 'selected' : '' }}>Peace, Public Order, Safety, and Security Division (PPOSSD)</option>
-                                <option value="MED" {{ old('division', $employee->division) === 'MED' ? 'selected' : '' }}>Monitoring and Evaluation Division (MED)</option>
-                            @endif
-
-                            @if(old('bureau', $employee->bureau === "RDSPB"))
-                                <option value="IKMD" {{ old('division', $employee->division) === 'IKMD' ? 'selected' : '' }}>Information and Knowledge Management Division (IKMD)</option>
-                                <option value="RDD" {{ old('division', $employee->division) === 'RDD' ? 'selected' : '' }}>Research and Development Division (RDD)</option>
-                                <option value="ODA/NFPPCD" {{ old('division', $employee->division) === 'ODA/NFPPCD' ? 'selected' : '' }}>ODA/National Funded Programs and Projects Coordination Division(EPD)</option>
-                                <option value="EID" {{ old('division', $employee->division) === 'EID' ? 'selected' : '' }}>Economic Intelligence Division (EID)</option>
-                                <option value="IPD" {{ old('division', $employee->division) === 'IPD' ? 'selected' : '' }}>Insfrastructure Planning and Coordinating Division (EPD)</option>
-                                <option value="PPOSSD" {{ old('division', $employee->division) === 'PPOSSD' ? 'selected' : '' }}>Peace, Public Order, Safety, and Security Division (PPOSSD)</option>
-                                <option value="MED" {{ old('division', $employee->division) === 'MED' ? 'selected' : '' }}>Monitoring and Evaluation Division (MED)</option>
-                            @endif
-
-                            @if(old('bureau', $employee->bureau === "FASS"))
-                                <option value="Finance Division" {{ old('division', $employee->division) === 'Finance Division' ? 'selected' : '' }}>Finance Division</option>
-                                <option value="Administrative Division" {{ old('division', $employee->division) === 'Administrative Division' ? 'selected' : '' }}>Administrative Division</option>
-                            @endif
-
-                            @if(old('bureau', $employee->bureau === "Other"))
-                                <option value="Other" {{ old('division', $employee->division) === 'Other' ? 'selected' : '' }}>Other</option>
-                            @endif --}}
                         </select>
                     </div>
 

@@ -61,7 +61,7 @@
                         </a>
 
                         {{-- View/Details Button --}}
-                        <a href="{{ route('employees.index', $employee->id) }}" 
+                        <a href="{{ route('employees.show', $employee->employee_id) }}" 
                         class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-black hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 transition-all duration-200 group/btn"
                         title="View Details">
                             <i class="bi bi-eye text-sm"></i>

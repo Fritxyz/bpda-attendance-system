@@ -47,7 +47,6 @@
             </div>
         @endif
 
-
         @if(session('success'))
             <div class="mx-6 mt-4 bg-emerald-800 border-l-8 border-yellow-400 text-white rounded-xl shadow-lg p-4 flex items-center gap-3 animate-fade-in alert-message">
                 

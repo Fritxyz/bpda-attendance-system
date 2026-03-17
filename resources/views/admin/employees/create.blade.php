@@ -46,15 +46,14 @@
                 <h3 class="text-xs font-black text-blue-600 uppercase tracking-widest border-b pb-2">Identification</h3>
                 
                 <div class="grid grid-cols-1 ">
-                    {{-- Employee ID with BPDA- Prefix --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Employee ID</label>
                         <div class="flex">
                             <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-gray-500 font-bold text-sm">
                                 BPDA-
                             </span>
-                            <input type="text" name="employee_id" value="{{ old('employee_id') }}" id="main-employee-id"
-                                placeholder="e.g. 123456789012345" required maxlength="15" pattern="\d{15}"
+                            <input type="text" name="employee_id" value="{{ old('employee_id', $employee_id) }}" id="main-employee-id"
+                                placeholder="e.g. 20260001" required maxlength="15" pattern="\d{15}" readonly
                                 title="Employee ID must be exactly 15 digits."
                                 oninput="syncEmployeeId(this.value)"
                                 class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
