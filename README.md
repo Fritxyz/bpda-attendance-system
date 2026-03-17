@@ -10,7 +10,8 @@ A modern **Attendance Management System** developed for the **Bangsamoro Plannin
 ## 🛠️ Tech Stack
 
 * **Backend:** [Laravel 10+](https://laravel.com/) (PHP 8.2+)
-* **Frontend:** [Tailwind CSS](https://tailwindcss.com/), [Alpine.js](https://alpinejs.dev/)
+* **Frontend:** [Tailwind CSS](https://tailwindcss.com/), [Alpine.js](https://alpinejs.dev/), [SweetAlert2](sweetalert2.github.io)
+* **Graphs:** [Chart.js](https://www.chartjs.org/)
 * **Interactivity:** Vanilla JavaScript (Fetch API / AJAX)
 * **Icons:** [Bootstrap Icons](https://icons.getbootstrap.com/)
 * **Database:** MySQL
