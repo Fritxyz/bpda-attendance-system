@@ -4,19 +4,18 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
-    
-    {{-- Breadcrumb --}}
+
     <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-2">
-            <li>
-                <a href="{{ route('admin.dashboard') }}" class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">
-                    <i class="bi bi-house-door text-xs"></i>
-                    Dashboard
-                </a>
-            </li>
             <li class="flex items-center gap-2">
+                <i class="bi bi-clock-history text-xs"></i>
+                <span class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">Timekeeping</span>
                 <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
-                <span class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">Daily Time Record Monitoring</span>
+            </li>
+            <li>
+                <button class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    Daily Attendance
+                </button>
             </li>
         </ol>
     </nav>

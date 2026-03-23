@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>BPDA Attendance System - Home</title>
+    @vite('resources/css/app.css')
     <link rel="icon" href="{{ asset('images/bpda-logo.jpg') }}">
 </head>
 <body>
@@ -106,20 +107,13 @@
                 </div>
             </div>
 
-            {{-- // start --}}
             <div class="flex-1 p-6 overflow-y-auto bg-gray-100/50 space-y-4 snap-y snap-mandatory">
-                {{-- // Simula ng Loop --}}
                 @foreach($employees as $employee)
                     @php
-                        // Kunin ang attendance record ngayong araw
                         $todayLog = $employee->attendances->first();
-                        
-                        // Logic para malaman kung "In" o "Out"
-                        // I-assume natin na kung may PM OUT na, "Out" na siya. Kung may AM IN pa lang, "In".
                         $isOut = $todayLog && $todayLog->pm_out ? true : false;
                         $statusText = $todayLog ? ($isOut ? 'Out' : 'In') : 'No Log';
                         
-                        // Kunin ang pinakahuling time column na may laman
                         $lastTime = '--:--';
                         if($todayLog) {
                             $lastTime = $todayLog->ot_out ?? $todayLog->ot_in ?? 
@@ -128,10 +122,8 @@
                         }
                     @endphp
 
-                    <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-800 overflow-hidden flex h-[30%] min-h-[180px] snap-start hover:shadow-xl transition-all duration-300">
-                        
+                    <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-800 overflow-hidden flex h-[30%] min-h-[180px] snap-start hover:shadow-xl transition-all duration-300">          
                         <div class="w-1/3 bg-emerald-950 relative">
-                            {{-- Photo from DB --}}
                             <img src="{{ $employee->profile_picture ? asset('storage/' . $employee->profile_picture) : asset('images/bpda-logo.jpg') }}" 
                                 class="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0">
                             
@@ -160,21 +152,16 @@
                                     <p class="text-lg font-black text-emerald-900 font-mono">
                                         {{ $lastTime != '--:--' ? \Carbon\Carbon::parse($lastTime)->format('h:i A') : '--:--' }}
                                     </p>
-                                </div>
-                                
-                                
+                                </div>  
                             </div>
-
                             <div class="absolute bottom-0 left-0 h-1 bg-yellow-400 w-full"></div>
                         </div>
                     </div>
                 @endforeach
             </div>
-
         </div>
     </div>
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function updateClock() {
             const now = new Date();
@@ -195,8 +182,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-

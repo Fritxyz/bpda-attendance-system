@@ -73,104 +73,30 @@
 
             <div class="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">    
                 <div class="mb-4">
-                    <a href="{{ route('admin.dashboard') }}" 
+                    <a href="#" 
                     class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
-                        <i class="bi bi-speedometer2 {{ request()->routeIs('admin.dashboard') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
+                        <i class="bi bi-speedometer2 # ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
                         Dashboard
                     </a>
                 </div>
 
-                <div class="mb-2 space-y-1">
-                    <p class="px-4 text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Workforce</p>
-                    
-                    <div>
-                        <button @click="workforceOpen = !workforceOpen" 
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
-                            <span class="flex items-center gap-3">
-                                <i class="bi bi-people-fill text-yellow-500 group-hover:rotate-12 transition"></i> Employees
-                            </span>
-                            <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="workforceOpen ? 'rotate-180' : ''"></i>
-                        </button>
-
-                        <div x-show="workforceOpen" x-collapse x-cloak class="mt-1 space-y-1">
-                            <a href="{{ route('employees.index') }}" 
-                            class="block pl-11 py-2 text-xs transition border-l-2 ml-6 {{ request()->routeIs('employees.index') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
-                                View All Employees
-                            </a>
-                            <a href="{{ route('employees.create') }}" 
-                            class="block pl-11 py-2 text-xs transition border-l-2 ml-6 {{ request()->routeIs('employees.create') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
-                                Add New Employee
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <button @click="leaveManagementOpen = !leaveManagementOpen" 
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
-                            <span class="flex items-center gap-3">
-                                <i class="bi bi-calendar2-check-fill text-yellow-500 group-hover:rotate-12 transition"></i> Leave
-                            </span>
-                            <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="leaveManagementOpen ? 'rotate-180' : ''"></i>
-                        </button>
-
-                        <div x-show="leaveManagementOpen" x-collapse x-cloak class="mt-1 space-y-1">
-                            <a href="#" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                                Leave Requests
-                            </a>
-                            
-                        </div>
-                    </div>
-
-                    <div>
-                        <button @click="holidayManagement = !holidayManagement" 
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
-                            <span class="flex items-center gap-3">
-                                <i class="bi bi-calendar-event-fill text-yellow-500 group-hover:rotate-12 transition"></i> Holidays
-                            </span>
-                            <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="holidayManagement ? 'rotate-180' : ''"></i>
-                        </button>
-
-                        <div x-show="holidayManagement" x-collapse x-cloak class="mt-1 space-y-1">
-                            <a href="{{ route('holiday.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                                Holiday Calendar
-                            </a>
-                            <a href="{{ route('holiday.create') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                                Set New Holiday
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-2 pt-4 border-t border-emerald-900/50">
-                    <p class="px-4 text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Reports</p>
-                    
-                    <button @click="timekeepingOpen = !timekeepingOpen" 
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
-                        <span class="flex items-center gap-3">
-                            <i class="bi bi-clock-history text-yellow-500 group-hover:rotate-12 transition"></i> Timekeeping
-                        </span>
-                        <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="timekeepingOpen ? 'rotate-180' : ''"></i>
-                    </button>
-
-                    <div x-show="timekeepingOpen" x-collapse x-cloak class="mt-1 space-y-1">
-                        <a href="{{ route('dtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                            Daily Time Record
-                        </a>
-                        <a href="#" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                            Overtime Logs
-                        </a>
-                    </div>
+                <div class="mb-4">
+                    <a href="#" 
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
+                        <i class="bi bi-speedometer2 # ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
+                        Dashboard
+                    </a>
                 </div>
             </div>
 
             <div class="p-4 bg-emerald-950 border-t border-emerald-800/50 shadow-inner">
                 <div class="flex items-center gap-3 px-2 py-2 bg-emerald-900/40 rounded-2xl border border-emerald-800">
                     <div class="w-10 h-10 min-w-[40px] rounded-xl bg-yellow-500 flex items-center justify-center font-black text-emerald-950 shadow-lg">
-                        {{ strtoupper(substr(auth()->user()?->employee?->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr(auth()->user()?->employee?->last_name ?? 'U', 0, 1)) }}
+                       SE
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <p class="text-[11px] font-bold truncate">
-                            {{ auth()->user()?->employee?->first_name }} {{ auth()->user()?->employee?->last_name }}
+                            Sample Employee
                         </p>
                         <p class="text-[9px] text-emerald-400 uppercase font-black tracking-tighter italic">Administrator</p>
                     </div>

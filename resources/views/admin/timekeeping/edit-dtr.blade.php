@@ -32,18 +32,23 @@
 
 <div class="max-w-4xl mx-auto px-4 py-6">
 
-    {{-- Breadcrumb --}}
     <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-2">
-            <li>
-                <a href="{{ route('dtr.view') }}" class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">
-                    <i class="bi bi-calendar2-date text-xs"></i>
-                    Daily Time Record
-                </a>
-            </li>
             <li class="flex items-center gap-2">
+                <i class="bi bi-clock-history text-xs"></i>
+                <span class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">Timekeeping</span>
                 <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
-                <span class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">Edit Daily Time Record</span>
+            </li>
+            <li>
+                <button class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    Daily Attendance
+                </button>
+                <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
+            </li>
+            <li>
+                <button class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    Edit Daily Attendance
+                </button>
             </li>
         </ol>
     </nav>
@@ -73,7 +78,7 @@
         
         <div class="bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100 text-center">
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">DTR Log Date</p>
-            <span class="text-sm font-black text-slate-700 uppercase">{{ $attendance->attendance_date }}</span>
+            <span class="text-sm font-black text-slate-700 uppercase">{{ $dateOnly }}</span>
         </div>
     </div>
 

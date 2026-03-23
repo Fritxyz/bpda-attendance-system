@@ -5,7 +5,15 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
 
-    {{-- 1. HEADER SECTION --}}
+    <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li class="flex items-center gap-2">
+                <i class="bi bi-speedometer2 text-xs"></i>
+                <span class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">Dashboard</span>
+            </li>
+        </ol>
+    </nav>
+
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
             <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Dashboard</h2>
@@ -21,7 +29,6 @@
         </div>
     </div>
 
-    {{-- 2. STATS GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
             <div class="relative z-10">
@@ -69,7 +76,6 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {{-- 3. MAIN TREND CHART --}}
         <div class="lg:col-span-2 bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl shadow-slate-100/50">
             <div class="flex justify-between items-center mb-8">
                 <div>
@@ -86,7 +92,6 @@
             </div>
         </div>
 
-        {{-- 4. TODAY'S DISTRIBUTION --}}
         <div class="bg-slate-900 rounded-[2.5rem] p-8 border border-slate-800 shadow-xl flex flex-col items-center justify-center text-center">
             <h4 class="text-sm font-black text-white uppercase tracking-widest mb-6">Punctuality Ratio</h4>
             <div class="relative w-full aspect-square max-w-[200px]">
@@ -109,7 +114,6 @@
         </div>
     </div>
 
-    {{-- 5. RECENT ACTIVITY --}}
     <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <div>

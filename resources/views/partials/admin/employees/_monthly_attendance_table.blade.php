@@ -57,12 +57,12 @@
                         </td>
                     @else
                         {{-- REGULAR DATA / WEEKEND --}}
-                        <td class="px-2 py-4 text-center font-bold text-slate-600">{{ $record && $record->am_in ? date('H:i', strtotime($record->am_in)) : '--:--' }}</td>
-                        <td class="px-2 py-4 text-center text-slate-500">{{ $record && $record->am_out ? date('H:i', strtotime($record->am_out)) : '--:--' }}</td>
-                        <td class="px-2 py-4 text-center border-l border-slate-100 font-bold text-slate-600">{{ $record && $record->pm_in ? date('H:i', strtotime($record->pm_in)) : '--:--' }}</td>
-                        <td class="px-2 py-4 text-center border-r border-slate-100 font-bold text-slate-600">{{ $record && $record->pm_out ? date('H:i', strtotime($record->pm_out)) : '--:--' }}</td>
-                        <td class="px-2 py-4 text-center text-emerald-600 font-bold italic">{{ $record && $record->ot_in ? date('H:i', strtotime($record->ot_in)) : '--:--' }}</td>
-                        <td class="px-2 py-4 text-center text-emerald-600 font-bold italic">{{ $record && $record->ot_out ? date('H:i', strtotime($record->ot_out)) : '--:--' }}</td>
+                        <td class="px-2 py-4 text-center font-bold text-slate-600">{{ $record && $record->am_in ? date('h:i A', strtotime($record->am_in)) : '--:--' }}</td>
+                        <td class="px-2 py-4 text-center text-slate-500">{{ $record && $record->am_out ? date('h:i A', strtotime($record->am_out)) : '--:--' }}</td>
+                        <td class="px-2 py-4 text-center border-l border-slate-100 font-bold text-slate-600">{{ $record && $record->pm_in ? date('h:i A', strtotime($record->pm_in)) : '--:--' }}</td>
+                        <td class="px-2 py-4 text-center border-r border-slate-100 font-bold text-slate-600">{{ $record && $record->pm_out ? date('h:i A', strtotime($record->pm_out)) : '--:--' }}</td>
+                        <td class="px-2 py-4 text-center text-emerald-600 font-bold italic">{{ $record && $record->ot_in ? date('h:i A', strtotime($record->ot_in)) : '--:--' }}</td>
+                        <td class="px-2 py-4 text-center text-emerald-600 font-bold italic">{{ $record && $record->ot_out ? date('h:i A', strtotime($record->ot_out)) : '--:--' }}</td>
                     @endif
 
                     {{-- Total Hours --}}

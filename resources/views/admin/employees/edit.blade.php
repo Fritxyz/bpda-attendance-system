@@ -5,18 +5,27 @@
 @section('content')
 <div class="max-w-4.5xl mx-auto px-4 py-3">
     
-    <nav class="flex mb-6 text-sm text-gray-500" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1">
-            <li class="inline-flex items-center">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition">Dashboard</a>
+    <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li class="flex items-center gap-2">
+                <i class="bi bi-person-vcard text-xs"></i>
+                <span class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">Employees</span>
+                <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
             </li>
-            <li class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <a href="{{ route('employees.index') }}" class="ml-1 hover:text-blue-600 transition">Employees</a>
+            <li>
+                <a href="{{ route('employees.index') }}" class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    View All Employees
+                </a>
+                <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
             </li>
-            <li class="flex items-center" aria-current="page">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <span class="ml-1 font-medium text-gray-800">Edit Employee</span>
+            <li>
+                <button  class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    Edit Employee
+                </button>
+            </li>
+            <li class="flex items-center gap-2">
+                <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
+                <span class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">{{ $employee->first_name }} {{ $employee->last_name }} {{ $employee->suffix }}</span>
             </li>
         </ol>
     </nav>
@@ -27,7 +36,7 @@
             <p class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Updating record for: {{ $employee->first_name }} {{ $employee->last_name }}</p>
         </div>
 
-        <form method="POST" action="{{ route('employees.update', $employee->employee_id) }}" class="p-8" enctype="multipart/form-data">
+        <form id="editEmployeeForm" method="POST" action="{{ route('employees.update', $employee->employee_id) }}" class="p-8" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -54,7 +63,7 @@
                                 BPDA-
                             </span>
                             <input type="text" name="employee_id" value="{{ old('employee_id', $employee->employee_id) }}" id="main-employee-id"
-                                placeholder="e.g. 123456789012345" required maxlength="15" pattern="\d{15}"
+                                placeholder="e.g. 123456789012345" required readonly
                                 title="Employee ID must be exactly 15 digits."
                                 oninput="syncEmployeeId(this.value)"
                                 class="flex-1 px-2 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
@@ -564,6 +573,28 @@
             bureauSelect.value = original.bureau;
             bureauSelect.dispatchEvent(new Event('change'));  // This triggers everything
         }
+
+        const employeeForm = document.getElementById('editEmployeeForm');
+        
+        if (employeeForm) {
+            employeeForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Stop form from auto-submitting
+                
+                Swal.fire({
+                    title: 'Confirm Changes?',
+                    text: "You are about to modify this employee's info.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#059669',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, update it!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        employeeForm.submit(); // Submit after confirmation
+                    }
+                });
+            });
+        }
     });
 
     // --- Salary Toggle (one clean version only) ---
@@ -613,8 +644,6 @@
                 return;
             }
         }
-
-        // Kung okay → payagan mag-submit
     });
 </script>
 @endsection

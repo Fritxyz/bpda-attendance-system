@@ -19,6 +19,16 @@ class Attendance extends Model
         'remarks'
     ];
 
+    protected $casts = [
+        'am_in' => 'datetime',
+        'am_out' => 'datetime',
+        'pm_in' => 'datetime',
+        'pm_out' => 'datetime',
+        'ot_in' => 'datetime',
+        'ot_out' => 'datetime',
+        'attendance_date' => 'date',
+    ];
+
     /**
      * Ang attendance record ay pag-aari ng isang Employee.
      */

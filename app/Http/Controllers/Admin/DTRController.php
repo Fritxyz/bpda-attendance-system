@@ -133,7 +133,9 @@ class DTRController extends Controller
             ->where('attendance_date', $date)
             ->firstOrFail(); 
 
-        return view('admin.timekeeping.edit-dtr', compact('attendance'));
+        $dateOnly = Carbon::parse($attendance->attendance_date)->toDateString();
+
+        return view('admin.timekeeping.edit-dtr', compact('attendance', 'dateOnly'));
     }
 
     /**

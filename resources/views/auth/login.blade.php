@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <div class="flex py-1 gap-1 justify-center items-center align-middle text-center">
-            <img src="{{ asset('images/bpda-logo.jpg') }}" alt="BPDA Logo" class="h-24 drop-shadow-sm">
-            <img src="{{ asset('images/barmm-logo.png') }}" alt="BARMM Logo" class="h-24 drop-shadow-sm">
+        <div class="flex py-1 gap-2 justify-center items-center align-middle text-center">
+            <img src="{{ asset('images/bpda-logo.jpg') }}" alt="BPDA Logo" class="mix-blend-multiply h-24 w-auto">
+            <img src="{{ asset('images/barmm-logo.png') }}" alt="BARMM Logo" class="h-24 w-auto scale-95">
         </div>
         
         <h1 class="mt-4 text-xl font-extrabold text-slate-900 uppercase tracking-tighter">
@@ -25,7 +25,6 @@
         </div>
 
         <div class="p-8">
-
             <x-auth-session-status class="mb-4" :status="session('status')" />
 
             <form method="POST" action="{{ route('auth.store') }}">
@@ -39,7 +38,7 @@
                         <x-text-input id="employee_id" 
                             class="block w-full border-slate-300 focus:border-indigo-600 focus:ring-indigo-600 rounded-lg pl-3 bg-slate-50 text-sm" 
                             type="text" name="employee_id" :value="old('employee_id')" required autofocus 
-                            placeholder="BPDA-###############" />
+                            placeholder="BPDA-########" />
                     </div>
                     
                 </div>
@@ -53,13 +52,6 @@
                         type="password" name="password" required autocomplete="current-password"
                         placeholder="••••••••" />
                     <x-input-error :messages="$errors->get('employee_id')" class="mt-2 text-xs" />
-                </div>
-
-                <div class="flex items-center justify-between mt-6">
-                    <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                        <input id="remember_me" type="checkbox" class="rounded border-slate-300 text-indigo-900 shadow-sm focus:ring-indigo-600" name="remember">
-                        <span class="ms-2 text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors">{{ __('Keep me logged in') }}</span>
-                    </label>
                 </div>
 
                 <div class="mt-8">
