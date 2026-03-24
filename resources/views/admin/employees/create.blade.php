@@ -125,15 +125,10 @@
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Current Position</label>
-                        <select id="position-select" name="position" required disabled
-                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400 
-                                {{ old('position') ? 'bg-white' : 'bg-gray-50' }}"
-                                {{ old('position') ? '' : 'disabled' }}>
-                            <option value="" disabled selected>Select Division first</option>
-                            @if(old('position'))
-                                <option value="{{ old('position') }}" selected>{{ old('position') }}</option>
-                            @endif
-                        </select>
+                        <input type="text" name="position" id="position-input" 
+                            placeholder="Select division first"
+                            disabled
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-not-allowed disabled:opacity-70">
                     </div>
 
                     <div>
@@ -223,7 +218,7 @@
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" id="is_active" value="1" checked
                            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition">
-                    <label for="is_active" class="ml-2 block text-sm font-bold text-gray-600 cursor-pointer">Active Status</label>
+                    <label for="is_active" class="ml-2 block text-sm font-bold text-gray-600 cursor-pointer">Active Employee</label>
                 </div>
 
                 <div class="flex space-x-3">
@@ -263,7 +258,6 @@
         const input = document.getElementById('password-input');
         if(input) {
             input.value = password;
-            // Visual feedback na nag-change ang value
             input.classList.add('ring-2', 'ring-blue-400');
             setTimeout(() => input.classList.remove('ring-2', 'ring-blue-400'), 500);
         }
@@ -295,164 +289,53 @@
         ]
     };
 
-    const positionsByDivision = {
-        // Planning and Policies Bureau (PPB)
-        'MEPD': [
-            'Chief Economic Development Specialist',
-            'Socio Economic Development Specialist',
-            'Economic Development Specialist II',
-            'Economic Development Analyst',
-        ],
-        'EPD': [
-            'Chief Economic Development Specialist',
-            'Senior Economic Development Specialist',
-            'Economic Development Specialist III',
-            'Economic Development Analyst',
-        ],
-        'SPD': [
-            'Planning Officer V',
-            'Planning Officer III',
-            'Planning Officer II',
-            'Planning Officer I',
-        ],
-        'IPD': [
-            'Planning Officer V',
-            'Engineer III',
-            'Engineer II',
-            'Planning Officer I',
-        ],
-        'PPOSSD': [
-            'Planning Officer V',
-            'Development Management Officer III',
-            'Development Management Officer II',
-            'Planning Officer I',
-        ],
-        'MED': [
-            'Planning Officer V',
-            'Engineer III',
-            'Engineer II',
-            'Project Evaluation Officer I',
-        ],
-        'LPCD': [
-            'Planning Officer V',
-            'Planning Officer IV',
-            'Development Management Officer II',
-            'Development Management Officer I',
-        ],
-        // Reseach Development and Special Projects Bureau (RDSPB)
-        'RDD': [
-            'Development Management Officer V',
-            'Development Management Officer III',
-            'Statistician II',
-            'Development Management Officer I',
-        ],
-        'IKMD': [
-            'Information Technology Officer III',
-            'Supervision Administrative Officer',
-            'Information Technology Officer I',
-            'Administrative Officer I',
-            'Computer Programmer',
-        ],
-        'ODA/NFPPCD': [
-            'Project Development Officer V',
-            'Project Development Officer III',
-            'Project Development Officer II',
-            'Project Development Officer I',
-        ],
-        'EID': [
-            'Chief Economic Development Specialist',
-            'Senior Economic Development Specialist',
-            'Economic Development Specialist II',
-            'Economic Development Analyst',
-        ],
-        'Finance Division': [
-            'Chief Accountant',
-            'Accountant III',
-            'Budget Officer III',
-            'Cashier III',
-            'Senior Bookkeeper',
-            'Disbursing Officer II',
-        ],
-        'Administrative Division': [
-            'Chief Administrative Officer',
-            'HRMO II',
-            'Supply Officer II',
-            'Records Officer II',
-            'Clerk III',
-        ],
-        'Other': [
-            'Bangsamoro Director General',
-            'Attorney IV',
-            'Internal Auditor II',
-            'Administrative Aide IV',
-            'Deputy Director General',
-            'Executive Assistant I',
-        ],
-    };
-
     const bureauSelect = document.getElementById('bureau-select');
     const divisionSelect = document.getElementById('division-select');
-    const positionSelect = document.getElementById('position-select');
+    const positionInput = document.getElementById('position-input')
     const employmentTypeSelect = document.getElementById('employment-type-select');
 
     const getAcronym = text => (text.match(/\(([^)]+)\)/) || [, ''])[1].trim();
 
     bureauSelect.addEventListener('change', function() {
-        const selectedBureau = this.value;
+const selectedBureau = this.value;
         const options = divisionsByBureau[selectedBureau] || [];
-
-        // 1. Linisin ang kasalukuyang options
-        divisionSelect.innerHTML = '<option value="" disabled selected>Select Division</option>';
         
-        // 2. Enable ang Division select
+        divisionSelect.innerHTML = '<option value="" disabled selected>Select Division</option>';
         divisionSelect.disabled = false;
         divisionSelect.classList.remove('bg-gray-100');
         divisionSelect.classList.add('bg-white');
 
-        // 3. Idagdag ang mga bagong options
+        positionInput.disabled = true;
+        positionInput.value = "";
+        positionInput.placeholder = "Select division first";
+        positionInput.classList.remove('bg-white', 'cursor-text');
+        positionInput.classList.add('bg-gray-100', 'cursor-not-allowed', 'opacity-70');
+
         options.forEach(division => {
-            const acronym = getAcronym(division);           // '' kung wala
+            const acronym = getAcronym(division);
             const el = document.createElement('option');
-            
-            el.value = acronym || division;                 // acronym kung meron, full name kung wala
-            el.textContent = division;                      // palaging full name ang nakikita
-            
-            // Optional: idagdag ang acronym sa display para makita (hal. "Division Name (ACR)")
-            // el.textContent = acronym ? `${division} (${acronym})` : division;
-            
-            console.log(`Acronym for "${division}": ${acronym}`);
+ 
+            el.value = acronym || division; 
+            el.textContent = division; 
+ 
             divisionSelect.appendChild(el);
         });
     });
 
     divisionSelect.addEventListener('change', function() {
-        const selectDivision = this.value;
-        const options = positionsByDivision[selectDivision] || [];
-
-        // 1. Linisin ang kasalukuyang options
-        positionSelect.innerHTML = '<option value="" disabled selected>Select Current Position</option>';
-        
-        // 2. Enable ang Division select
-        positionSelect.disabled = false;
-        positionSelect.classList.remove('bg-gray-100');
-        positionSelect.classList.add('bg-white');
-
-        // 3. Idagdag ang mga bagong options
-        options.forEach(position => {
-            const el = document.createElement('option');
-            
-            el.value = position;                // acronym kung meron, full name kung wala
-            el.textContent = position;                      // palaging full name ang nakikita
-            
-            // Optional: idagdag ang acronym sa display para makita (hal. "Division Name (ACR)")
-            // el.textContent = acronym ? `${division} (${acronym})` : division;
-            
-            console.log(position);
-            positionSelect.appendChild(el);
-        });
+        if (this.value) {
+        positionInput.disabled = false;
+        positionInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+        positionInput.classList.add('bg-white', 'cursor-text');
+        positionInput.placeholder = "Enter current position";
+        } else {
+            positionInput.disabled = true;
+            positionInput.value = "";
+            positionInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+            positionInput.placeholder = "Select division first";
+        }
     });
 
-    // --- Salary Toggle (one clean version only) ---
     document.addEventListener('DOMContentLoaded', () => {
         const employmentTypeSelect = document.getElementById('employment-type-select');
         const salaryInput = document.getElementById('salary-id');
@@ -471,20 +354,18 @@
                 }
             }
 
-            toggleSalaryField(); // initial check
+            toggleSalaryField(); 
             employmentTypeSelect.addEventListener('change', toggleSalaryField);
         }
     });
 
-    // --- Employee ID Real-time Clean & Feedback ---
     function syncEmployeeId(value) {
         const cleanValue = value.replace(/[^0-9]/g, '').substring(0, 15);
         const mainInput = document.getElementById('main-employee-id');
         if (mainInput) {
             mainInput.value = cleanValue;
         }
-        // Optional: kung gusto mo ng visual feedback sa baba ng field
-        // Halimbawa: <small id="id-feedback" class="text-xs mt-1 block"></small>
+        
         const feedback = document.getElementById('id-feedback');
         if (feedback) {
             if (cleanValue.length === 15) {
@@ -499,12 +380,10 @@
         }
     }
 
-    // Sa dulo ng <script> block mo, palitan 'to
     document.getElementById('employee-create-form')?.addEventListener('submit', function(e) {
         const employeeIdInput = document.querySelector('input[name="employee_id"]');
         const suffixInput     = document.querySelector('input[name="suffix"]');
 
-        // 1. Employee ID check
         if (employeeIdInput.value.length !== 15 || !/^\d{15}$/.test(employeeIdInput.value)) {
             alert("Employee ID dapat eksaktong 15 digits (numero lamang).");
             employeeIdInput.focus();
@@ -512,7 +391,6 @@
             return;
         }
 
-        // 2. Suffix check
         if (suffixInput.value.trim() !== "") {
             const validSuffix = /^(Jr|Sr|I|II|III|IV|V|VI|VII|VIII|IX|X|Jr\.|Sr\.)$/i;
             if (!validSuffix.test(suffixInput.value.trim())) {
@@ -522,8 +400,6 @@
                 return;
             }
         }
-
-        // Kung okay → payagan mag-submit
     });
 </script>
 @endsection

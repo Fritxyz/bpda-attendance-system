@@ -21,10 +21,8 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Simulan ang query
         $query = Employee::query();
         
-        // 2. Search Filter (Name o ID)
         if ($request->filled('search-input')) {
             $search = $request->input('search-input');
             $query->where(function($q) use ($search) {
@@ -52,7 +50,6 @@ class EmployeeController extends Controller
 
         $employees = $query->latest()->paginate(10)->appends($request->all( ));
 
-        // Eto ang trick: Kapag AJAX, table partial lang ang ibabalik
         if ($request->ajax() || $request->has('ajax')) {
             return view('partials.admin.employees.table', compact('employees'))->render();
         }
@@ -81,28 +78,19 @@ class EmployeeController extends Controller
         $validated = $request->validated();
 
         return DB::transaction(function () use ($request, $validated) {
-            
-            // 1. I-prepare ang basic data
             $validated['is_active'] = $request->has('is_active');
             $validated['employee_id'] = 'BPDA-' . $request->input('employee_id');
 
-            // 2. Handle Image Upload
             if ($request->hasFile('profile_picture')) {
                 $extension = $request->file('profile_picture')->getClientOriginalExtension();
-                // Mas maganda kung ang ID ang filename para unique
                 $fileName = 'BPDA-' . $request->input('employee_id') . '.' . $extension;
                 
-                // I-store ang file
                 $imagePath = $request->file('profile_picture')->storeAs('profiles', $fileName, 'public');
-                
-                // Eto ang kulang mo: I-update ang validated array para ang path ang ma-save, hindi yung file object
                 $validated['profile_picture'] = $imagePath; 
             }
 
-            // 3. I-save ang Employee Profile
             $employee = Employee::create($validated);
 
-            // 4. I-create ang User Account
             $user = User::create([
                 'employee_id' => $employee->employee_id,
                 'password'    => $request->input('password'),
@@ -120,12 +108,16 @@ class EmployeeController extends Controller
     public function show(Request $request, $employee_id)
     {
         $employee = Employee::where('employee_id', $employee_id)->firstOrFail();
+
         $selectedMonth = $request->get('month', now()->timezone('Asia/Manila')->format('Y-m'));
-        $date = Carbon::parse($selectedMonth);
+        $parsedMonth = Carbon::parse($selectedMonth);
+        $now = now()->timezone('Asia/Manila');
+
+        $hireDate = Carbon::parse($employee->created_at)->startOfDay();
 
         $attendanceRecords = Attendance::where('employee_id', $employee_id)
-            ->whereYear('attendance_date', $date->year)
-            ->whereMonth('attendance_date', $date->month)
+            ->whereYear('attendance_date', $parsedMonth->year)
+            ->whereMonth('attendance_date', $parsedMonth->month)
             ->get()
             ->map(function ($record) {
                 $tz = 'Asia/Manila';
@@ -174,28 +166,30 @@ class EmployeeController extends Controller
                 return Carbon::parse($item->attendance_date)->format('Y-m-d');
             });
 
-        $daysInMonth = $date->daysInMonth;
+        $daysInMonth = $parsedMonth->daysInMonth;
         $attendance = [];
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $currentDate = Carbon::create($date->year, $date->month, $day);
-            $dateStr = $currentDate->format('Y-m-d');
-            
-            // --- STATIC DATA MOCKUP ---
-            $isHoliday = ($day == 5); // Example: May 5 is Holiday
-            $isOnLeave = ($day == 8); // Example: May 8 is Leave
-            // --------------------------
 
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $currentIterationDate = Carbon::create($parsedMonth->year, $parsedMonth->month, $day)->startOfDay();
+            $dateStr = $currentIterationDate->format('Y-m-d');
+
+            // Logic Flags
+            $isFuture = $currentIterationDate->gt($now->startOfDay());
+            $isBeforeHire = $currentIterationDate->lt($hireDate);
+            
             $attendance[$day] = [
-                'day_name'   => $currentDate->format('D'),
-                'date_str'   => $dateStr,
-                'is_holiday' => $isHoliday,
-                'is_leave'   => $isOnLeave,
-                'record'     => $attendanceRecords->get($dateStr) ?? null
+                'day_name'      => $currentIterationDate->format('D'),
+                'date_str'      => $dateStr,
+                'is_future'     => $isFuture,      // New flag
+                'is_before_hire' => $isBeforeHire, // New flag
+                'is_holiday'    => false,          // Replace with your holiday logic
+                'is_leave'      => false,          // Replace with your leave logic
+                'record'        => $attendanceRecords->get($dateStr) ?? null
             ];
         }
 
         if ($request->ajax()) {
-            return view('partials.admin.employees._monthly_attendance_table', compact('attendance'))->render();
+            return view('partials.admin.employees._monthly_attendance_table', compact('attendance', 'employee'))->render();
         }
 
         return view('admin.employees.show', compact('employee', 'attendance', 'selectedMonth'));
@@ -206,7 +200,6 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        // dd($employee->all());
         $user = User::where("employee_id", '=', $employee->employee_id)->first();
         $employee->employee_id = substr($employee->employee_id, 5);
 
@@ -222,8 +215,6 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeRequest $request, $employee) 
     {
-        // todo: ayusin ang update logic haha and test rigidly hahaha
-        // 1. Hanapin ang record (Dito natin kukunin ang Object)
         $formattedId = str_starts_with($employee, 'BPDA-') ? $employee : 'BPDA-' . $employee;
         $employeeRecord = Employee::where('employee_id', $formattedId)->firstOrFail();
 
@@ -236,9 +227,6 @@ class EmployeeController extends Controller
             $validated['salary'] = null;
         }
 
-        // dd($validated);
-
-        // 2. Handle Profile Picture (Same logic mo)
         if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
             if ($employeeRecord->profile_picture && !str_contains($employeeRecord->profile_picture, 'bpda-logo.jpg')) {
                 Storage::disk('public')->delete($employeeRecord->profile_picture);
@@ -247,7 +235,6 @@ class EmployeeController extends Controller
             $validated['profile_picture'] = $path;
         }
 
-        // 3. Handle Password & User logic
         if ($request->filled('password') || $request->filled('role') || $request->filled('employee_id')) {
             $user = User::where('employee_id', $employeeRecord->getOriginal('employee_id'))->first();
             
@@ -258,7 +245,6 @@ class EmployeeController extends Controller
                     $userData['password'] = Hash::make($request->password);
                 }
                 
-                // I-sync ang employee_id at role sa User account
                 $userData['employee_id'] = $validated['employee_id'];
                 $userData['role'] = $validated['role'];
 
@@ -266,7 +252,6 @@ class EmployeeController extends Controller
             }
         }
 
-        // 4. Eto ang importante: Gamitin ang Object ($employeeRecord), hindi yung parameter string
         $employeeRecord->update($validated);
 
         return redirect()

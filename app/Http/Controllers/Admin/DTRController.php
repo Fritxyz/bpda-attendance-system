@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\Attendance;
+use App\Models\Employee;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 
 class DTRController extends Controller
@@ -41,15 +44,11 @@ class DTRController extends Controller
 
             $regularMinutes = 0;
 
-
-            // Priority 1: Full continuous kung walang am_out (most common incomplete case)
             if ($amIn && $pmOut && !$amOut) {
-                // Whether may pm_in or not — count from first in to last out
                 if ($pmOut->gt($amIn)) {
                     $regularMinutes = $amIn->diffInMinutes($pmOut);
                 }
             } else {
-                // Fallback to normal split kung may am_out
                 if ($amIn && $amOut && $amOut->gt($amIn)) {
                     $regularMinutes += $amIn->diffInMinutes($amOut);
                 }
@@ -58,19 +57,16 @@ class DTRController extends Controller
                 }
             }
 
-            // OT (kung may — pero sa case mo NULL, so 0)
             if ($otIn && $otOut && $otOut->gt($otIn)) {
                 $regularMinutes += $otIn->diffInMinutes($otOut);
             }
 
-            $totalMinutes = $regularMinutes;  // rename if needed
+            $totalMinutes = $regularMinutes;  
 
-            // Format
             $hours   = floor($totalMinutes / 60);
             $minutes = $totalMinutes % 60;
             $record->computed_total_hours = "{$hours}h {$minutes}m";
 
-            // Simple status vs 8 hours (fixed muna)
             $requiredMinutes = 8 * 60;
             $diffMinutes = $totalMinutes - $requiredMinutes;
 
@@ -147,8 +143,6 @@ class DTRController extends Controller
                             ->where('attendance_date', $date)
                             ->firstOrFail();
 
-        // dd($attendance);
-
         $attendance->update($request->validated());
 
         return redirect()->route('dtr.view')
@@ -161,5 +155,27 @@ class DTRController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function generateDTR($employee_id, $month, $year) 
+    {
+        $employee = Employee::where('employee_id', $employee_id)->firstOrFail();
+        
+        $start = Carbon::create($year, $month, 1);
+        $end = $start->copy()->endOfMonth();
+        $period = CarbonPeriod::create($start, $end);
+
+        $attendances = Attendance::where('employee_id', $employee_id)
+            ->whereMonth('attendance_date', $month)
+            ->whereYear('attendance_date', $year)
+            ->get()
+            ->keyBy(function($item) {
+                return Carbon::parse($item->attendance_date)->day;
+            });
+
+        $pdf = Pdf::loadView('dtr.print.blade', compact('employee', 'period', 'attendances', 'start'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->stream("DTR_{$employee->last_name}.pdf");
     }
 }

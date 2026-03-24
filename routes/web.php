@@ -51,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employee/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('/employee/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
         Route::get('/employee/{employee}/view', [EmployeeController::class, 'show'])->name('employees.show');
+        Route::get('/employee/{employee}/view/printdtr/{month}/{year}', [DTRController::class, 'generateDTR'])->name('dtr.print');
 
         // timekeeping management
         Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view'); // - daily time record
@@ -66,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/holidays/{id}/delete', [HolidayController::class, 'destroy'])->name('holiday.destroy');
     });
 
+    // route::group admin
     Route::prefix('employee')->group(function() {
         Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])->name('employee.dashboard');
     });

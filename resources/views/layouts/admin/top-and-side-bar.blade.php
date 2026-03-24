@@ -17,37 +17,32 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; overflow: hidden; }
-        /* Para hindi mag-overlap ang content sa sidebar */
         .main-wrapper { height: 100vh; display: flex; }
         .sidebar-container { min-width: 260px; max-width: 260px; }
         .content-container { flex-grow: 1; overflow-y: auto; background-color: #f8fafc; }
+        #sidebar .flex-1::-webkit-scrollbar {
+            width: 5px; 
+        }
 
-        /* Custom Scrollbar para sa Sidebar */
-    #sidebar .flex-1::-webkit-scrollbar {
-        width: 5px; /* Gawing manipis */
-    }
+        #sidebar .flex-1::-webkit-scrollbar-track {
+            background: transparent; 
+        }
 
-    #sidebar .flex-1::-webkit-scrollbar-track {
-        background: transparent; 
-    }
+        #sidebar .flex-1::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3); /* Kulay Yellow (Yellow-400) na medyo transparent */
+            border-radius: 10px;
+        }
 
-    #sidebar .flex-1::-webkit-scrollbar-thumb {
-        background: rgba(251, 191, 36, 0.3); /* Kulay Yellow (Yellow-400) na medyo transparent */
-        border-radius: 10px;
-    }
+        #sidebar .flex-1:hover::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.6); /* Mas matingkad kapag naka-hover */
+        }
 
-    #sidebar .flex-1:hover::-webkit-scrollbar-thumb {
-        background: rgba(251, 191, 36, 0.6); /* Mas matingkad kapag naka-hover */
-    }
+        #sidebar .flex-1 {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
+        }
 
-    /* Para sa Firefox */
-    #sidebar .flex-1 {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
-    }
-
-    /* Iwasan ang layout shift */
-    [x-cloak] { display: none !important; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body>
@@ -220,8 +215,8 @@
                 text: "Do you want to logout?",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626',          // red-600
-                cancelButtonColor: '#10b981',           // emerald-600
+                confirmButtonColor: '#dc2626',          
+                cancelButtonColor: '#10b981',           
                 confirmButtonText: 'Yes, logout',
                 cancelButtonText: 'Cancel'
             }).then((result) => {

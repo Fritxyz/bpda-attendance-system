@@ -129,115 +129,11 @@
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Current Position</label>
-                        <select id="position-select" name="position" required
-                                class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition cursor-pointer disabled:bg-gray-100 disabled:text-gray-400">
-                            <option value="" disabled selected>Select Division first</option>
-
-                            {{-- @if(old('division', $employee->division === "MEPD"))
-                                <option value="Chief Economic Developement Specialist" {{ old('position', $employee->position) === 'Chief Economic Developement Specialist' ? 'selected' : '' }}>Chief Economic Developement Specialist</option>
-                                <option value="Socio Economic Developement Specialist" {{ old('position', $employee->position) === 'Socio Economic Developement Specialist' ? 'selected' : '' }}>Socio Economic Developement Specialist</option>
-                                <option value="Economic Developement Specialist II" {{ old('position', $employee->position) === 'Economic Developement Specialist II' ? 'selected' : '' }}>Economic Developement Specialist II</option>
-                                <option value="Economic Developement Analyst" {{ old('position', $employee->position) === 'Economic Developement Analyst' ? 'selected' : '' }}>Economic Developement Analyst</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "EPD"))
-                                <option value="Chief Economic Developement Specialist" {{ old('position', $employee->position) === 'Chief Economic Developement Specialist' ? 'selected' : '' }}>Chief Economic Developement Specialist</option>
-                                <option value="Senior Economic Developement Specialist" {{ old('position', $employee->position) === 'Senior Economic Developement Specialist' ? 'selected' : '' }}>Senior Economic Developement Specialist</option>
-                                <option value="Economic Developement Specialist III" {{ old('position', $employee->position) === 'Economic Developement Specialist III' ? 'selected' : '' }}>Economic Developement Specialist III</option>
-                                <option value="Economic Developement Analyst" {{ old('position', $employee->position) === 'Economic Developement Analyst' ? 'selected' : '' }}>Economic Developement Analyst</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "SPD"))
-                                <option value="Planning Officer V" {{ old('position', $employee->position) === 'Planning Officer V' ? 'selected' : '' }}>Planning Officer V</option>
-                                <option value="Planning Officer III" {{ old('position', $employee->position) === 'Planning Officer III' ? 'selected' : '' }}>Planning Officer III</option>
-                                <option value="Planning Officer II" {{ old('position', $employee->position) === 'Planning Officer II' ? 'selected' : '' }}>Planning Officer II</option>
-                                <option value="Planning Officer I" {{ old('position', $employee->position) === 'Planning Officer I' ? 'selected' : '' }}>Planning Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "LPCD"))
-                                <option value="Planning Officer V" {{ old('position', $employee->position) === 'Planning Officer V' ? 'selected' : '' }}>Planning Officer V</option>
-                                <option value="Planning Officer IV" {{ old('position', $employee->position) === 'Planning Officer IV' ? 'selected' : '' }}>Planning Officer IV</option>
-                                <option value="Development Management Officer II" {{ old('position', $employee->position) === 'Development Management Officer II' ? 'selected' : '' }}>Developement Management Officer II</option>
-                                <option value="Development Management Officer I" {{ old('position', $employee->position) === 'Development Management Officer I' ? 'selected' : '' }}>Development Management Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "IPD"))
-                                <option value="Planning Officer V" {{ old('position', $employee->position) === 'Planning Officer V' ? 'selected' : '' }}>Planning Officer V</option>
-                                <option value="Engineer III" {{ old('position', $employee->position) === 'Engineer III' ? 'selected' : '' }}>Engineer III</option>
-                                <option value="Engineer II" {{ old('position', $employee->position) === 'Engineer II' ? 'selected' : '' }}>Engineer II</option>
-                                <option value="Planning Officer I" {{ old('position', $employee->position) === 'Planning Officer I' ? 'selected' : '' }}>Planning Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "PPOSSD"))
-                                <option value="Planning Officer V" {{ old('position', $employee->position) === 'Planning Officer V' ? 'selected' : '' }}>Planning Officer V</option>
-                                <option value="Development Management Officer III" {{ old('position', $employee->position) === 'Development Management Officer III' ? 'selected' : '' }}>Development Management Officer III</option>
-                                <option value="Development Management Officer II" {{ old('position', $employee->position) === 'Development Management Officer II' ? 'selected' : '' }}>Development Management Officer II</option>
-                                <option value="Planning Officer I" {{ old('position', $employee->position) === 'Planning Officer I' ? 'selected' : '' }}>Planning Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "MED"))
-                                <option value="Planning Officer V" {{ old('position', $employee->position) === 'Planning Officer V' ? 'selected' : '' }}>Planning Officer V</option>
-                                <option value="Engineer III" {{ old('position', $employee->position) === 'Engineer III' ? 'selected' : '' }}>Engineer III</option>
-                                <option value="Engineer II" {{ old('position', $employee->position) === 'Engineer II' ? 'selected' : '' }}>Engineer II</option>
-                                <option value="Project Evaluation Officer I" {{ old('position', $employee->position) === 'Project Evaluation Officer I' ? 'selected' : '' }}>Project Evaluation Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "IKMD"))
-                                <option value="Information Technology Officer III" {{ old('position', $employee->position) === 'Information Technology Officer III' ? 'selected' : '' }}>Information Technology Officer III</option>
-                                <option value="Supervision Administrative Officer" {{ old('position', $employee->position) === 'Supervision Administrative Officer' ? 'selected' : '' }}>Supervision Administrative Officer</option>
-                                <option value="Information Technology Officer I" {{ old('position', $employee->position) === 'Information Technology Officer I' ? 'selected' : '' }}>Information Technology Officer I</option>
-                                <option value="Administrative Officer I" {{ old('position', $employee->position) === 'Administrative Officer I' ? 'selected' : '' }}>Administrative Officer I</option>
-                                <option value="Computer Programmer" {{ old('position', $employee->position) === 'Computer Programmer' ? 'selected' : '' }}>Computer Programmer</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "RDD"))
-                                <option value="Development Management Officer V" {{ old('position', $employee->position) === 'Development Management Officer V' ? 'selected' : '' }}>Development Management Officer V</option>
-                                <option value="Development Management Officer III" {{ old('position', $employee->position) === 'Development Management Officer V' ? 'selected' : '' }}>Development Management Officer V</option>
-                                <option value="Statistician II" {{ old('position', $employee->position) === 'Statistician II' ? 'selected' : '' }}>Statistician II</option>
-                                <option value="Development Management Officer I" {{ old('position', $employee->position) === 'Development Management Officer I' ? 'selected' : '' }}>Development Management Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "ODA/NFPPCD"))
-                                <option value="Project Development Officer V" {{ old('position', $employee->position) === 'Project Development Officer V' ? 'selected' : '' }}>Project Development Officer V</option>
-                                <option value="Project Development Officer III" {{ old('position', $employee->position) === 'Project Development Officer III' ? 'selected' : '' }}>Project Development Officer III</option>
-                                <option value="Project Development Officer II" {{ old('position', $employee->position) === 'Project Development Officer II' ? 'selected' : '' }}>Project Development Officer II</option>
-                                <option value="Project Development Officer I" {{ old('position', $employee->position) === 'Project Development Officer I' ? 'selected' : '' }}>Project Development Officer I</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "EID"))
-                                <option value="Chief Economic Development Specialist" {{ old('position', $employee->position) === 'Chief Economic Development Specialist' ? 'selected' : '' }}>Chief Economic Development Specialist</option>
-                                <option value="Senior Economic Development Specialist" {{ old('position', $employee->position) === 'Senior Economic Development Specialist' ? 'selected' : '' }}>Senior Economic Development Specialist</option>
-                                <option value="Economic Development Specialist II" {{ old('position', $employee->position) === 'Economic Development Specialist II' ? 'selected' : '' }}>Economic Development Specialist II</option>
-                                <option value="Economic Development Analysts" {{ old('position', $employee->position) === 'Economic Development Analyst' ? 'selected' : '' }}>Economic Development Analyst</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "Finance Division"))
-                                <option value="Chief Accountant" {{ old('position', $employee->position) === 'Chief Accountant' ? 'selected' : '' }}>Chief Accountant</option>
-                                <option value="Accountant III" {{ old('position', $employee->position) === 'Accountant III' ? 'selected' : '' }}>Accountant III</option>
-                                <option value="Budget Officer III" {{ old('position', $employee->position) === 'Budget Officer III' ? 'selected' : '' }}>Budget Officer III</option>
-                                <option value="Cashier III" {{ old('position', $employee->position) === 'Cashier III' ? 'selected' : '' }}>Cashier III</option>
-                                <option value="Senior Bookkeeper" {{ old('position', $employee->position) === 'Senior Bookkeeper' ? 'selected' : '' }}>Senior Bookkeeper</option>
-                                <option value="Disbursing Officer II" {{ old('position', $employee->position) === 'Disbursing Officer II' ? 'selected' : '' }}>Disbursing Officer</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "Administrative Division"))
-                                <option value="Chief Administratve Officer" {{ old('position', $employee->position) === 'Chief Administratve Officer' ? 'selected' : '' }}>Chief Administratve Officer</option>
-                                <option value="HRMO II" {{ old('position', $employee->position) === 'HRMO II' ? 'selected' : '' }}>HRMO II</option>
-                                <option value="Supply Officer II" {{ old('position', $employee->position) === 'Supply Officer II' ? 'selected' : '' }}>Supply Officer II</option>
-                                <option value="Records Officer II" {{ old('position', $employee->position) === 'Records Officer II' ? 'selected' : '' }}>Records Officer II</option>
-                                <option value="Clerk III" {{ old('position', $employee->position) === 'Clerk III' ? 'selected' : '' }}>Clerk III</option>
-                            @endif
-
-                            @if(old('division', $employee->division === "Other"))
-                                <option value="Bangsamoro Director General" {{ old('position', $employee->position) === 'Bangsamoro Director General' ? 'selected' : '' }}>Bangsamoro Director General</option>
-                                <option value="Attorney IV" {{ old('position', $employee->position) === 'Attorney IV' ? 'selected' : '' }}>Attorney IV</option>
-                                <option value="Internal Auditor II" {{ old('position', $employee->position) === 'Internal Auditor II' ? 'selected' : '' }}>Internal Auditor II</option>
-                                <option value="Administrative Aide IV" {{ old('position', $employee->position) === 'Administrative Aide IV' ? 'selected' : '' }}>Administrative Aide IV</option>
-                                <option value="Deputy Director General" {{ old('position', $employee->position) === 'Deputy Director General' ? 'selected' : '' }}>Deputy Director General</option>
-                                <option value="Executive Assistant I" {{ old('position', $employee->position) === 'Executive Assistant I' ? 'selected' : '' }}>Executive Assistant I</option>
-                            @endif --}}
-                            {{-- todo: fass and other --}}
-                        </select>
+                        <input type="text" name="position" id="position-input" 
+                            placeholder="Select division first"
+                            value="{{ old('position', $employee->position) }}"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none transition disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400"
+                            required>
                     </div>
 
                     <div>
@@ -327,7 +223,7 @@
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" id="is_active" value="1" checked
                            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition">
-                    <label for="is_active" class="ml-2 block text-sm font-bold text-gray-600 cursor-pointer">Active Status</label>
+                    <label for="is_active" class="ml-2 block text-sm font-bold text-gray-600 cursor-pointer">Active Employee</label>
                 </div>
 
                 <div class="flex space-x-3">
@@ -373,7 +269,7 @@
         }
     }
 
-    // --- Dropdown Logic (Bureau → Division → Position) ---
+    // --- Data Definitions ---
     const divisionsByBureau = {
         'PPB': [
             { value: 'MEPD',  label: 'Macro-Economic Planning Division (MEPD)' },
@@ -394,208 +290,85 @@
             { value: 'Finance Division',       label: 'Finance Division' },
             { value: 'Administrative Division',label: 'Administrative Division' },
         ],
-        'Other': [
-            { value: 'Other', label: 'Other' }
-        ]
+        'Other': [{ value: 'Other', label: 'Other' }]
     };
-
-    const positionsByDivision = {
-        // Planning and Policies Bureau (PPB)
-        'MEPD': [
-            'Chief Economic Development Specialist',
-            'Socio Economic Development Specialist',
-            'Economic Development Specialist II',
-            'Economic Development Analyst',
-        ],
-        'EPD': [
-            'Chief Economic Development Specialist',
-            'Senior Economic Development Specialist',
-            'Economic Development Specialist III',
-            'Economic Development Analyst',
-        ],
-        'SPD': [
-            'Planning Officer V',
-            'Planning Officer III',
-            'Planning Officer II',
-            'Planning Officer I',
-        ],
-        'IPD': [
-            'Planning Officer V',
-            'Engineer III',
-            'Engineer II',
-            'Planning Officer I',
-        ],
-        'PPOSSD': [
-            'Planning Officer V',
-            'Development Management Officer III',
-            'Development Management Officer II',
-            'Planning Officer I',
-        ],
-        'MED': [
-            'Planning Officer V',
-            'Engineer III',
-            'Engineer II',
-            'Project Evaluation Officer I',
-        ],
-        'LPCD': [
-            'Planning Officer V',
-            'Planning Officer IV',
-            'Development Management Officer II',
-            'Developement Management Officer I',
-        ],
-        // Reseach Development and Special Projects Bureau (RDSPB)
-        'RDD': [
-            'Development Management Officer V',
-            'Development Management Officer III',
-            'Statistician II',
-            'Development Management Officer I',
-        ],
-        'IKMD': [
-            'Information Technology Officer III',
-            'Supervision Administrative Officer',
-            'Information Technology Officer I',
-            'Administrative Officer I',
-            'Computer Programmer',
-        ],
-        'ODA/NFPPCD': [
-            'Project Development Officer V',
-            'Project Developement Officer III',
-            'Project Development Officer II',
-            'Project Development Officer I',
-        ],
-        'EID': [
-            'Chief Economic Development Specialist',
-            'Senior Economic Development Specialist',
-            'Economic Development Specialist II',
-            'Economic Development Analyst',
-        ],
-        'Finance Division': [
-            'Chief Accountant',
-            'Accountant III',
-            'Budget Officer III',
-            'Cashier III',
-            'Senior Bookkeeper',
-            'Disbursing Officer II',
-        ],
-        'Administrative Division': [
-            'Chief Administrative Officer',
-            'HRMO II',
-            'Supply Officer II',
-            'Records Officer II',
-            'Clerk III',
-        ],
-        'Other': [
-            'Bangsamoro Director General',
-            'Attorney IV',
-            'Internal Auditor II',
-            'Administrative Aide IV',
-            'Deputy Director General',
-            'Executive Assistant I',
-        ],
-    };
-
-    const original = {
-        bureau:   "{{ old('bureau',   $employee->bureau   ?? '') }}",
-        division: "{{ old('division', $employee->division ?? '') }}",
-        position: "{{ old('position', $employee->position ?? '') }}",
-    };
-
-    function populateSelect(selectElement, items, selectedValue = '', isObjectArray = false) {
-        selectElement.innerHTML = '<option value="" disabled>Select...</option>';
-
-        items.forEach(item => {
-            const option = document.createElement('option');
-            
-            if (isObjectArray) {
-                // For divisions (array of objects)
-                option.value = item.value;
-                option.textContent = item.label;
-            } else {
-                // For positions (array of strings)
-                option.value = item;
-                option.textContent = item;
-            }
-
-            if (item.value === selectedValue || item === selectedValue) {
-                option.selected = true;
-            }
-            selectElement.appendChild(option);
-        });
-
-        // Fallback if saved value not in current list
-        if (selectedValue && !selectElement.querySelector(`option[value="${selectedValue}"]`)) {
-            const fallback = document.createElement('option');
-            fallback.value = selectedValue;
-            fallback.disabled = true;
-            fallback.textContent = `${selectedValue} (previous – not available now)`;
-            fallback.style.color = '#dc2626';
-            fallback.selected = true;
-            selectElement.appendChild(fallback);
-        }
-    }
 
     const bureauSelect = document.getElementById('bureau-select');
     const divisionSelect = document.getElementById('division-select');
-    const positionSelect = document.getElementById('position-select');
+    const positionInput = document.getElementById('position-input');
 
-    const getAcronym = text => (text.match(/\(([^)]+)\)/) || [, ''])[1].trim();
+    // Initial Data from DB
+    const currentDivision = "{{ old('division', $employee->division) }}";
 
-    // When Bureau changes → reset & populate Division + Position
-    bureauSelect.addEventListener('change', () => {
-        const bureau = bureauSelect.value;
-        const divisionItems = divisionsByBureau[bureau] || [];
+    function populateDivisions(bureauValue, selectedDivision = '') {
+        const divisions = divisionsByBureau[bureauValue] || [];
+        divisionSelect.innerHTML = '<option value="" disabled selected>Select Division</option>';
+        
+        divisions.forEach(div => {
+            const option = document.createElement('option');
+            option.value = div.value;
+            option.textContent = div.label;
+            if (div.value === selectedDivision) option.selected = true;
+            divisionSelect.appendChild(option);
+        });
 
-        // 1. Repopulate Division
-        populateSelect(divisionSelect, divisionItems, original.division, true);
+        divisionSelect.disabled = divisions.length === 0;
+    }
 
-        // 2. Reset & disable Position until division is chosen
-        positionSelect.innerHTML = '<option value="" disabled selected>Select Division first</option>';
-        positionSelect.disabled = true;
+    // 1. Bureau Change Logic
+    bureauSelect.addEventListener('change', function() {
+        populateDivisions(this.value);
+        
+        // Reset Position Input
+        positionInput.value = '';
+        positionInput.disabled = true;
+        positionInput.placeholder = "Select division first";
+    });
 
-        // If there's already a division selected (after repopulation), trigger position update
-        if (divisionSelect.value) {
-            divisionSelect.dispatchEvent(new Event('change'));
+    // 2. Division Change Logic
+    divisionSelect.addEventListener('change', function() {
+        if (this.value) {
+            positionInput.disabled = false;
+            positionInput.placeholder = "Enter current position";
+        } else {
+            positionInput.disabled = true;
+            positionInput.value = '';
         }
     });
 
-    divisionSelect.addEventListener('change', () => {
-        const divisionCode = divisionSelect.value;
-        const positionItems = positionsByDivision[divisionCode] || [];
-
-        populateSelect(positionSelect, positionItems, original.position, false);
-        
-        positionSelect.disabled = positionItems.length === 0;
-    });
-
-    // Initialize form with saved values on page load
+    // 3. Initialize on Page Load
     document.addEventListener('DOMContentLoaded', () => {
-        if (original.bureau) {
-            bureauSelect.value = original.bureau;
-            bureauSelect.dispatchEvent(new Event('change'));  // This triggers everything
+        // Load divisions if bureau is already set
+        if (bureauSelect.value) {
+            populateDivisions(bureauSelect.value, currentDivision);
         }
 
-        const employeeForm = document.getElementById('editEmployeeForm');
-        
-        if (employeeForm) {
-            employeeForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Stop form from auto-submitting
-                
-                Swal.fire({
-                    title: 'Confirm Changes?',
-                    text: "You are about to modify this employee's info.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#059669',
-                    cancelButtonColor: '#64748b',
-                    confirmButtonText: 'Yes, update it!',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        employeeForm.submit(); // Submit after confirmation
-                    }
-                });
-            });
+        // Enable position input if division is already set (Edit mode)
+        if (divisionSelect.value || currentDivision) {
+            positionInput.disabled = false;
+            positionInput.placeholder = "Enter current position";
+        } else {
+            positionInput.disabled = true;
         }
+
+        // --- Salary Toggle ---
+        const employmentTypeSelect = document.getElementById('employment-type-select');
+        const salaryInput = document.getElementById('salary-id');
+
+        function toggleSalaryField() {
+            if (employmentTypeSelect.value === "Permanent") {
+                salaryInput.disabled = true;
+                salaryInput.value = '';
+                salaryInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+            } else {
+                salaryInput.disabled = false;
+                salaryInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+            }
+        }
+        toggleSalaryField();
+        employmentTypeSelect.addEventListener('change', toggleSalaryField);
     });
+
 
     // --- Salary Toggle (one clean version only) ---
     document.addEventListener('DOMContentLoaded', () => {

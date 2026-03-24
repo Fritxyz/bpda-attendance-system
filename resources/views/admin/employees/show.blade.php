@@ -4,7 +4,6 @@
 
 @section('content')
 <style>
-    /* Tatanggalin nito ang sidebar at buttons kapag nag-print */
     @media print {
         .no-print, button, select, nav, .sidebar {
             display: none !important;
@@ -121,11 +120,14 @@
                     </div>
                     <div class="flex items-center gap-3">
                         <form id="filter-form" class="flex items-center gap-3 no-print">
-                            <input type="month" id="month-input" name="month" value="{{ $selectedMonth }}" 
+                            <input type="month" id="month-input" name="month" value="{{ $selectedMonth }}" max="{{ now()->format('Y-m') }}"
                                 class="bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-600 px-4 py-2 focus:ring-2 focus:ring-emerald-500">
-                            <button type="button" onclick="window.print()" class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
-                                <i class="bi bi-printer-fill"></i> PRINT DTR
-                            </button>
+                            <a href="{{ route('dtr.print', ['employee' => $employee->employee_id, 'month' => \Carbon\Carbon::parse($selectedMonth)->month, 'year' => \Carbon\Carbon::parse($selectedMonth)->year]) }}" 
+                                id="print-dtr-btn" 
+                                target="_blank" 
+                                class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
+                                    <i class="bi bi-printer-fill"></i> PRINT DTR
+                            </a>
                         </form>
                     </div>
                 </div>
@@ -140,16 +142,18 @@
 
 <script>
     document.getElementById('month-input').addEventListener('change', function() {
-        const month = this.value;
-        const container = document.getElementById('attendance-container');
+        const monthVal = this.value; 
+        const [year, month] = monthVal.split('-');
         
-        // Optional: Maglagay ng loading effect
+        const printBtn = document.getElementById('print-dtr-btn');
+        let printUrl = "{{ route('dtr.print', ['employee' => $employee->employee_id, 'month' => ':month', 'year' => ':year']) }}";
+        printBtn.href = printUrl.replace(':month', month).replace(':year', year);
+        
+        const container = document.getElementById('attendance-container');
         container.style.opacity = '0.5';
 
-        fetch(`{{ route('employees.show', $employee->employee_id) }}?month=${month}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+        fetch(`{{ route('employees.show', $employee->employee_id) }}?month=${monthVal}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => response.text())
         .then(html => {

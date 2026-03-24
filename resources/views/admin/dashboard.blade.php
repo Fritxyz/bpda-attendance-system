@@ -23,19 +23,16 @@
             <button class="bg-white border border-slate-200 p-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition shadow-sm">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
-            <button class="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-100 hover:bg-slate-900 transition-all active:scale-95">
-                <i class="bi bi-file-earmark-pdf me-2"></i> Export Report
-            </button>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
             <div class="relative z-10">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Workforce</p>
-                <h3 class="text-3xl font-black text-slate-900 tracking-tight">145</h3>
+                <h3 class="text-3xl font-black text-slate-900 tracking-tight">{{ $totalEmployeeCount }}</h3>
                 <div class="mt-2 flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                    <i class="bi bi-graph-up-arrow"></i> <span>+2 New this month</span>
+                    <i class="bi bi-graph-up-arrow"></i> <span>{{ $newEmployeesThisMonth }} New this month</span>
                 </div>
             </div>
             <i class="bi bi-people-fill absolute -right-4 -bottom-4 text-7xl text-slate-50 group-hover:text-emerald-50 transition-colors"></i>
@@ -44,9 +41,9 @@
         <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
             <div class="relative z-10">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Present Today</p>
-                <h3 class="text-3xl font-black text-emerald-600 tracking-tight">122</h3>
+                <h3 class="text-3xl font-black text-emerald-600 tracking-tight">{{ $presentToday }}</h3>
                 <div class="mt-2 flex items-center gap-1 text-[10px] font-bold text-slate-400">
-                    <span>84% Attendance Rate</span>
+                    <span>{{ $attendanceRate }}% Attendance Rate</span>
                 </div>
             </div>
             <i class="bi bi-person-check-fill absolute -right-4 -bottom-4 text-7xl text-slate-50 group-hover:text-emerald-50 transition-colors"></i>
@@ -55,23 +52,12 @@
         <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
             <div class="relative z-10">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Late Arrivals</p>
-                <h3 class="text-3xl font-black text-amber-500 tracking-tight">08</h3>
+                <h3 class="text-3xl font-black text-amber-500 tracking-tight">{{ $lateToday }}</h3>
                 <div class="mt-2 flex items-center gap-1 text-[10px] font-bold text-red-500">
                     <i class="bi bi-exclamation-triangle"></i> <span>Check logs</span>
                 </div>
             </div>
             <i class="bi bi-clock-history absolute -right-4 -bottom-4 text-7xl text-slate-50 group-hover:text-amber-50 transition-colors"></i>
-        </div>
-
-        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
-            <div class="relative z-10">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">On Leave</p>
-                <h3 class="text-3xl font-black text-blue-600 tracking-tight">05</h3>
-                <div class="mt-2 flex items-center gap-1 text-[10px] font-bold text-slate-400">
-                    <span>Approved Requests</span>
-                </div>
-            </div>
-            <i class="bi bi-calendar2-x-fill absolute -right-4 -bottom-4 text-7xl text-slate-50 group-hover:text-blue-50 transition-colors"></i>
         </div>
     </div>
 
@@ -129,41 +115,74 @@
                         <th class="px-8 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Employee</th>
                         <th class="px-8 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Log Details</th>
                         <th class="px-8 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                        <th class="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Action</th>
+                        
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                    @php $logs = [['name' => 'Juan Dela Cruz', 'id' => 'BPDA-001', 'time' => '07:45 AM', 'type' => 'AM IN', 'status' => 'On-Time'], ['name' => 'Maria Santos', 'id' => 'BPDA-024', 'time' => '08:12 AM', 'type' => 'AM IN', 'status' => 'Late']]; @endphp
-                    @foreach($logs as $log)
+                    @foreach($todaysAttendance as $attendance)
+
+                    @php
+                        $logs = [
+                            'AM IN' => $attendance->am_in,
+                            'AM OUT' => $attendance->am_out,
+                            'PM IN' => $attendance->pm_in,
+                            'PM OUT' => $attendance->pm_out,
+                            'OT IN' => $attendance->ot_in,
+                            'OT OUT' => $attendance->ot_out,
+                        ];
+
+                        $filtered = array_filter($logs);
+                        $latestType = null;
+                        $latestTime = null;
+
+                        if (!empty($filtered)) {
+                            $latestTime = max($filtered);
+                            $latestType = array_search($latestTime, $filtered);
+                        }
+
+                        // simple status logic (edit if needed)
+                        $status = ($attendance->am_in && $attendance->am_in <= '08:16') ? 'On-Time' : 'Late';
+                    @endphp
+
                     <tr class="group hover:bg-slate-50 transition-colors">
                         <td class="px-8 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-xs uppercase shadow-md group-hover:scale-110 transition-transform">
-                                    {{ substr($log['name'], 0, 1) }}{{ substr(explode(' ', $log['name'])[1], 0, 1) }}
+                                    {{ substr($attendance->employee->first_name, 0, 1) }}
+                                    {{ substr($attendance->employee->last_name, 0, 1) }}
                                 </div>
                                 <div>
-                                    <p class="text-sm font-black text-slate-900 uppercase tracking-tight">{{ $log['name'] }}</p>
-                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ $log['id'] }}</p>
+                                    <p class="text-sm font-black text-slate-900 uppercase tracking-tight">
+                                        {{ $attendance->employee->first_name }}
+                                    </p>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                        {{ $attendance->employee->last_name }}
+                                    </p>
                                 </div>
                             </div>
                         </td>
+
                         <td class="px-8 py-4">
                             <div class="flex flex-col">
-                                <span class="text-xs font-black text-slate-700">{{ $log['time'] }}</span>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase">{{ $log['type'] }}</span>
+                                <span class="text-xs font-black text-slate-700">
+                                    {{ $latestTime ?? '-' }}
+                                </span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase">
+                                    {{ $latestType ?? 'No Log' }}
+                                </span>
                             </div>
                         </td>
+
                         <td class="px-8 py-4">
-                            @if($log['status'] == 'On-Time')
-                            <span class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-100">On-Time</span>
+                            @if($status == 'On-Time')
+                                <span class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-100">
+                                    On-Time
+                                </span>
                             @else
-                            <span class="bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border border-amber-100">Late Arrival</span>
+                                <span class="bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border border-amber-100">
+                                    Late Arrival
+                                </span>
                             @endif
-                        </td>
-                        <td class="px-8 py-4 text-right">
-                            <button class="h-8 w-8 rounded-lg text-slate-400 hover:bg-emerald-600 hover:text-white transition-all">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
                         </td>
                     </tr>
                     @endforeach
