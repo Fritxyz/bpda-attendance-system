@@ -10,14 +10,6 @@ use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
-// Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
-
-// // auth (login and logout)
-// Route::get('/signin', [AuthenticatedSessionController::class, 'index'])->name('auth.login');
-// Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
-
-// Public routes (hindi dapat makita kapag logged in na)
 Route::middleware('guest')->group(function () {
     Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/add', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -27,17 +19,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/signin/authenticate', [AuthenticatedSessionController::class, 'store'])->name('auth.store');
 });
 
-
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('auth.logout');
-
-// employee route
-// // Route::get('/employee/dashboard/', function() {
-// //     return view('employee.dashboard');
-// // })->name('employee.dashboard');
-
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('auth.logout')
+    ->middleware('auth');
 
 // PROTECTED ADMIN ROUTES (Dapat naka-login)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     
     // route group: admin
     Route::prefix('admin')->group(function () {
@@ -54,12 +41,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employee/{employee}/view', [EmployeeController::class, 'show'])->name('employees.show');
         Route::get('/employee/{employee}/view/printdtr/{month}/{year}', [DTRController::class, 'generateDTR'])->name('dtr.print');
 
-        // timekeeping management
+        // Timekeeping management
         Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view'); // - daily time record
         Route::get('/dtr/edit/{employee}/{date}', [DTRController::class, 'edit'])->name('dtr.edit'); // - edit the daily time record
         Route::put('/dtr/edit/{employee}/{date}/update', [DTRController::class, 'update'])->name('dtr.update');
 
-        // holiday management
+        // Holiday management
         Route::get('/holidays/all', [HolidayController::class, 'index'])->name('holiday.index');
         Route::get('/holidays/create', [HolidayController::class, 'create'])->name('holiday.create');
         Route::post('/holidays/create', [HolidayController::class, 'store'])->name('holiday.store');
@@ -69,10 +56,19 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('admin.audittrail');
     });
+});
 
-    // route::group admin
+
+Route::middleware(['auth', 'employee'])->group(function () {
+
+    // route::group employee
     Route::prefix('employee')->group(function() {
         Route::get('/dashboard', [EmployeeDashboardController::class, 'index'])->name('employee.dashboard');
+        Route::get('/my-profile', [EmployeeDashboardController::class, 'showEmployeeProfile'])->name('employee.profile');
+        Route::get('/my-profile/print-dtr/{month}/{year}', [EmployeeDashboardController::class, 'printEmployeeDtr'])->name('employee.printdtr');
     });
 });
+
+
+ 
 

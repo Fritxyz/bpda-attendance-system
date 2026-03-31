@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class IsAdmin
 {
     /**
      * Handle an incoming request.
@@ -20,6 +20,8 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'You do not have admin access.');
+        // Kung hindi admin, itapon sa sarili nilang dashboard na may error
+        return redirect()->route('employee.dashboard')
+            ->with('error', 'Unauthorized access.');
     }
 }

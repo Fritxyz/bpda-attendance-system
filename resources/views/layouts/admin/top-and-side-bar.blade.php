@@ -114,7 +114,6 @@
                             <a href="#" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
                                 Leave Requests
                             </a>
-                            
                         </div>
                     </div>
 

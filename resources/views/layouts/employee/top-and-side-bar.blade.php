@@ -15,37 +15,35 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; overflow: hidden; }
-        /* Para hindi mag-overlap ang content sa sidebar */
         .main-wrapper { height: 100vh; display: flex; }
         .sidebar-container { min-width: 260px; max-width: 260px; }
         .content-container { flex-grow: 1; overflow-y: auto; background-color: #f8fafc; }
 
-        /* Custom Scrollbar para sa Sidebar */
-    #sidebar .flex-1::-webkit-scrollbar {
-        width: 5px; /* Gawing manipis */
-    }
+        #sidebar .flex-1::-webkit-scrollbar {
+            width: 5px; /* Gawing manipis */
+        }
 
-    #sidebar .flex-1::-webkit-scrollbar-track {
-        background: transparent; 
-    }
+        #sidebar .flex-1::-webkit-scrollbar-track {
+            background: transparent; 
+        }
 
-    #sidebar .flex-1::-webkit-scrollbar-thumb {
-        background: rgba(251, 191, 36, 0.3); /* Kulay Yellow (Yellow-400) na medyo transparent */
-        border-radius: 10px;
-    }
+        #sidebar .flex-1::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3); /* Kulay Yellow (Yellow-400) na medyo transparent */
+            border-radius: 10px;
+        }
 
-    #sidebar .flex-1:hover::-webkit-scrollbar-thumb {
-        background: rgba(251, 191, 36, 0.6); /* Mas matingkad kapag naka-hover */
-    }
+        #sidebar .flex-1:hover::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.6); /* Mas matingkad kapag naka-hover */
+        }
 
-    /* Para sa Firefox */
-    #sidebar .flex-1 {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
-    }
+  
+        #sidebar .flex-1 {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
+        }
 
-    /* Iwasan ang layout shift */
-    [x-cloak] { display: none !important; }
+        
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body>
@@ -73,32 +71,26 @@
 
             <div class="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">    
                 <div class="mb-4">
-                    <a href="#" 
+                    <a href="{{ route('employee.profile') }}" 
                     class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
-                        <i class="bi bi-speedometer2 # ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
-                        Dashboard
+                        <i class="bi bi-speedometer2 {{ request()->routeIs('admin.dashboard') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
+                        My Profile & DTR
                     </a>
                 </div>
 
-                <div class="mb-4">
-                    <a href="#" 
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
-                        <i class="bi bi-speedometer2 # ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
-                        Dashboard
-                    </a>
-                </div>
+                
             </div>
 
             <div class="p-4 bg-emerald-950 border-t border-emerald-800/50 shadow-inner">
                 <div class="flex items-center gap-3 px-2 py-2 bg-emerald-900/40 rounded-2xl border border-emerald-800">
-                    <div class="w-10 h-10 min-w-[40px] rounded-xl bg-yellow-500 flex items-center justify-center font-black text-emerald-950 shadow-lg">
-                       SE
+                   <div class="w-10 h-10 min-w-[40px] rounded-xl bg-yellow-500 flex items-center justify-center font-black text-emerald-950 shadow-lg">
+                        {{ strtoupper(substr(auth()->user()?->employee?->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr(auth()->user()?->employee?->last_name ?? 'U', 0, 1)) }}
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <p class="text-[11px] font-bold truncate">
-                            Sample Employee
+                            {{ auth()->user()?->employee?->first_name }} {{ auth()->user()?->employee?->last_name }}
                         </p>
-                        <p class="text-[9px] text-emerald-400 uppercase font-black tracking-tighter italic">Administrator</p>
+                        <p class="text-[9px] text-emerald-400 uppercase font-black tracking-tighter italic">Employee</p>
                     </div>
                     <form action="{{ route('auth.logout') }}" method="POST" id="logout-form">
                         @csrf

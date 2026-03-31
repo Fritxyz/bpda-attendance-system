@@ -32,15 +32,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        // \Illuminate\Support\Facades\Log::debug('=== LOGIN DEBUG ===', [
-        //     'auth_id'          => $user?->id,
-        //     'auth_employee_id' => $user?->employee_id,
-        //     'auth_role_raw'    => $user?->role,
-        //     'auth_role_get'    => $user?->getAttribute('role'),
-        //     'auth_role_array'  => $user?->toArray()['role'] ?? 'missing',
-        //     'auth_exists'      => $user ? 'yes' : 'NO USER',
-        //     'intended'         => $request->session()->get('url.intended'),
-        // ]);
+        dd($user);
 
         AuditTrail::create([
             'user_id'        => $user->employee_id,
@@ -56,7 +48,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Default redirect para sa regular employees (Attendance Kiosk)
-        return redirect()->route('employee.dashboard');
+        return redirect()->route('employee.profile');
     }
 
     /**
