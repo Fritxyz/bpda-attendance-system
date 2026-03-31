@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\AuditTrail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,14 +32,23 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        \Illuminate\Support\Facades\Log::debug('=== LOGIN DEBUG ===', [
-            'auth_id'          => $user?->id,
-            'auth_employee_id' => $user?->employee_id,
-            'auth_role_raw'    => $user?->role,
-            'auth_role_get'    => $user?->getAttribute('role'),
-            'auth_role_array'  => $user?->toArray()['role'] ?? 'missing',
-            'auth_exists'      => $user ? 'yes' : 'NO USER',
-            'intended'         => $request->session()->get('url.intended'),
+        // \Illuminate\Support\Facades\Log::debug('=== LOGIN DEBUG ===', [
+        //     'auth_id'          => $user?->id,
+        //     'auth_employee_id' => $user?->employee_id,
+        //     'auth_role_raw'    => $user?->role,
+        //     'auth_role_get'    => $user?->getAttribute('role'),
+        //     'auth_role_array'  => $user?->toArray()['role'] ?? 'missing',
+        //     'auth_exists'      => $user ? 'yes' : 'NO USER',
+        //     'intended'         => $request->session()->get('url.intended'),
+        // ]);
+
+        AuditTrail::create([
+            'user_id'        => $user->employee_id,
+            'event'          => 'Login',
+            'auditable_type' => get_class($user),
+            'auditable_id'   => $user->id,
+            'remarks'        => "User logged in successfully via Web Dashboard",
+            'ip_address'     => $request->ip(),
         ]);
 
         if ($request->user()->role === 'Admin') {
@@ -54,6 +64,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+
+        if ($user) {
+            // LOGGING LOGOUT EVENT
+            AuditTrail::create([
+                'user_id'        => $user->employee_id,
+                'event'          => 'Logout',
+                'auditable_type' => get_class($user),
+                'auditable_id'   => $user->id,
+                'remarks'        => "User logged out safely",
+                'ip_address'     => $request->ip(),
+            ]);
+        }
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

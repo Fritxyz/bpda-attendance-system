@@ -71,15 +71,33 @@
                         {{-- Performer --}}
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <div class="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-[10px]">
-                                    {{ strtoupper(substr($log->user->first_name ?? 'S', 0, 1)) }}{{ strtoupper(substr($log->user->last_name ?? 'S', 0, 1)) }}
-                                </div>
-                                <div>
-                                    <div class="text-xs font-black text-slate-800 uppercase tracking-tight">
-                                        {{ $log->user->first_name ?? 'System' }} {{ $log->user->last_name ?? '' }}
+                                @if($log->auditable_type == 'App\Models\User')
+                                    @php
+                                        // Hanapin ang employee record gamit ang user_id (BPDA-XXXX)
+                                        $employee = \App\Models\Employee::where('employee_id', $log->user_id)->first();
+                                    @endphp
+
+                                    <div class="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-[10px]">
+                                        {{ strtoupper(substr($employee->first_name ?? 'S', 0, 1)) }}{{ strtoupper(substr($employee->last_name ?? 'S', 0, 1)) }}
                                     </div>
-                                    <div class="text-[9px] text-slate-400 font-medium">{{ $log->ip_address }}</div>
-                                </div>
+                                    <div>
+                                        <div class="text-xs font-black text-slate-800 uppercase tracking-tight">
+                                            {{ $employee->first_name ?? 'System' }} {{ $employee->last_name ?? '' }}
+                                        </div>
+                                        <div class="text-[9px] text-slate-400 font-medium">{{ $log->ip_address }}</div>
+                                    </div>
+                                    @else
+                                        <div class="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-[10px]">
+                                            {{ strtoupper(substr($log->user->first_name ?? 'S', 0, 1)) }}{{ strtoupper(substr($log->user->last_name ?? 'S', 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-black text-slate-800 uppercase tracking-tight">
+                                                {{ $log->user->first_name ?? 'System' }} {{ $log->user->last_name ?? '' }}
+                                            </div>
+                                            <div class="text-[9px] text-slate-400 font-medium">{{ $log->ip_address }}</div>
+                                        </div>
+                                    @endif
+                                
                             </div>
                         </td>
 
@@ -135,6 +153,23 @@
                                                 </div>
                                             @else
                                                 <span class="text-slate-400 italic">Employee Record Deleted (#{{ $log->auditable_id }})</span>
+                                            @endif
+                                        
+                                        @elseif($log->auditable_type == 'App\Models\User')
+                                            @php
+                                                // Hanapin ang employee record gamit ang user_id (BPDA-XXXX)
+                                                $employee = \App\Models\Employee::where('employee_id', $log->user_id)->first();
+                                            @endphp
+
+                                            @if(in_array(strtolower($log->event), ['login', 'logout']))
+                                                <div class="flex flex-col">
+                                                    <span class="uppercase font-bold text-slate-800">
+                                                        PERSONNEL: {{ $employee ? ($employee->first_name . ' ' . $employee->last_name) : 'Unknown User' }}
+                                                    </span>
+                                                    <span class="text-[10px] text-slate-500 font-medium">
+                                                        <i class="bi bi-person-check-fill text-xs"></i> ID: {{ $log->user_id }}
+                                                    </span>
+                                                </div>
                                             @endif
 
                                         @elseif($log->auditable_type == 'App\Models\Holiday')
