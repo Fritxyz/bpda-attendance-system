@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Admin\DTRController;
@@ -65,6 +66,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/holidays/{id}/edit', [HolidayController::class, 'edit'])->name('holiday.edit');
         Route::put('/holidays/{id}/update', [HolidayController::class, 'update'])->name('holiday.update');
         Route::delete('/holidays/{id}/delete', [HolidayController::class, 'destroy'])->name('holiday.destroy');
+
+        Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('admin.audittrail');
     });
 
     // route::group admin

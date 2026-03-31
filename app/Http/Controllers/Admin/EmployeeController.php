@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Attendance;
+use App\Models\AuditTrail;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -95,6 +97,28 @@ class EmployeeController extends Controller
                 'employee_id' => $employee->employee_id,
                 'password'    => $request->input('password'),
                 'role'        => $request->input('role', 'Employee'),
+            ]);
+
+            $fieldsToAudit = [
+                'first_name', 'last_name', 'middle_name', 'role', 'suffix', 
+                'bureau', 'division', 'position', 'salary', 'employment_type', 
+                'is_active', 'profile_picture'
+            ];
+
+            $auditSnapshot = array_merge(
+                $employee->only($fieldsToAudit),
+                ['role' => $user->role]
+            );
+
+            AuditTrail::create([
+                'user_id'        => Auth::getUser()->employee_id, 
+                'event'          => 'Created',
+                'auditable_type' => get_class($employee),
+                'auditable_id'   => $user->id,
+                'old_values'     => json_encode([]), 
+                'new_values'     => $auditSnapshot,
+                'ip_address'     => $request->ip(),
+                'remarks'        => "Registered new personnel: " . $employee->first_name . " " . $employee->last_name,
             ]);
 
             return redirect()->route('employees.index')
@@ -218,6 +242,15 @@ class EmployeeController extends Controller
         $formattedId = str_starts_with($employee, 'BPDA-') ? $employee : 'BPDA-' . $employee;
         $employeeRecord = Employee::where('employee_id', $formattedId)->firstOrFail();
 
+        $user = User::where('employee_id', $employeeRecord->employee_id)->first();
+        
+        $fieldsToAudit = ['first_name', 'last_name', 'middle_name', 'role', 'suffix', 'bureau', 'division', 'position', 'salary', 'employment_type', 'is_active', 'profile_picture'];
+        $oldEmployeeData = $employeeRecord->only(['first_name', 'last_name', 'middle_name', 'suffix', 'bureau', 'division', 'position', 'salary', 'employment_type', 'is_active', 'profile_picture']);
+
+        $oldUserData = $user ? $user->only(['role']) : [];
+
+        $combinedOldData = array_merge($oldEmployeeData, $oldUserData);
+
         $validated = $request->validated();
 
         $validated['employee_id'] = 'BPDA-' . $request->employee_id;
@@ -235,6 +268,7 @@ class EmployeeController extends Controller
             $validated['profile_picture'] = $path;
         }
 
+        $newUserData = [];
         if ($request->filled('password') || $request->filled('role') || $request->filled('employee_id')) {
             $user = User::where('employee_id', $employeeRecord->getOriginal('employee_id'))->first();
             
@@ -249,10 +283,25 @@ class EmployeeController extends Controller
                 $userData['role'] = $validated['role'];
 
                 $user->update($userData);
+                $newUserData = $user->only(['role']);
             }
         }
 
         $employeeRecord->update($validated);
+
+        $newEmployeeData = $employeeRecord->only($fieldsToAudit);
+        $combinedNewData = array_merge($newEmployeeData, $newUserData);
+
+        AuditTrail::create([
+            'user_id'        => Auth::getUser()->employee_id,
+            'event'          => 'Updated',
+            'auditable_type' => get_class($employeeRecord),
+            'auditable_id'   => $employeeRecord->id,
+            'old_values'     => $combinedOldData,
+            'new_values'     => $combinedNewData,
+            'remarks'        => "Updated profile for personnel: {$employeeRecord->first_name} {$employeeRecord->last_name}",
+            'ip_address'     => request()->ip(),
+        ]);
 
         return redirect()
             ->route('employees.index')

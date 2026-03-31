@@ -163,11 +163,17 @@
                                                 <i class="bi bi-pencil-square text-lg"></i>
                                             </a>
                                             
-                                            <form action="{{ route('holiday.destroy', $holiday->id) }}" method="POST" id="deleteHolidayForm">
+                                            {{-- Update mo yung form mo sa loob ng loop --}}
+                                            <form action="{{ route('holiday.destroy', $holiday->id) }}" method="POST" class="delete-holiday-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
-                                                    <i class="bi bi-trash3 text-lg"></i>
+                                                {{-- Dito natin ilalagay yung remarks galing sa SweetAlert --}}
+                                                <input type="hidden" name="remarks" class="remarks-input"> 
+                                                
+                                                <button type="button" 
+                                                        class="delete-btn ..." 
+                                                        data-holiday-name="{{ $holiday->name }}">
+                                                    <i class="bi bi-trash3"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -196,35 +202,66 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const holidayForm = document.getElementById('deleteHolidayForm');
+        const deleteButtons = document.querySelectorAll('.delete-btn');
         
-        if (holidayForm) {
-            holidayForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Stop form from auto-submitting
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('.delete-holiday-form');
+                const remarksInput = form.querySelector('.remarks-input');
+                const holidayName = this.getAttribute('data-holiday-name') || 'this record';
+
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This action cannot be undone.",
+                    title: '<span class="text-slate-800 tracking-tight">Confirm Deletion</span>',
+                    html: `
+                        <div class="text-sm text-slate-500 mb-4 text-center">
+                            Are you sure you want to delete <b class="text-rose-600">${holidayName}</b>?<br>
+                            <span class="text-[11px] italic text-slate-400">This action will be permanently recorded in the audit trail.</span>
+                        </div>
+                    `,
                     icon: 'warning',
+                    input: 'textarea', // Textarea para sa mas mahabang explanation kung kailangan
+                    inputLabel: 'Reason for Deletion',
+                    inputPlaceholder: 'Please provide a justification (e.g., Erroneous entry, event cancelled...)',
+                    inputAttributes: {
+                        'aria-label': 'Type your reason here',
+                        'class': 'text-xs p-3 rounded-lg border-slate-200'
+                    },
                     showCancelButton: true,
-                    confirmButtonColor: '#dc2626',
-                    cancelButtonColor: '#64748b',
-                    confirmButtonText: 'Yes, delete it!',
+                    confirmButtonColor: '#be123c', // Rose-700
+                    cancelButtonColor: '#64748b', // Slate-500
+                    confirmButtonText: 'Confirm Delete',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true, // Standard UX: Cancel on the left
+                    
+                    // Validation: Mandatory ang remarks para sa compliance
+                    inputValidator: (value) => {
+                        if (!value || value.trim().length < 5) {
+                            return 'Please provide a valid reason (minimum 5 characters).';
+                        }
+                    },
+                    
+                    didOpen: () => {
+                        // Fine-tuning the appearance of the textarea
+                        const textarea = Swal.getInput();
+                        textarea.style.fontSize = '12px';
+                        textarea.style.height = '80px';
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        remarksInput.value = result.value.trim();
+
                         Swal.fire({
-                            title: 'Deleting...',
-                            text: 'Please wait',
+                            title: 'Processing...',
+                            html: 'Finalizing deletion and updating audit logs.',
                             allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
+                            didOpen: () => { Swal.showLoading(); }
                         });
 
-                        holidayForm.submit(); 
+                        form.submit();
                     }
                 });
             });
-        }
+        });
     });
 </script>
 </div>

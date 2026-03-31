@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\Attendance;
+use App\Models\AuditTrail;
 use App\Models\Employee;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class DTRController extends Controller
 {
@@ -45,24 +48,15 @@ class DTRController extends Controller
             $regularMinutes = 0;
 
             if ($amIn && $pmOut && !$amOut) {
-                if ($pmOut->gt($amIn)) {
-                    $regularMinutes = $amIn->diffInMinutes($pmOut);
-                }
+                if ($pmOut->gt($amIn)) { $regularMinutes = $amIn->diffInMinutes($pmOut); }
             } else {
-                if ($amIn && $amOut && $amOut->gt($amIn)) {
-                    $regularMinutes += $amIn->diffInMinutes($amOut);
-                }
-                if ($pmIn && $pmOut && $pmOut->gt($pmIn)) {
-                    $regularMinutes += $pmIn->diffInMinutes($pmOut);
-                }
+                if ($amIn && $amOut && $amOut->gt($amIn)) { $regularMinutes += $amIn->diffInMinutes($amOut); }
+                if ($pmIn && $pmOut && $pmOut->gt($pmIn)) { $regularMinutes += $pmIn->diffInMinutes($pmOut); }
             }
 
-            if ($otIn && $otOut && $otOut->gt($otIn)) {
-                $regularMinutes += $otIn->diffInMinutes($otOut);
-            }
+            if ($otIn && $otOut && $otOut->gt($otIn)) { $regularMinutes += $otIn->diffInMinutes($otOut); }
 
             $totalMinutes = $regularMinutes;  
-
             $hours   = floor($totalMinutes / 60);
             $minutes = $totalMinutes % 60;
             $record->computed_total_hours = "{$hours}h {$minutes}m";
@@ -91,6 +85,10 @@ class DTRController extends Controller
 
             return $record;
         });
+
+        if ($request->ajax()) {
+            return view('partials.admin.timekeeping._dtr_table', compact('today_records'))->render();
+        }
 
         return view('admin.timekeeping.view-dtr', compact('today_records'));
     }
@@ -143,7 +141,39 @@ class DTRController extends Controller
                             ->where('attendance_date', $date)
                             ->firstOrFail();
 
+        $formatTime = fn($time) => $time ? Carbon::parse($time)->format('Y-m-d h:i A') : 'EMPTY';
+
+        $oldData = [
+            'am_in'  => $formatTime($attendance->am_in),
+            'am_out' => $formatTime($attendance->am_out),
+            'pm_in'  => $formatTime($attendance->pm_in),
+            'pm_out' => $formatTime($attendance->pm_out),
+            'ot_in' => $formatTime($attendance->ot_in),
+            'ot_out' => $formatTime($attendance->ot_out),
+        ];
+
         $attendance->update($request->validated());
+
+        $newData = [
+            'am_in'  => $formatTime($attendance->am_in),
+            'am_out' => $formatTime($attendance->am_out),
+            'pm_in'  => $formatTime($attendance->pm_in),
+            'pm_out' => $formatTime($attendance->pm_out),
+            'ot_in'  => $formatTime($attendance->ot_in),
+            'ot_out' => $formatTime($attendance->ot_out),
+        ];
+
+        // 4. I-record sa Audit Trail
+        $data = AuditTrail::create([
+            'user_id'        => Auth::getUser()->employee_id, // Ang Admin na nag-edit
+            'event'          => 'Updated',
+            'auditable_type' => get_class($attendance),
+            'auditable_id'   => $attendance->id,
+            'old_values'     => $oldData,
+            'new_values'     => $newData,
+            'remarks'        => $request->remarks ?? "Manual DTR adjustment for {$date}", // Maganda kung may 'reason' field sa form mo
+            'ip_address'     => request()->ip(),
+        ]);
 
         return redirect()->route('dtr.view')
                      ->with('success', "Attendance record for {$employee} on {$date} has been updated.");

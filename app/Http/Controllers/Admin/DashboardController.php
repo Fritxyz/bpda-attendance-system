@@ -10,7 +10,6 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     //
-    // Sa iyong DashboardController.php
     public function index() {
 
         $totalEmployeeCount = Employee::count();

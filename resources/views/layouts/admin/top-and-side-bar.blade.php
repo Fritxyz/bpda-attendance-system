@@ -157,6 +157,14 @@
                             Overtime Logs
                         </a>
                     </div>
+
+                    <div class="mb-4">
+                        <a href="{{ route('admin.audittrail') }}" 
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.audittrail') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
+                            <i class="bi bi-list-columns-reverse {{ request()->routeIs('admin.audittrail') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
+                            System Logs
+                        </a>
+                    </div>
                 </div>
             </div>
 
