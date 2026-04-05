@@ -26,12 +26,26 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
+        if($request->employee_id == null) {
+            return redirect()->back()->with('error', 'Please enter your Employee ID Number to proceed.');
+        }
+
+        if(strlen($request->employee_id) != 8) {
+            return redirect()->back()->with('error', 'Invalid Input: Employee ID must be exactly 8 digits.');
+        }
+
         $employee_id = 'BPDA-' . $request->employee_id;
         $employee = Employee::where('employee_id', $employee_id)->first();
 
         if (!$employee) {
-            return redirect()->back()->with('error', 'Employee ID not found.');
+            return redirect()->back()->with('error', 'Record Not Found: The Employee ID entered does not exist in our database.');
         }
+
+        if($employee) {
+            if($employee->is_active == 0) {
+                return redirect()->back()->with('error', 'Access Denied: Your employee account is currently inactive. Please contact the HR for assistance.');
+            }
+        } 
 
         $nowInManila = now()->timezone('Asia/Manila');
 
@@ -41,7 +55,7 @@ class AttendanceController extends Controller
         $holiday = Holiday::whereDate('date', $dateToday)->first();
 
         if ($holiday) {
-            return redirect()->back()->with('error', "ATTENDANCE BLOCKED: Today is a Holiday ({$holiday->name}). Please contact the HR/Admin if you are on official duty.");
+            return redirect()->back()->with('error', "Attendance Restricted: Today is an official holiday ($holiday->name). Please contact HR if you are required to report for duty.");
         }
 
         $has_a_record = Attendance::where('employee_id', $employee_id)
@@ -50,7 +64,7 @@ class AttendanceController extends Controller
             ->exists();
 
         if($has_a_record) {
-            return redirect()->back()->with('error', "Employee {$employee_id} has already logged {$request->attendance_mode}.");
+            return redirect()->back()->with('error', "Transaction Duplicate: You have already recorded a {$request->attendance_mode} log for today..");
         }
             
         $attendance = Attendance::firstOrNew([
@@ -62,6 +76,7 @@ class AttendanceController extends Controller
         $attendance->save();
 
         return redirect()->route('attendance.index')
-            ->with('success', "Logged $request->attendance_mode for $employee->first_name at " . $nowInManila->format('h:i A'));
+            ->withInput($request->only('attendance_mode'))
+            ->with('success', "Attendance Verified: $request->attendance_mode for $employee->first_name at " . $nowInManila->format('h:i A')) . ". Have a productive day!";
     }
 }

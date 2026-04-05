@@ -87,7 +87,12 @@
                         <div class="grid grid-cols-2 gap-3">
                             @foreach(['AM IN', 'AM OUT', 'PM IN', 'PM OUT', 'OT IN', 'OT OUT'] as $mode)
                             <label class="cursor-pointer group relative">
-                                <input type="radio" name="attendance_mode" value="{{ $mode }}" class="peer hidden" {{ $loop->first ? 'checked' : '' }}>
+                                <input type="radio" 
+                                    name="attendance_mode" 
+                                    value="{{ $mode }}" 
+                                    class="peer hidden" 
+                                    {{ (old('attendance_mode', 'AM IN') == $mode) ? 'checked' : '' }}>
+                                
                                 <div class="py-4 text-center rounded-xl border-2 border-gray-100 bg-gray-50 text-gray-500 font-bold text-xs peer-checked:border-emerald-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:shadow-md transition-all">
                                     {{ $mode }}
                                 </div>
