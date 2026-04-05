@@ -77,7 +77,7 @@
                         <label class="text-emerald-900 font-bold uppercase text-xs">Employee ID Number</label>
                         <div class="flex shadow-sm">
                             <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 bg-emerald-50 text-emerald-800 font-bold text-sm">BPDA-</span>
-                            <input type="number" name="employee_id" autofocus onkeydown="if(['e', 'E', '.', '-'].includes(event.key)) event.preventDefault();"
+                            <input type="text" name="employee_id" autofocus maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);" onkeydown="if(['e', 'E', '.', '-'].includes(event.key)) event.preventDefault();"
                                 class="w-full px-4 py-4 rounded-r-xl border-2 border-emerald-100 focus:border-emerald-600 focus:outline-none text-2xl font-black text-emerald-900 placeholder-gray-200">
                         </div>
                     </div>
