@@ -101,7 +101,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-700 text-yellow-400 font-black py-5 rounded-2xl shadow-xl transform active:scale-95 transition-all uppercase tracking-[0.2em] flex flex-col items-center justify-center leading-none mt-4">
+                    <button type="submit" id="submitBtn" class="w-full bg-emerald-800 hover:bg-emerald-700 text-yellow-400 font-black py-5 rounded-2xl shadow-xl transform active:scale-95 transition-all uppercase tracking-[0.2em] flex flex-col items-center justify-center leading-none mt-4">
                         <span class="text-lg">Submit Log</span>
                         <span class="text-[9px] mt-1 text-emerald-200 opacity-70 tracking-normal italic">Tap here to record attendance</span>
                     </button>
