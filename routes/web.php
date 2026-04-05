@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DTRController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\HolidayController;
+use App\Http\Controllers\Admin\LateController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view'); // - daily time record
         Route::get('/dtr/edit/{employee}/{date}', [DTRController::class, 'edit'])->name('dtr.edit'); // - edit the daily time record
         Route::put('/dtr/edit/{employee}/{date}/update', [DTRController::class, 'update'])->name('dtr.update');
+
+        // late arrivals
+        Route::get('/tardiness', [LateController::class, 'index'])->name('tardiness.index');
 
         // Holiday management
         Route::get('/holidays/all', [HolidayController::class, 'index'])->name('holiday.index');

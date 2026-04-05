@@ -32,8 +32,6 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        dd($user);
-
         AuditTrail::create([
             'user_id'        => $user->employee_id,
             'event'          => 'Login',

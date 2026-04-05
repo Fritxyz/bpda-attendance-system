@@ -64,7 +64,7 @@
                 
                 <div class="flex gap-2 mt-2">
                     <button @click="activeTab = 'info'" :class="activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Overview</button>
-                    <button @click="activeTab = 'attendance'" :class="activeTab === 'attendance' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Attendance History</button>
+                    <button @click="activeTab = 'attendance'" :class="activeTab === 'attendance' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Attendance History / DTR</button>
                     <button></button>
                     <a href={{ route('employees.edit', $employee->employee_id) }} class="bg-white border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm ml-auto md:ml-0">
                         <i class="bi bi-pencil-square"></i> Edit

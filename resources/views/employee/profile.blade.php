@@ -58,7 +58,7 @@
                 
                 <div class="flex gap-2 mt-2">
                     <button @click="activeTab = 'info'" :class="activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Overview</button>
-                    <button @click="activeTab = 'attendance'" :class="activeTab === 'attendance' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Attendance History</button>
+                    <button @click="activeTab = 'attendance'" :class="activeTab === 'attendance' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Attendance History / DTR</button>
                     
                 </div>
             </div>

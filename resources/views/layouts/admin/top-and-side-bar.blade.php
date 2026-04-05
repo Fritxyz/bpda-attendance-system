@@ -152,6 +152,9 @@
                         <a href="{{ route('dtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
                             Daily Time Record
                         </a>
+                        <a href="{{ route('tardiness.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                            Late Arrivals
+                        </a>
                         <a href="#" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
                             Overtime Logs
                         </a>

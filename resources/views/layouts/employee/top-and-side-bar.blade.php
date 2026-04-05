@@ -20,7 +20,7 @@
         .content-container { flex-grow: 1; overflow-y: auto; background-color: #f8fafc; }
 
         #sidebar .flex-1::-webkit-scrollbar {
-            width: 5px; /* Gawing manipis */
+            width: 5px; 
         }
 
         #sidebar .flex-1::-webkit-scrollbar-track {
@@ -28,12 +28,12 @@
         }
 
         #sidebar .flex-1::-webkit-scrollbar-thumb {
-            background: rgba(251, 191, 36, 0.3); /* Kulay Yellow (Yellow-400) na medyo transparent */
+            background: rgba(251, 191, 36, 0.3); 
             border-radius: 10px;
         }
 
         #sidebar .flex-1:hover::-webkit-scrollbar-thumb {
-            background: rgba(251, 191, 36, 0.6); /* Mas matingkad kapag naka-hover */
+            background: rgba(251, 191, 36, 0.6); 
         }
 
   
@@ -69,11 +69,18 @@
                 <p class="text-[10px] text-emerald-300 font-medium mt-1 uppercase tracking-tighter">Bangsamoro Government</p>
             </div>
 
-            <div class="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">    
+            <div class="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar"> 
+                 <div class="mb-4">
+                    <a href="{{ route('employee.dashboard') }}" 
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
+                        <i class="bi bi-speedometer2 {{ request()->routeIs('employee.dashboard') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
+                        Dashboard
+                    </a>
+                </div>   
                 <div class="mb-4">
                     <a href="{{ route('employee.profile') }}" 
                     class="flex items-center gap-3 px-4 py-3 rounded-xl transition text-sm font-bold group {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-yellow-400 text-white' : 'hover:bg-emerald-800/50 text-emerald-100' }}">
-                        <i class="bi bi-speedometer2 {{ request()->routeIs('admin.dashboard') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
+                        <i class="bi bi-person-lines-fill {{ request()->routeIs('employee.profile') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
                         My Profile & DTR
                     </a>
                 </div>
