@@ -26,11 +26,22 @@
                         <p class="text-yellow-400 text-[10px] font-semibold uppercase">Bangsamoro Planning & Development Authority</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="text-xl font-mono font-bold leading-none" id="clock">00:00:00 AM</div>
-                    <div class="text-[10px] text-emerald-200 uppercase tracking-widest">{{ now()->format('F d, Y') }}</div>
+
+                <div class="flex items-center gap-6">
+                    <div class="text-right border-r border-emerald-700/50 pr-6 hidden md:block">
+                        <div class="text-xl font-mono font-bold leading-none text-white" id="clock">00:00:00 AM</div>
+                        <div class="text-[10px] text-emerald-200 uppercase tracking-widest">{{ now()->format('F d, Y') }}</div>
+                    </div>
+
+                    <a href="{{ route('auth.login') }}" 
+                    class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-400 text-emerald-950 px-5 py-2.5 rounded-xl font-black text-xs uppercase transition-all shadow-lg active:scale-95 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Portal Login</span>
+                    </a>
                 </div>
-            </div>
+            </div>           
         </div>
 
         @if(session('error'))
