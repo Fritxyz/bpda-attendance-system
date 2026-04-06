@@ -70,19 +70,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">First Name</label>
-                        <input type="text" name="first_name" value="{{ old('first_name') }}" required
+                        <input type="text" name="first_name" value="{{ old('first_name') }}" required maxlength="100"
                             oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
-                        <input type="text" name="middle_name" value="{{ old('middle_name') }}" required
+                        <input type="text" name="middle_name" value="{{ old('middle_name') }}" required maxlength="100"
                             oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Last Name</label>  
-                        <input type="text" name="last_name" value="{{ old('last_name') }}" required
+                        <input type="text" name="last_name" value="{{ old('last_name') }}" required maxlenght="100"
                             oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
@@ -92,7 +92,7 @@
                         {{-- Suffix: Jr, Sr, and Roman Numerals (I, V, X) --}}
                         <input type="text" name="suffix" value="{{ old('suffix') }}"
                             placeholder="e.g. Jr, Sr, III"
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')" maxlength="10"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                 </div>

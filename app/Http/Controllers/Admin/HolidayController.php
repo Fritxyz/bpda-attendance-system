@@ -16,12 +16,36 @@ class HolidayController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Kinukuha lahat ng holidays, naka-sort by date (latest first)
-        $holidays = Holiday::orderBy('date', 'asc')->get();
+        $query = Holiday::query();
 
-        return view('admin.holidays.index', compact('holidays'));
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('year')) {
+            $query->whereYear('date', $request->year);
+        }
+
+        $holidays = $query->orderBy('date', 'asc')->get();
+
+        $availableYears = Holiday::selectRaw('YEAR(date) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        $currentYear = now()->year;
+        if (!$availableYears->contains($currentYear)) {
+            $availableYears->push($currentYear);
+            $availableYears = $availableYears->sortDesc();
+        }
+
+        if ($request->ajax()) {
+            return view('partials.admin.holidays._holidays_table', compact('holidays'))->render();
+        }
+
+        return view('admin.holidays.index', compact('holidays', 'availableYears'));
     }
 
     /**
@@ -40,7 +64,6 @@ class HolidayController extends Controller
     {
         $data = $request->validated();
 
-        // Gamitin ang Transaction para sigurado
         return DB::transaction(function () use ($request, $data) {
             
             $holiday = Holiday::create($data);
@@ -57,16 +80,8 @@ class HolidayController extends Controller
             ]);
 
             return redirect()->route('holiday.index')
-                ->with('success', 'New holiday has been successfully registered.');
+                ->with('success', 'Official holiday has been successfully recorded in the registry.');
         });
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**

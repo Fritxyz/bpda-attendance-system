@@ -122,7 +122,7 @@ class EmployeeController extends Controller
             ]);
 
             return redirect()->route('employees.index')
-                ->with('success', "Employee and Account created! Employee ID: {$user->employee_id}");
+                ->with('success', "Employee record and associated account successfully established. ID: {$user->employee_id}");
         });
     }
 

@@ -76,19 +76,19 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">First Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name', $employee->first_name ) }}" required
-                           oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
+                           oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')" maxlength="100"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name', $employee->middle_name ) }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')" maxlength="100"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Last Name</label>
                         <input type="text" name="last_name" value="{{ old('last_name', $employee->last_name ) }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')" maxlength="100"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
 
@@ -96,7 +96,7 @@
                         <label class="block text-sm font-bold text-gray-700 mb-1">Suffix</label>
                         <input type="text" name="suffix" value="{{ old('suffix', $employee->suffix) }}"
                             placeholder="Jr, Sr, III"
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')" maxlength="10"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                 </div>
