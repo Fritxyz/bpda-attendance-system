@@ -6,7 +6,7 @@
                 <th class="w=1/4 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Bureau / Division</th>
                 <th class="w=1/5 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Type & Salary</th>
                 <th class="w=1/6 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
-                <th class="w=1/6 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-right">Action</th>
+                <th class="w=1/6 px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">Action</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
@@ -50,21 +50,20 @@
                         {{ $employee->is_active ? 'Active' : 'Inactive' }}
                     </span>
                 </td>
-                <td class="px-6 py-4 text-right">
-                    {{-- Action Buttons Alignment --}}
-                    <div class="flex items-center justify-center gap-2">
-                        {{-- Edit Button --}}
-                        <a href="{{ route('employees.edit', $employee->employee_id) }}" 
-                        class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-emerald-600 hover:text-black hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-100 transition-all duration-200 group/btn"
-                        title="Edit Record">
-                            <i class="bi bi-pencil-square text-sm"></i>
+                <td class="px-6 py-4">
+                    <div class="flex items-center justify-end gap-2">
+                        {{-- View Button --}}
+                        <a href="{{ route('employees.show', $employee->employee_id) }}" 
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 group">
+                            <i class="bi bi-eye text-xs"></i>
+                            <span class="text-[10px] font-black uppercase tracking-wider">View</span>
                         </a>
 
-                        {{-- View/Details Button --}}
-                        <a href="{{ route('employees.show', $employee->employee_id) }}" 
-                        class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-black hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 transition-all duration-200 group/btn"
-                        title="View Details">
-                            <i class="bi bi-eye text-sm"></i>
+                        {{-- Edit Button --}}
+                        <a href="{{ route('employees.edit', $employee->employee_id) }}" 
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all duration-200 group">
+                            <i class="bi bi-pencil-square text-xs"></i>
+                            <span class="text-[10px] font-black uppercase tracking-wider">Edit</span>
                         </a>
                     </div>
                 </td>

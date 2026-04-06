@@ -50,7 +50,7 @@ function updateDivisions(selectedBureau, selectedValue = '') {
 }
 
 function updatePositions(selectedDivision, selectedValue = '') {
-    if (!positionSelect) return; // Iwas error kung wala sa page ang position select
+    if (!positionSelect) return; 
     const options = positionsByDivision[selectedDivision] || [];
     positionSelect.innerHTML = '<option value="">Select Position</option>';
     
@@ -86,41 +86,48 @@ divisionSelect.addEventListener('change', function() {
 
 // --- INITIAL LOAD (Fixes the Bug) ---
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Kunin ang values mula sa URL (parameters)
+    const bureauSelect = document.getElementById('bureau-select');
+    const divisionSelect = document.getElementById('division-select');
+    const typeSelect = document.getElementById('type-select'); // Gamitin ang ID
+    const statusRadios = document.querySelectorAll('input[name="status"]');
+
+    // --- DYNAMIC LISTENERS ---
+
+    // 1. Bureau Change
+    bureauSelect.addEventListener('change', function() {
+        updateDivisions(this.value);
+        updatePositions(''); // Reset positions
+        fetchEmployees();    // Auto refresh table
+    });
+
+    // 2. Division Change
+    divisionSelect.addEventListener('change', function() {
+        updatePositions(this.value);
+        fetchEmployees();    // Auto refresh table
+    });
+
+    // 3. Employment Type Change (ITO ANG FIX MO)
+    if (typeSelect) {
+        typeSelect.addEventListener('change', function() {
+            fetchEmployees(); // Auto refresh table
+        });
+    }
+
+    // 4. Status Radio Change
+    statusRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            fetchEmployees(); // Auto refresh table
+        });
+    });
+
+    // --- INITIAL LOAD LOGIC ---
     const urlParams = new URLSearchParams(window.location.search);
     const currentBureau = bureauSelect.value;
     const currentDivision = urlParams.get('division');
-    const currentPosition = urlParams.get('position');
 
-    // 2. I-trigger ang chain reaction base sa kung ano ang naka-load na value
     if (currentBureau) {
         updateDivisions(currentBureau, currentDivision);
     }
-    
-    if (currentDivision) {
-        updatePositions(currentDivision, currentPosition);
-    }
-
-    // 3. Salary Toggle Logic
-    const employmentTypeSelect = document.getElementById('employment-type-select');
-    const salaryInput = document.getElementById('salary-id');
-
-    if (employmentTypeSelect && salaryInput) {
-        function toggleSalary() {
-            if (employmentTypeSelect.value === "Permanent") {
-                salaryInput.disabled = true;
-                salaryInput.value = '';
-                salaryInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-            } else {
-                salaryInput.disabled = false;
-                salaryInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
-            }
-        }
-        toggleSalary();
-        employmentTypeSelect.addEventListener('change', toggleSalary);
-    }
-
-    
 });
 
 document.addEventListener('click', function (e) {
@@ -136,7 +143,6 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// --- AJAX SEARCH LOGIC ---
 
 const searchInput = document.getElementById('search-input');
 const tableContainer = document.getElementById('employee-table-container');
@@ -159,7 +165,6 @@ function fetchEmployees(pageUrl = null) {
     // 1. Kunin ang base path (halimbawa: /admin/employee/all)
     let baseUrl = pageUrl ? pageUrl.split('?')[0] : window.location.pathname;
     
-    // 1. Kunin ang base params
     const params = new URLSearchParams({
         'search-input': searchInputEl.value || '',
         bureau: document.getElementById('bureau-select').value || '',
@@ -171,15 +176,12 @@ function fetchEmployees(pageUrl = null) {
 
     let fetchUrl;
 
-    // 3. Kung galing sa pagination link, kunin ang 'page' number nito
     if (pageUrl) {
         const urlObj = new URL(pageUrl);
         const page = urlObj.searchParams.get('page');
         if (page) params.set('page', page);
     }
 
-    // 4. BUUIN ANG TAMANG URL (Dito tayo nagka-error)
-    // Pinagsasama nito ang baseUrl + ? + lahat ng params
     fetchUrl = `${baseUrl}?${params.toString()}`;
     tableContainer.classList.add('opacity-50', 'pointer-events-none');
 
@@ -201,15 +203,8 @@ function fetchEmployees(pageUrl = null) {
     .catch(error => console.error('Error:', error));
 }
 
-// // I-update rin ang Apply button ng filter para AJAX na rin
-// document.querySelector('form').addEventListener('submit', function(e) {
-//     e.preventDefault();
-//     fetchEmployees();
-// });
 
-// Much better: target the specific filter form
 const filterForm = document.querySelector('.relative[x-data="{ filterOpen: false }"] form');
-// or give your filter form an ID in Blade: <form id="filter-form" ...>
 
 if (filterForm) {
     filterForm.addEventListener('submit', function(e) {
