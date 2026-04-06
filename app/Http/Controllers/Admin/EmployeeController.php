@@ -241,18 +241,9 @@ class EmployeeController extends Controller
     {
         $formattedId = str_starts_with($employee, 'BPDA-') ? $employee : 'BPDA-' . $employee;
         $employeeRecord = Employee::where('employee_id', $formattedId)->firstOrFail();
-
         $user = User::where('employee_id', $employeeRecord->employee_id)->first();
-        
-        $fieldsToAudit = ['first_name', 'last_name', 'middle_name', 'role', 'suffix', 'bureau', 'division', 'position', 'salary', 'employment_type', 'is_active', 'profile_picture'];
-        $oldEmployeeData = $employeeRecord->only(['first_name', 'last_name', 'middle_name', 'suffix', 'bureau', 'division', 'position', 'salary', 'employment_type', 'is_active', 'profile_picture']);
-
-        $oldUserData = $user ? $user->only(['role']) : [];
-
-        $combinedOldData = array_merge($oldEmployeeData, $oldUserData);
 
         $validated = $request->validated();
-
         $validated['employee_id'] = 'BPDA-' . $request->employee_id;
         $validated['is_active'] = $request->has('is_active');
 
@@ -268,37 +259,67 @@ class EmployeeController extends Controller
             $validated['profile_picture'] = $path;
         }
 
-        $newUserData = [];
-        if ($request->filled('password') || $request->filled('role') || $request->filled('employee_id')) {
-            $user = User::where('employee_id', $employeeRecord->getOriginal('employee_id'))->first();
-            
-            if ($user) {
-                $userData = [];
-                
-                if ($request->filled('password')) {
-                    $userData['password'] = Hash::make($request->password);
-                }
-                
-                $userData['employee_id'] = $validated['employee_id'];
-                $userData['role'] = $validated['role'];
+        $employeeRecord->fill($validated);
 
-                $user->update($userData);
-                $newUserData = $user->only(['role']);
+        $userWillChange = false;
+        if ($user) {
+            $passwordChanged = $request->filled('password');
+            $roleChanged = $user->role !== $validated['role'];
+            $idChanged = $user->employee_id !== $validated['employee_id'];
+            
+            if ($passwordChanged || $roleChanged || $idChanged) {
+                $userWillChange = true;
             }
         }
 
-        $employeeRecord->update($validated);
+        if (!$employeeRecord->isDirty() && !$userWillChange) {
+            return redirect()
+                ->route('employees.index')
+                ->with('info', "No changes were detected for {$employeeRecord->first_name} {$employeeRecord->last_name}.");
+        }
+
+        $fieldsToAudit = ['first_name', 'last_name', 'middle_name', 'role', 'suffix', 'bureau', 'division', 'position', 'salary', 'employment_type', 'is_active', 'profile_picture'];
+        $oldEmployeeData = $employeeRecord->getOriginal();
+        $oldUserData = $user ? $user->only(['role']) : [];
+        $combinedOldData = array_merge($oldEmployeeData, $oldUserData);
+
+        $newUserData = [];
+        if ($user && $userWillChange) {
+            $userData = [
+                'employee_id' => $validated['employee_id'],
+                'role'        => $validated['role'],
+            ];
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($request->password);
+            }
+            $user->update($userData);
+            $newUserData = $user->only(['role']);
+        }
+
+        $employeeRecord->save();
 
         $newEmployeeData = $employeeRecord->only($fieldsToAudit);
         $combinedNewData = array_merge($newEmployeeData, $newUserData);
 
+        $finalOldValues = [];
+        $finalNewValues = [];
+
+        foreach ($combinedNewData as $key => $newValue) {
+            $oldValue = $combinedOldData[$key] ?? null;
+
+            if ($oldValue != $newValue) {
+                $finalOldValues[$key] = $oldValue;
+                $finalNewValues[$key] = $newValue;
+            }
+        }
+
         AuditTrail::create([
-            'user_id'        => Auth::getUser()->employee_id,
+            'user_id'        => Auth::getUser()->employee_id, 
             'event'          => 'Updated',
             'auditable_type' => get_class($employeeRecord),
             'auditable_id'   => $employeeRecord->id,
-            'old_values'     => $combinedOldData,
-            'new_values'     => $combinedNewData,
+            'old_values'     => $finalOldValues,
+            'new_values'     => $finalNewValues,
             'remarks'        => "Updated profile for personnel: {$employeeRecord->first_name} {$employeeRecord->last_name}",
             'ip_address'     => request()->ip(),
         ]);

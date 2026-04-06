@@ -76,20 +76,19 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">First Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name', $employee->first_name ) }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                           oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name', $employee->middle_name ) }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Last Name</label>
-                        
                         <input type="text" name="last_name" value="{{ old('last_name', $employee->last_name ) }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
 
@@ -269,7 +268,6 @@
         }
     }
 
-    // --- Data Definitions ---
     const divisionsByBureau = {
         'PPB': [
             { value: 'MEPD',  label: 'Macro-Economic Planning Division (MEPD)' },
@@ -297,7 +295,6 @@
     const divisionSelect = document.getElementById('division-select');
     const positionInput = document.getElementById('position-input');
 
-    // Initial Data from DB
     const currentDivision = "{{ old('division', $employee->division) }}";
 
     function populateDivisions(bureauValue, selectedDivision = '') {
@@ -315,17 +312,14 @@
         divisionSelect.disabled = divisions.length === 0;
     }
 
-    // 1. Bureau Change Logic
     bureauSelect.addEventListener('change', function() {
         populateDivisions(this.value);
         
-        // Reset Position Input
         positionInput.value = '';
         positionInput.disabled = true;
         positionInput.placeholder = "Select division first";
     });
 
-    // 2. Division Change Logic
     divisionSelect.addEventListener('change', function() {
         if (this.value) {
             positionInput.disabled = false;
@@ -336,14 +330,11 @@
         }
     });
 
-    // 3. Initialize on Page Load
     document.addEventListener('DOMContentLoaded', () => {
-        // Load divisions if bureau is already set
         if (bureauSelect.value) {
             populateDivisions(bureauSelect.value, currentDivision);
         }
 
-        // Enable position input if division is already set (Edit mode)
         if (divisionSelect.value || currentDivision) {
             positionInput.disabled = false;
             positionInput.placeholder = "Enter current position";
@@ -351,7 +342,6 @@
             positionInput.disabled = true;
         }
 
-        // --- Salary Toggle ---
         const employmentTypeSelect = document.getElementById('employment-type-select');
         const salaryInput = document.getElementById('salary-id');
 
@@ -369,8 +359,6 @@
         employmentTypeSelect.addEventListener('change', toggleSalaryField);
     });
 
-
-    // --- Salary Toggle (one clean version only) ---
     document.addEventListener('DOMContentLoaded', () => {
         const employmentTypeSelect = document.getElementById('employment-type-select');
         const salaryInput = document.getElementById('salary-id');
@@ -389,17 +377,15 @@
                 }
             }
 
-            toggleSalaryField(); // initial check
+            toggleSalaryField(); 
             employmentTypeSelect.addEventListener('change', toggleSalaryField);
         }
     });
 
-    // Sa dulo ng <script> block mo, palitan 'to
     document.getElementById('employee-create-form')?.addEventListener('submit', function(e) {
         const employeeIdInput = document.querySelector('input[name="employee_id"]');
         const suffixInput     = document.querySelector('input[name="suffix"]');
 
-        // 1. Employee ID check
         if (employeeIdInput.value.length !== 15 || !/^\d{15}$/.test(employeeIdInput.value)) {
             alert("Employee ID dapat eksaktong 15 digits (numero lamang).");
             employeeIdInput.focus();
@@ -407,7 +393,6 @@
             return;
         }
 
-        // 2. Suffix check
         if (suffixInput.value.trim() !== "") {
             const validSuffix = /^(Jr|Sr|I|II|III|IV|V|VI|VII|VIII|IX|X|Jr\.|Sr\.)$/i;
             if (!validSuffix.test(suffixInput.value.trim())) {

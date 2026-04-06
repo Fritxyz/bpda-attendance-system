@@ -33,6 +33,23 @@
         </div>
     @endif
 
+    @if (session('info'))
+        <div id="info-alert" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded-r-lg flex justify-between items-center shadow-sm">
+            <div class="flex items-center">
+                {{-- Info Icon --}}
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <p class="text-sm font-bold">{{ session('info') }}</p>
+            </div>
+            <button onclick="document.getElementById('info-alert').remove()" class="text-blue-500 hover:text-blue-700 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    @endif
+
     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
         <div>
             <h2 class="text-3xl font-black text-slate-900 tracking-tight">Workforce Directory</h2>
