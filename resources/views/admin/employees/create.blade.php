@@ -6,17 +6,22 @@
 <div class="max-w-4.5xl mx-auto px-4 py-3">
     
     <nav class="flex mb-6 text-sm text-gray-500" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1">
-            <li class="inline-flex items-center">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition">Dashboard</a>
+        <ol class="inline-flex items-center space-x-2">
+            <li class="flex items-center gap-2">
+                <i class="bi bi-person-vcard text-xs"></i>
+                <span class="text-gray-500 hover:text-emerald-600 transition flex items-center gap-1">Employees</span>
+                <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
             </li>
-            <li class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <a href="{{ route('employees.index') }}" class="ml-1 hover:text-blue-600 transition">Employees</a>
+            <li>
+                <a href="{{ route('employees.index') }}" class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    View All Employees
+                </a>
+                <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
             </li>
-            <li class="flex items-center" aria-current="page">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                <span class="ml-1 font-medium text-gray-800">New Registration</span>
+            <li>
+                <span class="font-bold text-emerald-900 uppercase tracking-wider text-[11px]">
+                    Create New Employee
+                </span>
             </li>
         </ol>
     </nav>
@@ -66,20 +71,19 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">First Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name') }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Middle Name</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name') }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Last Name</label>
-                        
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Last Name</label>  
                         <input type="text" name="last_name" value="{{ old('last_name') }}" required
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\s\-]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
 
@@ -87,7 +91,7 @@
                         <label class="block text-sm font-bold text-gray-700 mb-1">Suffix</label>
                         {{-- Suffix: Jr, Sr, and Roman Numerals (I, V, X) --}}
                         <input type="text" name="suffix" value="{{ old('suffix') }}"
-                            placeholder="Jr, Sr, III"
+                            placeholder="e.g. Jr, Sr, III"
                             oninput="this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '')"
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
