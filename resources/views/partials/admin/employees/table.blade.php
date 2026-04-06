@@ -1,3 +1,19 @@
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 px-4 pt-4">
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Personnel</p>
+        <p class="text-2xl font-black text-slate-800">
+            {{ $employees instanceof \Illuminate\Pagination\LengthAwarePaginator ? $employees->total() : $employees->count() }}
+        </p>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm border-l-4 border-l-emerald-500">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Status</p>
+        <p class="text-2xl font-black text-emerald-600">
+            {{-- Mas mainam na sa Controller na lang i-calculate ito at ipasa bilang variable para mas mabilis --}}
+            {{ $activeCount ?? $employees->where('is_active', true)->count() }}
+        </p>
+    </div>
+</div>
+
 <div class="overflow-x-auto text-slate-700">
     <table class="w-full text-left border-collapse">
         <thead>
