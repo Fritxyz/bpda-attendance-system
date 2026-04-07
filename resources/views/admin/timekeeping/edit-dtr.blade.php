@@ -95,7 +95,7 @@
                         <i class="bi bi-sun text-amber-500"></i>
                         <h4 class="text-[11px] font-black uppercase text-slate-900 tracking-wider">Morning Session</h4>
                     </div>
-                    <div class="relative" x-data="{ am_in: '{{ old('pm_in', $attendance->am_in ? date('H:i', strtotime($attendance->am_in)) : '') }}' }">
+                    <div class="relative" x-data="{ am_in: '{{ old('am_in', $attendance->am_in ? date('H:i', strtotime($attendance->am_in)) : '') }}' }">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time In (AM)</label>
                         <input type="time" name="am_in" id="am_in"
                             x-model="am_in"
@@ -107,7 +107,7 @@
                             <i class="bi bi-x-circle-fill"></i>
                         </button>
                     </div>
-                    <div class="relative" x-data="{ am_out: '{{ old('pm_in', $attendance->am_out ? date('H:i', strtotime($attendance->am_out)) : '') }}' }">
+                    <div class="relative" x-data="{ am_out: '{{ old('am_out', $attendance->am_out ? date('H:i', strtotime($attendance->am_out)) : '') }}' }">
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Time Out (AM)</label>
                         <input type="time" name="am_out" id="am_out" x-model="am_out"
                             class="w-full bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none"

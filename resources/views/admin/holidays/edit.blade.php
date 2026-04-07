@@ -1,6 +1,6 @@
 @extends('layouts.admin.top-and-side-bar')
 
-@section('header', 'Create New Holiday')
+@section('header', 'Update Holiday')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-6 py-8">
@@ -62,7 +62,7 @@
                 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Official Holiday Name</label>
-                    <input type="text" name="name" placeholder="e.g., Maundy Thursday" required
+                    <input type="text" name="name" placeholder="e.g., Maundy Thursday" required maxlength="100"
                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 placeholder:font-normal"
                            value="{{ old('name', $holiday->name) }}">
                 </div>
@@ -93,8 +93,8 @@
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Legal Basis / Authority Reference</label>
                     <div class="relative">
-                        <i class="bi bi-bank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" name="reference" placeholder="e.g., Proclamation No. 902, s. 2026" value="{{ old('reference', $holiday->reference) }}"
+                        <i class="bi bi-bank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i> 
+                        <input type="text" name="reference" placeholder="e.g., Proclamation No. 902, s. 2026" value="{{ old('reference', $holiday->reference) }}" maxlength="150"
                                class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 placeholder:font-normal">
                     </div>
                     <p class="text-[10px] text-slate-400 italic">Mention the official issuance that justifies this holiday.</p>
@@ -102,7 +102,7 @@
 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Internal Remarks (Optional)</label>
-                    <textarea name="remarks" rows="3" placeholder="Additional details or implementation notes..." 
+                    <textarea name="remarks" rows="3" placeholder="Additional details or implementation notes..." maxlength="500"
                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 placeholder:font-normal">{{ old('remarks', $holiday->remarks) }}</textarea>
                 </div>
             </div>
@@ -127,7 +127,7 @@
         
         if (holidayForm) {
             holidayForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Stop form from auto-submitting
+                e.preventDefault(); 
                 
                 Swal.fire({
                     title: 'Confirm Changes?',

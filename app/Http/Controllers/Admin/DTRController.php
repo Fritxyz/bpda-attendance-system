@@ -24,6 +24,11 @@ class DTRController extends Controller
         $targetDate = $request->input('date', now()->timezone('Asia/Manila')->toDateString());
         $search = $request->input('search');
 
+        $bureau = $request->input('bureau');
+        $division = $request->input('division');
+        $type = $request->input('type');
+        $status = $request->input('status');
+
         $query = Attendance::with('employee')
             ->whereDate('attendance_date', $targetDate);
 
@@ -34,6 +39,21 @@ class DTRController extends Controller
                 ->orWhere('employee_id', 'like', "%{$search}%");
             });
         }
+
+        $query->whereHas('employee', function($q) use ($bureau, $division, $type, $status) {
+            if ($bureau) {
+                $q->where('bureau', $bureau);
+            }
+            if ($division) {
+                $q->where('division', $division);
+            }
+            if ($type) {
+                $q->where('employment_type', $type); 
+            }
+            if (isset($status)) { 
+                $q->where('is_active', $status);
+            }
+        });
 
         $today_records = $query->get()->map(function ($record) {
             $tz = 'Asia/Manila';
@@ -94,30 +114,6 @@ class DTRController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit($employee, $date)
@@ -138,53 +134,70 @@ class DTRController extends Controller
     public function update(UpdateAttendanceRequest $request, $employee, $date)
     {
         $attendance = Attendance::where('employee_id', $employee)
-                            ->where('attendance_date', $date)
-                            ->firstOrFail();
+                                ->where('attendance_date', $date)
+                                ->firstOrFail();
 
-        $formatTime = fn($time) => $time ? Carbon::parse($time)->format('Y-m-d h:i A') : 'EMPTY';
+        // 1. Kunin lang ang mga fields na nasa validation (iwas sa extra inputs)
+        $validated = $request->validated();
+        $attendance->fill($validated);
+        
+        $changes = $attendance->getDirty(); 
+        
+        if (empty($changes)) {
+            return redirect()->back()->with('info', "No changes were made.");
+        }
 
-        $oldData = [
-            'am_in'  => $formatTime($attendance->am_in),
-            'am_out' => $formatTime($attendance->am_out),
-            'pm_in'  => $formatTime($attendance->pm_in),
-            'pm_out' => $formatTime($attendance->pm_out),
-            'ot_in' => $formatTime($attendance->ot_in),
-            'ot_out' => $formatTime($attendance->ot_out),
-        ];
+        $oldData = [];
+        $newData = [];
+        
+        // Tukuyin natin kung alin lang ang time fields
+        $timeFields = ['am_in', 'am_out', 'pm_in', 'pm_out', 'ot_in', 'ot_out'];
 
-        $attendance->update($request->validated());
+        foreach ($changes as $field => $newValue) {
+            $originalValue = $attendance->getOriginal($field);
 
-        $newData = [
-            'am_in'  => $formatTime($attendance->am_in),
-            'am_out' => $formatTime($attendance->am_out),
-            'pm_in'  => $formatTime($attendance->pm_in),
-            'pm_out' => $formatTime($attendance->pm_out),
-            'ot_in'  => $formatTime($attendance->ot_in),
-            'ot_out' => $formatTime($attendance->ot_out),
-        ];
+            if (in_array($field, $timeFields)) {
+                // Safe Parsing Logic
+                $oldData[$field] = $this->safeFormatTime($originalValue);
+                $newData[$field] = $this->safeFormatTime($newValue);
+            } else {
+                // Para sa 'remarks' o ibang non-time fields
+                $oldData[$field] = $originalValue;
+                $newData[$field] = $newValue;
+            }
+        }
 
-        // 4. I-record sa Audit Trail
-        $data = AuditTrail::create([
-            'user_id'        => Auth::getUser()->employee_id, // Ang Admin na nag-edit
+        $attendance->save();
+
+        // Audit Trail
+        AuditTrail::create([
+            'user_id'        => Auth::user()->employee_id,
             'event'          => 'Updated',
             'auditable_type' => get_class($attendance),
             'auditable_id'   => $attendance->id,
             'old_values'     => $oldData,
             'new_values'     => $newData,
-            'remarks'        => $request->remarks ?? "Manual DTR adjustment for {$date}", // Maganda kung may 'reason' field sa form mo
+            'remarks'        => $request->remarks ?? "Manual DTR adjustment",
             'ip_address'     => request()->ip(),
         ]);
 
         return redirect()->route('dtr.view')
-                     ->with('success', "Attendance record for {$employee} on {$date} has been updated.");
+                        ->with('success', "Attendance updated successfully.");
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Helper function para i-format ang time nang hindi nag-e-error
      */
-    public function destroy(string $id)
+    private function safeFormatTime($value)
     {
-        //
+        if (empty($value) || $value === 'EMPTY') return 'EMPTY';
+        
+        try {
+            return \Carbon\Carbon::parse($value)->format('h:i A');
+        } catch (\Exception $e) {
+            // Kung hindi talaga ma-parse (gaya ng "edit pm in"), ibalik ang original string
+            return $value;
+        }
     }
 
     public function generateDTR($employee_id, $month, $year) 

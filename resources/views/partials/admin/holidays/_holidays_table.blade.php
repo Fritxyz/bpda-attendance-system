@@ -69,20 +69,25 @@
                     <p class="text-[9px] text-slate-400 mt-1 font-bold uppercase tracking-tighter">Legal Reference</p>
                 </div>
 
-                <div class="flex items-center gap-1">
-                    <a href="{{ route('holiday.edit', $holiday->id) }}" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
-                        <i class="bi bi-pencil-square text-lg"></i>
+                <div class="flex items-center gap-2">
+                    {{-- EDIT BUTTON --}}
+                    <a href="{{ route('holiday.edit', $holiday->id) }}" 
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 transition-all duration-200 group">
+                        <i class="bi bi-pencil-square text-base"></i>
+                        <span class="text-[10px] font-black uppercase tracking-widest hidden lg:block">Edit</span>
                     </a>
                     
+                    {{-- DELETE BUTTON --}}
                     <form action="{{ route('holiday.destroy', $holiday->id) }}" method="POST" class="delete-holiday-form">
                         @csrf
                         @method('DELETE')
                         <input type="hidden" name="remarks" class="remarks-input"> 
                         
                         <button type="button" 
-                                class="delete-btn ..." 
+                                class="delete-btn flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-red-700 border border-red-100 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200 group" 
                                 data-holiday-name="{{ $holiday->name }}">
-                            <i class="bi bi-trash3"></i>
+                            <i class="bi bi-trash3 text-base"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest hidden lg:block">Delete</span>
                         </button>
                     </form>
                 </div>
@@ -99,3 +104,66 @@
         </td>
     </tr>
 @endforelse
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('.delete-holiday-form');
+                const remarksInput = form.querySelector('.remarks-input');
+                const holidayName = this.getAttribute('data-holiday-name') || 'this record';
+
+                Swal.fire({
+                    title: '<span class="text-slate-800 tracking-tight">Confirm Deletion</span>',
+                    html: `
+                        <div class="text-sm text-slate-500 mb-4 text-center">
+                            Are you sure you want to delete <b class="text-rose-600">${holidayName}</b>?<br>
+                            <span class="text-[11px] italic text-slate-400">This action will be permanently recorded in the audit trail.</span>
+                        </div>
+                    `,
+                    icon: 'warning',
+                    input: 'textarea', 
+                    inputLabel: 'Reason for Deletion',
+                    inputPlaceholder: 'Please provide a justification (e.g., Erroneous entry, event cancelled...)',
+                    inputAttributes: {
+                        'aria-label': 'Type your reason here',
+                        'class': 'text-xs p-3 rounded-lg border-slate-200'
+                    },
+                    showCancelButton: true,
+                    confirmButtonColor: '#be123c', 
+                    cancelButtonColor: '#64748b', 
+                    confirmButtonText: 'Confirm Delete',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true, 
+                    
+                    inputValidator: (value) => {
+                        if (!value || value.trim().length < 5) {
+                            return 'Please provide a valid reason (minimum 5 characters).';
+                        }
+                    },
+                    
+                    didOpen: () => {
+                        const textarea = Swal.getInput();
+                        textarea.style.fontSize = '12px';
+                        textarea.style.height = '80px';
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        remarksInput.value = result.value.trim();
+
+                        Swal.fire({
+                            title: 'Processing...',
+                            html: 'Finalizing deletion and updating audit logs.',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); }
+                        });
+
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>

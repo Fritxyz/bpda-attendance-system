@@ -20,6 +20,37 @@
         </ol>
     </nav>
 
+        @if (session('success'))
+        <div id="success-alert" class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg flex justify-between items-center shadow-sm">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <p class="text-sm font-bold">{{ session('success') }}</p>
+            </div>
+            <button onclick="document.getElementById('success-alert').remove()" class="text-green-500 hover:text-green-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
+    @if (session('info'))
+        <div id="info-alert" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded-r-lg flex justify-between items-center shadow-sm">
+            <div class="flex items-center">
+                {{-- Info Icon --}}
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <p class="text-sm font-bold">{{ session('info') }}</p>
+            </div>
+            <button onclick="document.getElementById('info-alert').remove()" class="text-blue-500 hover:text-blue-700 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    @endif
+
     {{-- Header Section --}}
     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
         <div>
@@ -41,6 +72,58 @@
                     value="{{ request('date', now()->toDateString()) }}" 
                     class="py-2 pr-1 bg-transparent text-xs font-bold outline-none text-slate-600 cursor-pointer uppercase">
             </div>
+
+                            <div class="relative" x-data="{ filterOpen: false }">
+                    <button @click="filterOpen = !filterOpen" 
+                            :class="filterOpen ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200'"
+                            class="p-2.5 border rounded-xl hover:shadow-md transition-all flex items-center gap-2 shadow-sm">
+                        <i class="bi bi-funnel"></i>
+                        <span class="text-xs font-bold px-1">Filters</span>
+                    </button>
+
+                    <div x-show="filterOpen" 
+                        @click.away="filterOpen = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                        class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 p-4">
+                        
+                        <form action="{{ route('dtr.view') }}" method="GET" class="space-y-4">
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Bureau</label>
+                                <select name="bureau" id="bureau-select" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                    <option value="">All Bureaus</option>
+                                    <option value="PPB" {{ request('bureau') == 'PPB' ? 'selected' : '' }}>PPB</option>
+                                    <option value="RDSPB" {{ request('bureau') == 'RDSPB' ? 'selected' : '' }}>RDSPB</option>
+                                    <option value="FASS" {{ request('bureau') == 'FASS' ? 'selected' : '' }}>FASS</option>
+                                    <option value="Other" {{ request('bureau') == 'Other' ? 'selected' : '' }}>Other</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Division</label>
+                                <select name="division" id="division-select" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                    <option value="" disabled selected>Select Division</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Employment Type</label>
+                                <select name="type" id="type-select" class="w-full bg-slate-50 border-none rounded-lg text-xs font-bold p-2.5 focus:ring-2 focus:ring-emerald-500">
+                                    <option value="">All Types</option>
+                                    <option value="Permanent" {{ request('type') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                                    <option value="Contractual" {{ request('type') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
+                                    <option value="Job Order" {{ request('type') == 'Job Order' ? 'selected' : '' }}>Job Order</option>
+                                </select>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-50 flex gap-2">
+                                <a href="{{ route('dtr.view') }}" class="flex-1 text-center py-2 text-[10px] font-black uppercase text-slate-400 hover:text-slate-600 transition">Clear</a>
+                                <button type="submit" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-100">Apply</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             
             <button class="bg-slate-900 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-emerald-600 transition-all flex items-center gap-2">
                 <i class="bi bi-printer text-xs"></i> 
@@ -63,28 +146,65 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const dateInput = document.getElementById('dtrDateFilter');
-        const searchInput = document.getElementById('dtrSearchInput');
-        // I-target natin ang container para hindi mawala ang event listeners
         const tableContainer = document.getElementById('dtrTableContainer');
+        
+        // Data mapping para sa Bureau at Division
+        const divisionsByBureau = {
+            'PPB': ['MEPD', 'EPD', 'SPD', 'LPCD', 'IPD', 'PPOSSD', 'MED'],
+            'RDSPB': ['IKMD', 'RDD', 'ODA/NFPPCD', 'EID'],
+            'FASS': ['Finance Division', 'Administrative Division'],
+            'Other': ['Other']
+        };
+
+        const filters = {
+            date: document.getElementById('dtrDateFilter'),
+            search: document.getElementById('dtrSearchInput'),
+            bureau: document.getElementById('bureau-select'),
+            division: document.getElementById('division-select'),
+            type: document.getElementById('type-select'),
+        };
+
+        // --- DYNAMIC DIVISION LOGIC ---
+        filters.bureau.addEventListener('change', function() {
+            const selectedBureau = this.value;
+            const options = divisionsByBureau[selectedBureau] || [];
+            
+            // Reset Division Dropdown
+            filters.division.innerHTML = '<option value="">All Divisions</option>';
+            
+            options.forEach(div => {
+                const el = document.createElement('option');
+                el.value = div;
+                el.textContent = div;
+                filters.division.appendChild(el);
+            });
+
+            updateTable(); // Refresh table pag nagpalit ng Bureau
+        });
 
         function updateTable() {
             tableContainer.classList.add('opacity-40');
 
+            const statusChecked = document.querySelector('input[name="status"]:checked');
+
             const params = new URLSearchParams({
-                date: dateInput.value,
-                search: searchInput.value
+                date: filters.date.value,
+                search: filters.search.value,
+                bureau: filters.bureau.value,
+                division: filters.division.value,
+                type: filters.type.value,
+                status: statusChecked ? statusChecked.value : '',
+                ajax: 1
             });
 
             const url = `${window.location.pathname}?${params.toString()}`;
-            window.history.pushState({}, '', url);
+            window.history.pushState({}, '', url.replace('&ajax=1', ''));
 
             fetch(url, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.text())
             .then(html => {
-                // I-replace ang buong table content
                 tableContainer.innerHTML = html;
                 tableContainer.classList.remove('opacity-40');
             })
@@ -94,10 +214,16 @@
             });
         }
 
-        dateInput.addEventListener('change', updateTable);
+        // Listeners for other filters
+        filters.date.addEventListener('change', updateTable);
+        filters.division.addEventListener('change', updateTable);
+        filters.type.addEventListener('change', updateTable);
+        document.querySelectorAll('input[name="status"]').forEach(radio => {
+            radio.addEventListener('change', updateTable);
+        });
 
         let timeout = null;
-        searchInput.addEventListener('input', function() {
+        filters.search.addEventListener('input', function() {
             clearTimeout(timeout);
             timeout = setTimeout(updateTable, 500);
         });

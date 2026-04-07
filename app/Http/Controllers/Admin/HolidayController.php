@@ -101,7 +101,7 @@ class HolidayController extends Controller
     {
         $holiday = Holiday::findOrFail($id);
         
-        // Kunin ang original data bago i-update para sa "old_values"
+        
         $oldValues = $holiday->getRawOriginal(); 
         
         $validated = $request->validated();
@@ -109,22 +109,24 @@ class HolidayController extends Controller
         return DB::transaction(function () use ($request, $holiday, $validated, $oldValues) {
             
             $result = $holiday->update($validated);
-
-            // Kunin lang ang mga fields na actual na nagbago
+            
             $changes = $holiday->getChanges();
 
-            // Mag-create lang ng log kung may totoong binago ang user
             if (!empty($changes)) {
                 AuditTrail::create([
                     'user_id'        => Auth::getUser()->employee_id,
                     'event'          => 'Updated',
                     'auditable_type' => get_class($holiday),
                     'auditable_id'   => $holiday->id,
-                    'old_values'     => $oldValues, // Array/JSON format na ito
-                    'new_values'     => $changes,   // I-save lang ang mga nagbago para malinis
+                    'old_values'     => $oldValues, 
+                    'new_values'     => $changes,   
                     'ip_address'     => $request->ip(),
                     'remarks' => "Updated holiday: " . $holiday->name . ". Reason: " . ($validated['remarks'] ?? 'No specific remarks.'),
                 ]);
+            }
+            else {
+                return redirect()->route('holiday.index')
+                    ->with('info', "No changes were detected for {$holiday->name}.");
             }
 
             return redirect()->route('holiday.index')

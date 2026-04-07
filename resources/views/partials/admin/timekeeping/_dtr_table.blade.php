@@ -8,7 +8,7 @@
                 <th colspan="2" class="px-2 py-3 text-center border-r border-slate-100 bg-emerald-50/30 text-emerald-600">Overtime</th>
                 <th rowspan="2" class="px-4 py-4 text-center border-r border-slate-100">Total Hours</th>
                 <th rowspan="2" class="px-4 py-4 text-center border-r border-slate-100">Status</th>
-                <th rowspan="2" class="px-6 py-4 text-right">Actions</th>
+                <th rowspan="2" class="px-6 py-4 text-center">Actions</th>
             </tr>
             <tr class="bg-white border-b border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500">
                 <th class="px-4 py-2 text-center border-r border-slate-100">In</th>
@@ -33,13 +33,21 @@
                                 {{ $record->employee->first_name }} {{ $record->employee->last_name }}
                             </h3>
                             
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5 mb-1.5">
+                                @if($record->employee->bureau)
+                                    <span class="text-[9px] font-black uppercase tracking-wider text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/50">
+                                        {{ $record->employee->bureau }}
+                                    </span>
+                                @endif
+
                                 <span class="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
                                     {{ $record->employee->division ?? 'N/A' }}
                                 </span>
-                                
-                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                
+                            </div>
+
+                            {{-- Position Row (Underneath) --}}
+                            <div class="flex items-center gap-1">
+                                <i class="bi bi-person-badge text-[10px] text-slate-300"></i> {{-- Optional icon para mas maganda --}}
                                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter truncate">
                                     {{ $record->employee->position ?? 'N/A' }}
                                 </span>
@@ -82,9 +90,10 @@
                 <td class="px-6 py-4">
                     <div class="flex justify-end items-center gap-1">
                         <a href="{{ route('dtr.edit', ['employee' => $record->employee->employee_id, 'date' => $record->attendance_date]) }}" 
-                        class="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group/btn" 
-                            title="Edit Record">
-                            <i class="bi bi-pencil-square text-sm"></i>
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 transition-all duration-200 group" 
+                            >
+                            <i class="bi bi-pencil-square text-base"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest hidden lg:block">Edit</span>
                         </a>
                     </div>
                 </td>

@@ -85,22 +85,25 @@
                     @endforeach
                 </select>
             </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 bg-slate-50/50">
-                            <th class="px-8 py-4 border-b border-slate-100 w-[25%]">Full Date</th>
-                            <th class="px-6 py-4 border-b border-slate-100 w-[30%]">Holiday Designation</th>
-                            <th class="px-6 py-4 border-b border-slate-100 w-[20%] text-center">Classification</th>
-                            <th class="px-8 py-4 border-b border-slate-100 w-[25%] text-right">Authority & Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50" id="holidayTableBody">
-                        @include('partials.admin.holidays._holidays_table');
-                    </tbody>
-                </table>
-            </div>
+
+
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 bg-slate-50/50">
+                        <th class="px-8 py-4 border-b border-slate-100 w-[25%]">Full Date</th>
+                        <th class="px-6 py-4 border-b border-slate-100 w-[30%]">Holiday Designation</th>
+                        <th class="px-6 py-4 border-b border-slate-100 w-[20%] text-center">Classification</th>
+                        <th class="px-8 py-4 border-b border-slate-100 w-[25%] text-right">Authority & Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50" id="holidayTableBody">
+                    @include('partials.admin.holidays._holidays_table')
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="mt-8 text-center">
@@ -108,67 +111,6 @@
     </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const form = this.closest('.delete-holiday-form');
-                const remarksInput = form.querySelector('.remarks-input');
-                const holidayName = this.getAttribute('data-holiday-name') || 'this record';
-
-                Swal.fire({
-                    title: '<span class="text-slate-800 tracking-tight">Confirm Deletion</span>',
-                    html: `
-                        <div class="text-sm text-slate-500 mb-4 text-center">
-                            Are you sure you want to delete <b class="text-rose-600">${holidayName}</b>?<br>
-                            <span class="text-[11px] italic text-slate-400">This action will be permanently recorded in the audit trail.</span>
-                        </div>
-                    `,
-                    icon: 'warning',
-                    input: 'textarea', 
-                    inputLabel: 'Reason for Deletion',
-                    inputPlaceholder: 'Please provide a justification (e.g., Erroneous entry, event cancelled...)',
-                    inputAttributes: {
-                        'aria-label': 'Type your reason here',
-                        'class': 'text-xs p-3 rounded-lg border-slate-200'
-                    },
-                    showCancelButton: true,
-                    confirmButtonColor: '#be123c', 
-                    cancelButtonColor: '#64748b', 
-                    confirmButtonText: 'Confirm Delete',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true, 
-                    
-                    inputValidator: (value) => {
-                        if (!value || value.trim().length < 5) {
-                            return 'Please provide a valid reason (minimum 5 characters).';
-                        }
-                    },
-                    
-                    didOpen: () => {
-                        const textarea = Swal.getInput();
-                        textarea.style.fontSize = '12px';
-                        textarea.style.height = '80px';
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        remarksInput.value = result.value.trim();
-
-                        Swal.fire({
-                            title: 'Processing...',
-                            html: 'Finalizing deletion and updating audit logs.',
-                            allowOutsideClick: false,
-                            didOpen: () => { Swal.showLoading(); }
-                        });
-
-                        form.submit();
-                    }
-                });
-            });
-        });
-    });
-
     const searchInput = document.getElementById('holidaySearch');
     const yearFilter = document.getElementById('yearFilter');
     const tableBody = document.getElementById('holidayTableBody');
