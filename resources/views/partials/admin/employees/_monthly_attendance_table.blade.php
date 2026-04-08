@@ -67,11 +67,15 @@
                         {{-- CASE 3: Active Days (Regular Attendance Logic) --}}
                         @if($isHoliday)
                             <td colspan="6" class="px-4 py-4 text-center border-r border-slate-100 italic">
-                                <span class="text-[10px] font-black text-amber-600 uppercase tracking-[0.4em]">Regular Holiday</span>
+                                <span class="text-[10px] font-black text-amber-600 uppercase tracking-[0.4em]">Holiday ({{ $data['holiday_name'] }})</span>
                             </td>
                         @elseif($isLeave)
                             <td colspan="6" class="px-4 py-4 text-center border-r border-slate-100 italic">
                                 <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Approved Leave</span>
+                            </td>
+                        @elseif($isWeekend)
+                            <td colspan="6" class="px-4 py-4 text-center border-r border-slate-100 font-black text-red-200 tracking-widest uppercase text-[10px]">
+                                WEEKEND
                             </td>
                         @elseif(!$record && !$isWeekend)
                             <td colspan="6" class="px-4 py-4 text-center border-r border-slate-100 font-black text-red-200 tracking-widest uppercase text-[10px]">
@@ -91,7 +95,15 @@
 
                         {{-- 2. Total Hours --}}
                         <td class="px-4 py-5 text-center font-black text-slate-700 bg-slate-100/30 border-x border-slate-100 uppercase tracking-tighter">
-                            @if($isLeave) 8h 00m @elseif($record) {{ $record->computed_total_hours }} @else 0h 0m @endif
+                            @if($isLeave) 
+                                8h 00m 
+                            @elseif($isWeekend) 
+                                -- -- 
+                            @elseif($record) 
+                                {{ $record->computed_total_hours }} 
+                            @else 
+                                0h 0m 
+                            @endif
                         </td>
 
                         {{-- 3. Late --}}

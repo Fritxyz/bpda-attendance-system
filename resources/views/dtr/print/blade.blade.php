@@ -157,10 +157,20 @@
                     @php 
                         $day = $date->day; 
                         $log = $attendances->get($day);
+                        $isHoliday = $holidays->has($day); // Check kung holiday ang araw na ito
                     @endphp
                     <tr>
                         <td>{{ $day }}</td>
-                        <td>{{ ($log && $log->am_in) ? \Carbon\Carbon::parse($log->am_in)->format('h:i') : '' }}</td>
+                        
+                        {{-- A.M. IN: Dito natin ilalagay ang 'H' kung holiday --}}
+                        <td style="{{ $isHoliday ? 'font-weight: bold; color: red;' : '' }}">
+                            @if($isHoliday)
+                                H
+                            @else
+                                {{ ($log && $log->am_in) ? \Carbon\Carbon::parse($log->am_in)->format('h:i') : '' }}
+                            @endif
+                        </td>
+
                         <td>{{ ($log && $log->am_out) ? \Carbon\Carbon::parse($log->am_out)->format('h:i') : '' }}</td>
                         <td>{{ ($log && $log->pm_in) ? \Carbon\Carbon::parse($log->pm_in)->format('h:i') : '' }}</td>
                         <td>{{ ($log && $log->pm_out) ? \Carbon\Carbon::parse($log->pm_out)->format('h:i') : '' }}</td>

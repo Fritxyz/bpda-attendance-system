@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\HolidayController;
 use App\Http\Controllers\Admin\LateController;
+use App\Http\Controllers\Admin\SalaryController;
+use App\Http\Controllers\Admin\WTRController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,11 +43,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::put('/employee/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
         Route::get('/employee/{employee}/view', [EmployeeController::class, 'show'])->name('employees.show');
         Route::get('/employee/{employee}/view/printdtr/{month}/{year}', [DTRController::class, 'generateDTR'])->name('dtr.print');
+        Route::get('/employees{employee}/view/salary-deduction', [SalaryController::class, 'salaryDeductionOverview'])->name('salary.deduction.view');
 
-        // Timekeeping management
+        // timekeeping
         Route::get('/dtr/view', [DTRController::class, 'index'])->name('dtr.view'); // - daily time record
         Route::get('/dtr/edit/{employee}/{date}', [DTRController::class, 'edit'])->name('dtr.edit'); // - edit the daily time record
         Route::put('/dtr/edit/{employee}/{date}/update', [DTRController::class, 'update'])->name('dtr.update');
+        Route::get('/dtr/print/daily', [DTRController::class, 'printDailyAttendance'])->name('dtr.print.daily');
+        Route::get('/wtr/view/', [WTRController::class, 'index'])->name('wtr.view');
+        Route::get('/wtr/print/', [WTRController::class, 'print'])->name('wtr.print');
 
         // late arrivals
         Route::get('/tardiness', [LateController::class, 'index'])->name('tardiness.index');
@@ -58,6 +64,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::put('/holidays/{id}/update', [HolidayController::class, 'update'])->name('holiday.update');
         Route::delete('/holidays/{id}/delete', [HolidayController::class, 'destroy'])->name('holiday.destroy');
 
+        // outputs 
+        Route::get('/salary-deductions', [SalaryController::class, 'index'])->name('salary.view');
+        
         Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('admin.audittrail');
     });
 });

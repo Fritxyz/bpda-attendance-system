@@ -83,9 +83,7 @@
                         <i class="bi bi-person-lines-fill {{ request()->routeIs('employee.profile') ? 'text-yellow-400' : 'text-yellow-500 group-hover:scale-110 transition' }}"></i> 
                         My Profile & DTR
                     </a>
-                </div>
-
-                
+                </div> 
             </div>
 
             <div class="p-4 bg-emerald-950 border-t border-emerald-800/50 shadow-inner">

@@ -12,6 +12,7 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="icon" href="{{ asset('images/bpda-logo.jpg') }}">
     @vite('resources/css/app.css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -46,8 +47,7 @@
     </style>
 </head>
 <body>
-
-    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: true, leaveManagementOpen: true, holidayManagement: true }">
+    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: true, leaveManagementOpen: true, holidayManagement: true, outputsOpen: true }">
         
         <div x-show="sidebarOpen" 
             @click="sidebarOpen = false" 
@@ -150,13 +150,27 @@
 
                     <div x-show="timekeepingOpen" x-collapse x-cloak class="mt-1 space-y-1">
                         <a href="{{ route('dtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                            Daily Time Record
+                            Daily Attendance
+                        </a>
+                        <a href="{{ route('wtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                            Weekly Attendance
                         </a>
                         <a href="{{ route('tardiness.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
                             Late Arrivals
                         </a>
-                        <a href="#" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                            Overtime Logs
+                    </div>
+
+                    <button @click="outputsOpen = !outputsOpen" 
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
+                        <span class="flex items-center gap-3">
+                            <i class="bi bi-file-richtext text-yellow-500 group-hover:rotate-12 transition"></i> Outputs
+                        </span>
+                        <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="outputsOpen ? 'rotate-180' : ''"></i>
+                    </button>
+
+                    <div x-show="outputsOpen" x-collapse x-cloak class="mt-1 space-y-1">
+                        <a href="{{ route('salary.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                            Salary Deduction
                         </a>
                     </div>
 

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Attendance;
 use App\Models\AuditTrail;
 use App\Models\Employee;
+use App\Models\Holiday;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -132,12 +133,23 @@ class EmployeeController extends Controller
     public function show(Request $request, $employee_id)
     {
         $employee = Employee::where('employee_id', $employee_id)->firstOrFail();
-
         $selectedMonth = $request->get('month', now()->timezone('Asia/Manila')->format('Y-m'));
         $parsedMonth = Carbon::parse($selectedMonth);
         $now = now()->timezone('Asia/Manila');
-
         $hireDate = Carbon::parse($employee->created_at)->startOfDay();
+        $parsedMonth = Carbon::parse($selectedMonth);
+        $startDate = $parsedMonth->copy()->startOfMonth();
+        $endDate = $parsedMonth->copy()->endOfMonth();
+
+        $holidays = \App\Models\Holiday::whereBetween('date', [$startDate, $endDate])
+            ->get()
+            ->keyBy(function($holiday) {
+                return \Carbon\Carbon::parse($holiday->date)->format('Y-m-d');
+            })
+            ->map(function($holiday) {
+                return $holiday->name; // Siguraduhin na 'name' ang column sa DB mo
+            })
+            ->toArray();
 
         $attendanceRecords = Attendance::where('employee_id', $employee_id)
             ->whereYear('attendance_date', $parsedMonth->year)
@@ -206,7 +218,8 @@ class EmployeeController extends Controller
                 'date_str'      => $dateStr,
                 'is_future'     => $isFuture,      // New flag
                 'is_before_hire' => $isBeforeHire, // New flag
-                'is_holiday'    => false,          // Replace with your holiday logic
+                'is_holiday'     => isset($holidays[$dateStr]), // Check kung existing ang date sa array
+                'holiday_name'   => $holidays[$dateStr] ?? null, // <--- IPASA ITO!
                 'is_leave'      => false,          // Replace with your leave logic
                 'record'        => $attendanceRecords->get($dateStr) ?? null
             ];
@@ -327,13 +340,5 @@ class EmployeeController extends Controller
         return redirect()
             ->route('employees.index')
             ->with('success', "Employee {$employeeRecord->first_name} successfully updated.");
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

@@ -65,7 +65,7 @@
                 <div class="flex gap-2 mt-2">
                     <button @click="activeTab = 'info'" :class="activeTab === 'info' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Overview</button>
                     <button @click="activeTab = 'attendance'" :class="activeTab === 'attendance' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Attendance History / DTR</button>
-                    <button></button>
+                    <button @click="activeTab = 'salary-deduction'" :class="activeTab === 'salary-deduction' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Salary Deduction</button>
                     <a href={{ route('employees.edit', $employee->employee_id) }} class="bg-white border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm ml-auto md:ml-0">
                         <i class="bi bi-pencil-square"></i> Edit
                     </a>
@@ -137,6 +137,27 @@
                 </div>
             </div>
         </div>
+
+        <div x-show="activeTab === 'salary-deduction'" x-transition>
+            <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                <div class="p-8 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter">Salary Deduction</h3>
+                        <p class="text-sm text-slate-500 font-medium">Monthly Summary of Salary Deduction</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <form id="filter-form" class="flex items-center gap-3 no-print">
+                            <input type="month" id="month-input-salary-deduction" name="month" value="{{ $selectedMonth }}" max="{{ now()->format('Y-m') }}"
+                                class="bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-600 px-4 py-2 focus:ring-2 focus:ring-emerald-500">
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto" id="salary-container">
+                    @include('partials.admin.employees._monthly_salary_deduction_table')
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -150,6 +171,29 @@
         printBtn.href = printUrl.replace(':month', month).replace(':year', year);
         
         const container = document.getElementById('attendance-container');
+        container.style.opacity = '0.5';
+
+        fetch(`{{ route('employees.show', $employee->employee_id) }}?month=${monthVal}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            container.innerHTML = html;
+            container.style.opacity = '1';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.style.opacity = '1';
+        });
+    });
+
+        document.getElementById('month-input-salary-deduction').addEventListener('change', function() {
+        const monthVal = this.value; 
+        const [year, month] = monthVal.split('-');
+        
+       
+        
+        const container = document.getElementById('salary-container');
         container.style.opacity = '0.5';
 
         fetch(`{{ route('employees.show', $employee->employee_id) }}?month=${monthVal}`, {

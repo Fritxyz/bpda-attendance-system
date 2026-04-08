@@ -77,9 +77,9 @@
 
                         {{-- Edit Button --}}
                         <a href="{{ route('employees.edit', $employee->employee_id) }}" 
-                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all duration-200 group">
-                            <i class="bi bi-pencil-square text-xs"></i>
-                            <span class="text-[10px] font-black uppercase tracking-wider">Edit</span>
+                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all duration-200 group">
+                                <i class="bi bi-pencil-square text-xs"></i>
+                                <span class="text-[10px] font-black uppercase tracking-wider">Edit</span>
                         </a>
                     </div>
                 </td>

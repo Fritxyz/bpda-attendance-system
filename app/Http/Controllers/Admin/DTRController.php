@@ -208,6 +208,14 @@ class DTRController extends Controller
         $end = $start->copy()->endOfMonth();
         $period = CarbonPeriod::create($start, $end);
 
+        // Kunin ang holidays at i-format ang key bilang 'day'
+        $holidays = \App\Models\Holiday::whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get()
+            ->keyBy(function($holiday) {
+                return Carbon::parse($holiday->date)->day;
+            });
+
         $attendances = Attendance::where('employee_id', $employee_id)
             ->whereMonth('attendance_date', $month)
             ->whereYear('attendance_date', $year)
@@ -216,9 +224,41 @@ class DTRController extends Controller
                 return Carbon::parse($item->attendance_date)->day;
             });
 
-        $pdf = Pdf::loadView('dtr.print.blade', compact('employee', 'period', 'attendances', 'start'))
-                  ->setPaper('a4', 'portrait');
-
+        // Isama ang $holidays sa compact
+        $pdf = Pdf::loadView('dtr.print.blade', compact('employee', 'period', 'attendances', 'start', 'holidays'))
+                ->setPaper('a4', 'portrait');
+                
         return $pdf->stream("DTR_{$employee->last_name}.pdf");
+    }
+
+    public function printDailyAttendance(Request $request)
+    {
+        $barmmLogo = base64_encode(file_get_contents(public_path('images/barmm-logo.png')));
+        $bpdaLogo = base64_encode(file_get_contents(public_path('images/bpda-logo.jpg')));
+        $targetDate = $request->input('date', now()->toDateString());
+        $bureau = $request->input('bureau');
+        $division = $request->input('division');
+
+        $query = Attendance::with('employee')
+            ->whereDate('attendance_date', $targetDate);
+
+        // Apply same filters as index
+        $query->whereHas('employee', function($q) use ($bureau, $division) {
+            if ($bureau) $q->where('bureau', $bureau);
+            if ($division) $q->where('division', $division);
+        });
+
+        $records = $query->get()->sortBy('employee.last_name');
+
+        $pdf = Pdf::loadView('dtr.print.print-daily', [
+            'records' => $records,
+            'date' => Carbon::parse($targetDate)->format('F d, Y'),
+            'bureau' => $bureau,
+            'division' => $division,
+            'barmmLogo' => $barmmLogo,
+            'bpdaLogo' => $bpdaLogo,
+        ])->setPaper('a4', 'landscape'); 
+
+        return $pdf->stream("Daily_Attendance_{$targetDate}.pdf");
     }
 }

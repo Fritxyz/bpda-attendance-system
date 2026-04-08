@@ -1,6 +1,6 @@
 @extends('layouts.admin.top-and-side-bar')
 
-@section('header', 'Daily Time Record')
+@section('header', 'Daily Attendance Report')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
@@ -125,7 +125,7 @@
                     </div>
                 </div>
             
-            <button class="bg-slate-900 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-emerald-600 transition-all flex items-center gap-2">
+            <button onclick="printDailyAttendance()" class="bg-slate-900 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-emerald-600 transition-all flex items-center gap-2">
                 <i class="bi bi-printer text-xs"></i> 
                 <span>Print Daily Attendance</span>
             </button>
@@ -228,4 +228,17 @@
             timeout = setTimeout(updateTable, 500);
         });
     });
+
+    // Idagdag ito sa loob ng script tag mo
+    function printDailyAttendance() {
+        const date = document.getElementById('dtrDateFilter').value;
+        const bureau = document.getElementById('bureau-select').value;
+        const division = document.getElementById('division-select').value;
+        
+        // I-build ang URL na may query parameters
+        const url = `{{ route('dtr.print.daily') }}?date=${date}&bureau=${bureau}&division=${division}`;
+        
+        // Buksan sa bagong tab para i-print
+        window.open(url, '_blank');
+    }
 </script>
