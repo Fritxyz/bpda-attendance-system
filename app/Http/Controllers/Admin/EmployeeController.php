@@ -147,89 +147,281 @@ class EmployeeController extends Controller
                 return \Carbon\Carbon::parse($holiday->date)->format('Y-m-d');
             })
             ->map(function($holiday) {
-                return $holiday->name; // Siguraduhin na 'name' ang column sa DB mo
+                return $holiday->name; 
             })
             ->toArray();
 
-        $attendanceRecords = Attendance::where('employee_id', $employee_id)
-            ->whereYear('attendance_date', $parsedMonth->year)
-            ->whereMonth('attendance_date', $parsedMonth->month)
-            ->get()
-            ->map(function ($record) {
-                $tz = 'Asia/Manila';
-                $amIn  = $record->am_in  ? Carbon::parse($record->am_in, $tz) : null;
-                $amOut = $record->am_out ? Carbon::parse($record->am_out, $tz) : null;
-                $pmIn  = $record->pm_in  ? Carbon::parse($record->pm_in, $tz) : null;
-                $pmOut = $record->pm_out ? Carbon::parse($record->pm_out, $tz) : null;
-                $otIn  = $record->ot_in  ? Carbon::parse($record->ot_in, $tz) : null;
-                $otOut = $record->ot_out ? Carbon::parse($record->ot_out, $tz) : null;
+        $employee_type = $employee->employment_type;
 
-                $regularMinutes = 0;
-                if ($amIn && $pmOut && !$amOut) {
-                    if ($pmOut->gt($amIn)) { $regularMinutes = $amIn->diffInMinutes($pmOut); }
+        if($employee_type === "Contractual") {
+            $attendanceRecords = Attendance::where('employee_id', $employee_id)
+                ->whereYear('attendance_date', $parsedMonth->year)
+                ->whereMonth('attendance_date', $parsedMonth->month)
+                ->get()
+                ->map(function ($record) use($employee) {
+                    $tz = 'Asia/Manila';
+                    $dateStr = Carbon::parse($record->attendance_date)->format('Y-m-d');
+
+                    // Helper function para sigurado tayong "Today" ang date ng bawat log
+                    $parseTime = function($time) use ($dateStr, $tz) {
+                        if (!$time) return null;
+                        $onlyTime = date('H:i:s', strtotime($time));
+                        return Carbon::parse($dateStr . ' ' . $onlyTime, $tz);
+                    };
+
+                    $amIn  = $parseTime($record->am_in);
+                    $amOut = $parseTime($record->am_out);
+                    $pmIn  = $parseTime($record->pm_in);
+                    $pmOut = $parseTime($record->pm_out);
+                    $otIn  = $parseTime($record->ot_in);
+                    $otOut = $parseTime($record->ot_out);
+
+                    $rawDailyRate = $employee->salary / 22; 
+                    $dailyRate = floor($rawDailyRate * 100) / 100;
+                    $rawHourlyRate = $dailyRate / 8;
+                    $hourlyRate = floor($rawHourlyRate * 100) / 100;
+                    $rawMinuteRate = $hourlyRate / 60;
+                    $minuteRate = floor($rawMinuteRate * 100) / 100;
+
+                    // --- LATE COMPUTATION ---
+                    $lateMinutes = 0;
+                    $morningSched = Carbon::parse($dateStr . ' 08:15:00', $tz);
+                    $afternoonSched = Carbon::parse($dateStr . ' 13:15:00', $tz);
+
+                    if ($amIn && $amIn->gt($morningSched)) {
+                        $lateMinutes += $morningSched->diffInMinutes($amIn);
+                    }
+                    if (!$amIn) {
+                        if($pmIn && $pmIn->gt($afternoonSched)) {
+                            $lateMinutes += $afternoonSched->diffInMinutes($pmIn);
+                        } 
+                    }
+
+                    $record->salary_deduction_by_late = floor(($minuteRate * $lateMinutes) * 100) / 100;
+
+                    $record->computed_late = ($lateMinutes > 0) ? 
+                        (floor($lateMinutes / 60) > 0 ? floor($lateMinutes / 60)."h ".($lateMinutes % 60)."m" : ($lateMinutes % 60)."m") 
+                        : null;
+
+                    // --- TOTAL HOURS COMPUTATION ---
+                    $totalMinutes = 0;
+
+                    if(($amIn && !$amOut) && (!$pmIn && $pmOut)) {
+                        $totalMinutes = $amIn->diffInMinutes($pmOut);  
+                        $totalMinutes -= 60; 
+                    } else if(($amIn && $amOut) && (!$pmIn && $pmOut)) {
+                        $totalMinutes = $amIn->diffInMinutes($pmOut);  
+                        $totalMinutes -= 60; 
+                    } else if(($amIn && !$amOut) && ($pmIn && $pmOut)) {
+                        $totalMinutes = $amIn->diffInMinutes($pmOut);  
+                        $totalMinutes -= 60; 
+                    } else {
+                        // Morning Shift
+                        if ($amIn && $amOut && $amOut->gt($amIn)) {
+                            $totalMinutes += $amIn->diffInMinutes($amOut);
+                        }
+                        // Afternoon Shift
+                        if ($pmIn && $pmOut && $pmOut->gt($pmIn)) {
+                            $totalMinutes += $pmIn->diffInMinutes($pmOut);
+                        }
+                        // Overtime Shift
+                        if ($otIn && $otOut && $otOut->gt($otIn)) {
+                            $totalMinutes += $otIn->diffInMinutes($otOut);
+                        }
+                    }
+
+                    $h = floor($totalMinutes / 60);
+                    $m = $totalMinutes % 60;
+                    $record->computed_total_hours = "{$h}h {$m}m";
+
+                    $record->salary_today = $totalMinutes * $minuteRate;
+
+                    // --- UT / OT LOGIC ---
+                    $requiredMinutes = 480; // 8 hours
+                    $diffWithoutLate = $totalMinutes - $requiredMinutes;
+                    $diff = $diffWithoutLate + $lateMinutes;
+
+
+                    $record->salary_today = floor(($totalMinutes * $minuteRate) * 100) / 100;
+
+                    $record->salary_deduction_undertime = 0;
+
+                    if ($diff > 0) {
+                        // OVERTIME
+                        $record->diff_ut_ot = "+" . floor($diff / 60) . "h " . ($diff % 60) . "m";
+                        $record->attendance_status = 'OVERTIME';
+                        $record->status_color = 'emerald';
+                        $record->salary_deduction_undertime = 0; // Walang bawas
+                    } elseif ($diff < 0 && $totalMinutes > 0) {
+                        // UNDERTIME
+                        $absDiff = abs($diff  - $lateMinutes);
+                        $record->diff_ut_ot = "-" . floor($absDiff / 60) . "h " . ($absDiff % 60) . "m";
+                        $record->attendance_status = 'UNDERTIME';
+                        $record->status_color = 'rose';
+                        
+                        // Computation ng bawas base sa nawalang minuto
+                        $absDiff = abs($diff - $lateMinutes); 
+                        $record->salary_deduction_undertime = floor(($absDiff * $minuteRate) * 100) / 100;
+                    } elseif ($totalMinutes >= 480) {
+                        // REGULAR (Eksaktong 8 oras o higit pa pero di counted as OT)
+                        $record->diff_ut_ot = '0h 0m';
+                        $record->attendance_status = 'REGULAR';
+                        $record->status_color = 'emerald';
+                        $record->salary_deduction_undertime = 0; // Walang bawas
+                    } else {
+                        // ABSENT (0 ang total minutes)
+                        $record->diff_ut_ot = '-8h 0m';
+                        $record->attendance_status = 'ABSENT';
+                        $record->status_color = 'rose';
+                        $record->salary_deduction_undertime = $dailyRate;
+                        $record->salary_deduction_by_late = 0; // No late if absent
+                    }
+
+                    $record->total_day_deduction = $record->salary_deduction_undertime + $record->salary_deduction_by_late;
+                    return $record;
+                })
+                ->keyBy(fn($item) => Carbon::parse($item->attendance_date)->format('Y-m-d'));
+
+            $daysInMonth = $parsedMonth->daysInMonth;
+            $attendance = [];
+
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $currentIterationDate = Carbon::create($parsedMonth->year, $parsedMonth->month, $day)->startOfDay();
+                $dateStr = $currentIterationDate->format('Y-m-d');
+
+                // Logic Flags
+                $isFuture = $currentIterationDate->gt($now->startOfDay());
+                $isBeforeHire = $currentIterationDate->lt($hireDate);
+                $isWeekend = in_array($currentIterationDate->format('D'), ['Sat', 'Sun']);
+                $isHoliday = isset($holidays[$dateStr]);
+
+                // Bagong Logic para sa Absent Deduction
+                $isAbsent = (!$attendanceRecords->has($dateStr) && !$isWeekend && !$isHoliday && !$isFuture && !$isBeforeHire);
+
+                if ($isAbsent) {
+                    // Dito lang tayo mag-a-apply ng deduction kung employed na siya at absent
+                    $absentDeduction = floor(($employee->salary / 22) * 100) / 100;
                 } else {
-                    if ($amIn && $amOut && $amOut->gt($amIn)) { $regularMinutes += $amIn->diffInMinutes($amOut); }
-                    if ($pmIn && $pmOut && $pmOut->gt($pmIn)) { $regularMinutes += $pmIn->diffInMinutes($pmOut); }
+                    $absentDeduction = 0;
+                }
+                
+                $attendance[$day] = [
+                    'day_name'      => $currentIterationDate->format('D'),
+                    'date_str'      => $dateStr,
+                    'is_future'     => $isFuture,      
+                    'is_before_hire' => $isBeforeHire, 
+                    'is_holiday'     => isset($holidays[$dateStr]), 
+                    'holiday_name'   => $holidays[$dateStr] ?? null, 
+                    'is_leave'      => false,          
+                    'record'        => $attendanceRecords->get($dateStr) ?? null
+                ];
+            }
+
+            if ($request->ajax()) {
+                return view('partials.admin.employees._monthly_attendance_table', compact('attendance', 'employee', 'attendanceRecords'))->render();
+            }
+
+            return view('admin.employees.show', compact('employee', 'attendance', 'selectedMonth', 'attendanceRecords'));
+        } else if($employee_type === "Permanent") {
+            $selectedMonth = $request->query('month', Carbon::now()->format('Y-m'));
+            $parsedMonth = Carbon::parse($selectedMonth);
+            // 1. Kunin ang current balance mula sa database.
+            // Ito ang magiging 'Base' natin.
+            $startingBalance = $employee->leave_credits;
+
+            $totalMonthlyDeduction = 0;
+
+            $attendanceRecords = Attendance::where('employee_id', $employee_id)
+                ->whereYear('attendance_date', $parsedMonth->year)
+                ->whereMonth('attendance_date', $parsedMonth->month)
+                ->get()
+                ->map(function ($record) use (&$totalMonthlyDeduction) {
+                    $tz = 'Asia/Manila';
+                    $dateStr = Carbon::parse($record->attendance_date)->format('Y-m-d');
+
+                    $parseTime = function($time) use ($dateStr, $tz) {
+                        if (!$time) return null;
+                        return Carbon::parse($dateStr . ' ' . date('H:i:s', strtotime($time)), $tz);
+                    };
+
+                    $amIn = $parseTime($record->am_in); $amOut = $parseTime($record->am_out);
+                    $pmIn = $parseTime($record->pm_in); $pmOut = $parseTime($record->pm_out);
+
+                    // CSC Late/UT Computation
+                    $lateMinutes = 0;
+                    $morningSched = Carbon::parse($dateStr . ' 08:15:00', $tz);
+                    $afternoonSched = Carbon::parse($dateStr . ' 13:15:00', $tz);
+
+                    if ($amIn && $amIn->gt($morningSched)) $lateMinutes += $morningSched->diffInMinutes($amIn);
+                    if (!$amIn && $pmIn && $pmIn->gt($afternoonSched)) $lateMinutes += $afternoonSched->diffInMinutes($pmIn);
+
+                    $totalMinutes = 0;
+                    if ($amIn && $amOut && $amOut->gt($amIn)) $totalMinutes += $amIn->diffInMinutes($amOut);
+                    if ($pmIn && $pmOut && $pmOut->gt($pmIn)) $totalMinutes += $pmIn->diffInMinutes($pmOut);
+
+                    $requiredMinutes = 480;
+                    $undertimeMinutes = ($totalMinutes > 0 && $totalMinutes < $requiredMinutes) 
+                        ? max(0, ($requiredMinutes - $totalMinutes) - $lateMinutes) 
+                        : 0;
+
+                    $totalLostMinutes = $lateMinutes + $undertimeMinutes;
+                    
+                    if ($totalMinutes == 0) {
+                        $record->credit_deduction = 1.000; // Absent
+                    } else {
+                        $record->credit_deduction = round($totalLostMinutes * 0.00208333, 3);
+                    }
+
+                    $totalMonthlyDeduction += $record->credit_deduction;
+                    
+                    $record->computed_late = ($lateMinutes > 0) ? "{$lateMinutes}m" : null;
+                    $record->computed_undertime = ($undertimeMinutes > 0) ? "{$undertimeMinutes}m" : null;
+                    $record->computed_total_hours = floor($totalMinutes / 60) . "h " . ($totalMinutes % 60) . "m";
+
+                    return $record;
+                })->keyBy(fn($item) => Carbon::parse($item->attendance_date)->format('Y-m-d'));
+
+            $daysInMonth = $parsedMonth->daysInMonth;
+            $attendance = [];
+
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $currentIterationDate = Carbon::create($parsedMonth->year, $parsedMonth->month, $day)->startOfDay();
+                $dateStr = $currentIterationDate->format('Y-m-d');
+
+                $isFuture = $currentIterationDate->gt($now->startOfDay());
+                $isBeforeHire = $currentIterationDate->lt($hireDate);
+                $isWeekend = in_array($currentIterationDate->format('D'), ['Sat', 'Sun']);
+                $isHoliday = isset($holidays[$dateStr]);
+
+                // Absent Logic: Employed na siya pero walang record
+                if (!$attendanceRecords->has($dateStr) && !$isWeekend && !$isHoliday && !$isFuture && !$isBeforeHire) {
+                    $totalMonthlyDeduction += 1.000;
                 }
 
-                if ($otIn && $otOut && $otOut->gt($otIn)) { $regularMinutes += $otIn->diffInMinutes($otOut); }
+                $attendance[$day] = [
+                    'day_name' => $currentIterationDate->format('D'),
+                    'date_str' => $dateStr,
+                    'is_future' => $isFuture,
+                    'is_before_hire' => $isBeforeHire,
+                    'is_holiday' => $isHoliday,
+                    'holiday_name' => $holidays[$dateStr] ?? null,
+                    'record' => $attendanceRecords->get($dateStr) ?? null
+                ];
+            }
 
-                $hours = floor($regularMinutes / 60);
-                $minutes = $regularMinutes % 60;
-                $record->computed_total_hours = "{$hours}h {$minutes}m";
+            // Calculation para sa UI:
+            // Ang 'Current Balance' sa DB ay ang final amount. 
+            // Para makuha ang 'Starting Balance' ng buwan, i-reverse natin ang deduction.
+            $endingBalance = $startingBalance - $totalMonthlyDeduction;
 
-                $requiredMinutes = 480;
-                $diffMinutes = $regularMinutes - $requiredMinutes;
+            $currentStoredCredits = $endingBalance;
 
-                if ($diffMinutes > 0) {
-                    $h = floor($diffMinutes / 60); $m = $diffMinutes % 60;
-                    $record->diff_ut_ot = "+{$h}h {$m}m";
-                    $record->attendance_status = 'OVERTIME';
-                    $record->status_color = 'emerald';
-                } elseif ($diffMinutes < 0 && $regularMinutes > 0) {
-                    $absDiff = abs($diffMinutes); $h = floor($absDiff / 60); $m = $absDiff % 60;
-                    $record->diff_ut_ot = "-{$h}h {$m}m";
-                    $record->attendance_status = 'UNDERTIME';
-                    $record->status_color = 'red';
-                } else {
-                    $record->diff_ut_ot = '0h 0m';
-                    $record->attendance_status = $regularMinutes > 0 ? 'REGULAR' : 'ABSENT';
-                    $record->status_color = $regularMinutes > 0 ? 'emerald' : 'red';
-                }
-                return $record;
-            })
-            ->keyBy(function($item) {
-                return Carbon::parse($item->attendance_date)->format('Y-m-d');
-            });
+            $viewData = compact('attendance', 'employee', 'currentStoredCredits', 'totalMonthlyDeduction', 'startingBalance', 'endingBalance', 'selectedMonth');
 
-        $daysInMonth = $parsedMonth->daysInMonth;
-        $attendance = [];
-
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $currentIterationDate = Carbon::create($parsedMonth->year, $parsedMonth->month, $day)->startOfDay();
-            $dateStr = $currentIterationDate->format('Y-m-d');
-
-            // Logic Flags
-            $isFuture = $currentIterationDate->gt($now->startOfDay());
-            $isBeforeHire = $currentIterationDate->lt($hireDate);
-            
-            $attendance[$day] = [
-                'day_name'      => $currentIterationDate->format('D'),
-                'date_str'      => $dateStr,
-                'is_future'     => $isFuture,      // New flag
-                'is_before_hire' => $isBeforeHire, // New flag
-                'is_holiday'     => isset($holidays[$dateStr]), // Check kung existing ang date sa array
-                'holiday_name'   => $holidays[$dateStr] ?? null, // <--- IPASA ITO!
-                'is_leave'      => false,          // Replace with your leave logic
-                'record'        => $attendanceRecords->get($dateStr) ?? null
-            ];
+            return $request->ajax() 
+                ? view('partials.admin.employees._monthly_attendance_table', $viewData)->render()
+                : view('admin.employees.show', $viewData);
         }
-
-        if ($request->ajax()) {
-            return view('partials.admin.employees._monthly_attendance_table', compact('attendance', 'employee'))->render();
-        }
-
-        return view('admin.employees.show', compact('employee', 'attendance', 'selectedMonth'));
     }
 
     /**

@@ -83,7 +83,6 @@
                                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all">
                             <option value="" disabled selected>Select Type</option>
                             <option value="Regular" {{ old('type', $holiday->type) === "Regular" ? 'selected' : '' }}>Regular Holiday</option>
-                            <option value="Special Working"  {{ old('type', $holiday->type) === "Special Working" ? 'selected' : '' }}>Special Working Day</option>
                             <option value="Special Non-Working"  {{ old('type', $holiday->type) === "Special Non-Working" ? 'selected' : '' }}>Special Non-Working Day</option>
                             <option value="Local"  {{ old('type', $holiday->type) === "Local" ? 'selected' : '' }}>Local Holiday (BARMM)</option>
                         </select>

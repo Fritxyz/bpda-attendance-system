@@ -47,7 +47,7 @@
     </style>
 </head>
 <body>
-    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: true, leaveManagementOpen: true, holidayManagement: true, outputsOpen: true }">
+    <div class="main-wrapper flex h-screen overflow-hidden" x-data="{ sidebarOpen: false, workforceOpen: true, timekeepingOpen: true, officialTravelManagement: true, holidayManagement: true, outputsOpen: true }">
         
         <div x-show="sidebarOpen" 
             @click="sidebarOpen = false" 
@@ -102,17 +102,17 @@
                     </div>
 
                     <div>
-                        <button @click="leaveManagementOpen = !leaveManagementOpen" 
+                        <button @click="officialTravelManagement = !officialTravelManagement" 
                                 class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
                             <span class="flex items-center gap-3">
-                                <i class="bi bi-calendar2-check-fill text-yellow-500 group-hover:rotate-12 transition"></i> Leave
+                                <i class="bi bi-calendar2-check-fill text-yellow-500 group-hover:rotate-12 transition"></i> Official Business Management
                             </span>
-                            <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="leaveManagementOpen ? 'rotate-180' : ''"></i>
+                            <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="officialTravelManagement ? 'rotate-180' : ''"></i>
                         </button>
 
-                        <div x-show="leaveManagementOpen" x-collapse x-cloak class="mt-1 space-y-1">
-                            <a href="#" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                                Leave Requests
+                        <div x-show="officialTravelManagement" x-collapse x-cloak class="mt-1 space-y-1">
+                            <a href="{{ route('travels.field.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                                Travel Orders
                             </a>
                         </div>
                     </div>
@@ -127,10 +127,10 @@
                         </button>
 
                         <div x-show="holidayManagement" x-collapse x-cloak class="mt-1 space-y-1">
-                            <a href="{{ route('holiday.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                            <a href="{{ route('holiday.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 {{ request()->routeIs('holiday.index') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
                                 Holiday Calendar
                             </a>
-                            <a href="{{ route('holiday.create') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                            <a href="{{ route('holiday.create') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 {{ request()->routeIs('holiday.create') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
                                 Set New Holiday
                             </a>
                         </div>
@@ -149,28 +149,14 @@
                     </button>
 
                     <div x-show="timekeepingOpen" x-collapse x-cloak class="mt-1 space-y-1">
-                        <a href="{{ route('dtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                        <a href="{{ route('dtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 {{ request()->routeIs('dtr.view') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
                             Daily Attendance
                         </a>
-                        <a href="{{ route('wtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                        <a href="{{ route('wtr.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6  {{ request()->routeIs('wtr.view') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
                             Weekly Attendance
                         </a>
-                        <a href="{{ route('tardiness.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
+                        <a href="{{ route('tardiness.index') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6  {{ request()->routeIs('tardiness.index') ? 'border-yellow-400 text-yellow-400 font-bold' : 'border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500' }}">
                             Late Arrivals
-                        </a>
-                    </div>
-
-                    <button @click="outputsOpen = !outputsOpen" 
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold hover:bg-emerald-800/50 transition group">
-                        <span class="flex items-center gap-3">
-                            <i class="bi bi-file-richtext text-yellow-500 group-hover:rotate-12 transition"></i> Outputs
-                        </span>
-                        <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" :class="outputsOpen ? 'rotate-180' : ''"></i>
-                    </button>
-
-                    <div x-show="outputsOpen" x-collapse x-cloak class="mt-1 space-y-1">
-                        <a href="{{ route('salary.view') }}" class="block pl-11 py-2 text-xs border-l-2 ml-6 border-emerald-800 text-emerald-200 hover:text-white hover:border-emerald-500 transition">
-                            Salary Deduction
                         </a>
                     </div>
 

@@ -202,6 +202,7 @@ class DTRController extends Controller
 
     public function generateDTR($employee_id, $month, $year) 
     {
+        // dd($month, $year);
         $employee = Employee::where('employee_id', $employee_id)->firstOrFail();
         
         $start = Carbon::create($year, $month, 1);

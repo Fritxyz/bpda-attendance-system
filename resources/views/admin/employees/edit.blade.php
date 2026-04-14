@@ -141,7 +141,6 @@
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
                             <option value="Permanent" {{ $employee->employment_type === 'Permanent' ? 'selected' : '' }}>Permanent</option>
                             <option value="Contractual" {{ $employee->employment_type === 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                            <option value="Job Order" {{ $employee->employment_type === 'Job Order' ? 'selected' : '' }}>Job Order</option>
                         </select>
                     </div>
 
@@ -288,7 +287,10 @@
             { value: 'Finance Division',       label: 'Finance Division' },
             { value: 'Administrative Division',label: 'Administrative Division' },
         ],
-        'Other': [{ value: 'Other', label: 'Other' }]
+        'Other': [
+            { value: 'Other', label: 'Other' },
+            { value: 'Utility', label: 'Utility' }
+        ]
     };
 
     const bureauSelect = document.getElementById('bureau-select');
