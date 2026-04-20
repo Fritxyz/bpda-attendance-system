@@ -21,7 +21,6 @@ class Employee extends Model
         'position',
         'division',
         'salary',
-        'leave_credits',
         'employment_type',
         'is_active',
         'profile_picture'
@@ -33,7 +32,6 @@ class Employee extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'salary' => 'decimal:2',
-        'leave_credits' => 'decimal:3',
     ];
 
     public function getRouteKeyName()

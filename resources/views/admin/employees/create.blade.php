@@ -158,15 +158,6 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Leave Credits (For Permanent Employee)</label>
-                        <div class="flex items-center" id="leave_credits_section">
-                            <input type="number" name="leave_credits" step="0.001" value="15.000"
-                                placeholder="0.00"
-                                class="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        </div>
-                    </div>
-
-                    <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">System Role</label>
                         <select name="role" required
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
@@ -354,8 +345,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const employmentTypeSelect = document.getElementById('employment-type-select');
         const salaryInput = document.getElementById('salary-id');
-        const leaveSection = document.getElementById('leave_credits_section');
-        const leaveInput = leaveSection.querySelector('input[name="initial_leave_credits"]');
 
         if (employmentTypeSelect && salaryInput) {
             function toggleSalaryField() {
@@ -363,22 +352,11 @@
                     salaryInput.disabled = true;
                     salaryInput.value = '';
                     salaryInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-                    salaryInput.removeAttribute('required');
-
-                    // Leave Credits: Enabled
-                    leaveInput.disabled = false;
-                    leaveInput.classList.remove('bg-gray-100', 'cursor-not-allowed', 'opacity-50');
-                    leaveSection.classList.remove('opacity-50', 'pointer-events-none');
+                    salaryInput.removeAttribute('required');  
                 } else {
                     salaryInput.disabled = false;
                     salaryInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
                     salaryInput.setAttribute('required', 'required');
-
-                    // Leave Credits: Disabled
-                    leaveInput.disabled = true;
-                    leaveInput.value = '0.000'; // Or keep it at 0 for contractual
-                    leaveInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-                    leaveSection.classList.add('opacity-50', 'pointer-events-none');
                 }
             }
 

@@ -67,6 +67,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         // on travel
         Route::get('/travels-field-work', [TravelsFieldWork::class, 'index'])->name('travels.field.index');
         Route::get('/travels-field-work/create', [TravelsFieldWork::class, 'create'])->name('travels.field.create');
+        Route::post('/travels-field-work/create', [TravelsFieldWork::class, 'store'])->name('travels.field.store');
+        Route::get('/travels-field-work/edit/{id}', [TravelsFieldWork::class, 'edit'])->name('travels.field.edit');
+        Route::put('/travels-field-work/edit/{id}', [TravelsFieldWork::class, 'update'])->name('travels.field.update');
+        Route::delete('/travels-field-work/delete/{id}', [TravelsFieldWork::class, 'destroy'])->name('travels.field.delete');
         
         Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('admin.audittrail');
     });

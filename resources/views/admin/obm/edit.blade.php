@@ -1,6 +1,6 @@
 @extends('layouts.admin.top-and-side-bar')
 
-@section('header', 'Create Travel Order')
+@section('header', 'Edit Travel Order')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-6 py-8">
@@ -21,11 +21,25 @@
             <li>
                 <i class="bi bi-chevron-right text-[10px] text-gray-400"></i>
                 <span class="font-bold text-emerald-900 uppercase tracking-wider text-[11px] opacity-50">
-                    Create New Order
+                    Edit Travel Order
                 </span>
             </li>
         </ol>
     </nav>
+
+    @if (session('success'))
+        <div id="success-alert" class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg flex justify-between items-center shadow-sm">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <p class="text-sm font-bold">{{ session('success') }}</p>
+            </div>
+            <button onclick="document.getElementById('success-alert').remove()" class="text-green-500 hover:text-green-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
 
     {{-- Error Alerts --}}
     @if ($errors->any())
@@ -44,12 +58,14 @@
         <h1 class="text-3xl font-black text-slate-900 tracking-tight italic uppercase">Travel Authorization</h1>
         <p class="text-slate-500 text-sm mt-1 flex items-center gap-2 font-medium">
             <i class="bi bi-plus-circle-fill text-emerald-600"></i>
-            File a new Official Business or Travel Order for employees.
+            Edit an Official Business or Travel Order for employees.
         </p>
     </div>
 
-    <form action="{{ route('travels.field.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('travels.field.update', $travelOrder->id) }}" method="POST" class="space-y-6">
         @csrf
+        @method('PUT')
+
         <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-slate-200/60 overflow-hidden transition-all hover:border-emerald-200">
             {{-- Accent Top Bar --}}
             <div class="h-3 bg-gradient-to-r from-emerald-800 to-teal-600 w-full"></div>
@@ -66,7 +82,8 @@
                                     class="w-full">
                                 <option value=""></option>
                                 @foreach($employees as $employee)
-                                    <option value="{{ $employee->employee_id }}">
+                                    <option value="{{ $employee->employee_id }}" 
+                                        {{ (old('employee_id', $travelOrder->employee_id) == $employee->employee_id) ? 'selected' : '' }}>
                                         {{ strtoupper($employee->last_name) }}, {{ $employee->first_name }}
                                     </option>
                                 @endforeach
@@ -78,7 +95,7 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Travel Order (TO) No.</label>
                         <div class="relative">
                             <i class="bi bi-hash absolute left-5 top-1/2 -translate-y-1/2 text-emerald-600 font-black"></i>
-                            <input type="text" name="to_number" placeholder="e.g., 2026-04-001" required
+                            <input type="text" name="to_number" placeholder="e.g., 2026-04-001" required value="{{ old('to_number', $travelOrder->to_number) }}"
                                    class="w-full pl-10 pr-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder:font-normal">
                         </div>
                     </div>
@@ -90,7 +107,7 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Destination Location</label>
                         <div class="relative">
                             <i class="bi bi-geo-alt-fill absolute left-5 top-1/2 -translate-y-1/2 text-rose-500"></i>
-                            <input type="text" name="destination" placeholder="e.g., Zamboanga City, Philippines" required
+                            <input type="text" name="destination" placeholder="e.g., Zamboanga City, Philippines" required value="{{ old('destination', $travelOrder->destination) }}"
                                    class="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all">
                         </div>
                     </div>
@@ -98,7 +115,7 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Purpose of Travel</label>
                         <textarea name="purpose" rows="3" placeholder="Explain the objective of this official business..." required
-                                  class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder:font-normal"></textarea>
+                                  class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder:font-normal">{{ old('purpose', $travelOrder->purpose) }}</textarea>
                     </div>
                 </div>
 
@@ -108,7 +125,7 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Departure Date</label>
                         <div class="relative group">
                             <i class="bi bi-calendar-range absolute left-5 top-1/2 -translate-y-1/2 text-emerald-600 transition-colors"></i>
-                            <input type="date" name="date_from" required
+                            <input type="date" name="date_from" required value="{{ old('date_from', \Carbon\Carbon::parse($travelOrder->date_from)->format('Y-m-d')) }}"
                                    class="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all">
                         </div>
                     </div>
@@ -117,7 +134,7 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Return Date</label>
                         <div class="relative group">
                             <i class="bi bi-calendar-check absolute left-5 top-1/2 -translate-y-1/2 text-emerald-600 transition-colors"></i>
-                            <input type="date" name="date_to" required
+                            <input type="date" name="date_to" required value="{{ old('date_to', \Carbon\Carbon::parse($travelOrder->date_to)->format('Y-m-d')) }}"
                                    class="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all">
                         </div>
                     </div>

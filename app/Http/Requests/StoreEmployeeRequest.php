@@ -32,7 +32,6 @@ class StoreEmployeeRequest extends FormRequest
             'position' => 'required|string|max:255',
             'division' => 'required|string|max:255',
             'salary' => 'sometimes|numeric|min:0',
-            'leave_credits' => 'sometimes|numeric|min:0',
             'employment_type' => 'required|in:Permanent,Contractual,Job Order',
             'role' => 'required|in:Admin,Employee',
             'is_active' => 'sometimes|boolean',

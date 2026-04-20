@@ -33,6 +33,7 @@
                     <option value="Attendance" {{ request('type') == 'Attendance' ? 'selected' : '' }}>Attendance</option>
                     <option value="Holiday" {{ request('type') == 'Holiday' ? 'selected' : '' }}>Holidays</option>
                     <option value="Employee" {{ request('type') == 'Employee' ? 'selected' : '' }}>Employee</option>
+                    <option value="TravelOrder" {{ request('type') == 'TravelOrder' ? 'selected' : '' }}>Travel Orders</option>
                 </select>
             </div>
             
@@ -145,6 +146,30 @@
                                                 <span class="text-slate-400 italic">Attendance Record Deleted (#{{ $log->auditable_id }})</span>
                                             @endif
 
+                                        @elseif($log->auditable_type == 'App\Models\TravelOrder') {{-- ISINGIT ITO DITO --}}
+                                            @if($log->auditable)
+                                                <div class="flex flex-col">
+                                                    <span class="uppercase">TRAVEL ORDER: {{ $log->auditable->to_number }}</span>
+                                                    <span class="text-[10px] text-slate-500 font-medium">
+                                                        <i class="bi bi-person mr-1"></i>For: {{ $log->auditable->employee->first_name ?? '' }} {{ $log->auditable->employee->last_name ?? 'N/A' }}
+                                                    </span>
+                                                    <span class="text-[10px] text-slate-500 font-medium">
+                                                        <i class="bi bi-geo-alt mr-1"></i>Dest: {{ $log->auditable->destination }}
+                                                    </span>
+                                                </div>
+                                            @else
+                                                {{-- Fallback kapag deleted na (kukunin sa JSON) --}}
+                                                @php
+                                                    $fallbackValues = is_array($log->old_values) ? $log->old_values : json_decode($log->old_values, true);
+                                                    $fallbackTO = $fallbackValues['to_number'] ?? 'Unknown TO';
+                                                @endphp
+                                                <div class="flex flex-col">
+                                                    <span class="text-slate-500 font-bold uppercase">TRAVEL ORDER: {{ $fallbackTO }}</span>
+                                                    <span class="text-rose-500 text-[9px] font-black uppercase tracking-tighter italic">Record Deleted</span>
+                                                    <span class="text-[9px] text-slate-400">Ref ID: #{{ $log->auditable_id }}</span>
+                                                </div>
+                                            @endif
+
                                         @elseif($log->auditable_type == 'App\Models\Employee')
                                             @if($log->auditable)
                                                 <div class="flex flex-col">
@@ -230,7 +255,15 @@
                                             'date' => 'Holiday Date',
                                             'type' => 'Category',
                                             'reference' => 'Reference',
-                                            'remarks' => 'Remarks'
+                                            'remarks' => 'Remarks',
+
+                                            // Idagdag itong mga fields ng Travel Order
+                                            'to_number' => 'TO Number',
+                                            'destination' => 'Destination',
+                                            'purpose' => 'Purpose',
+                                            'departure_date' => 'Departure Date',
+                                            'arrival_date' => 'Arrival Date',
+                                            'status' => 'TO Status'
                                         ];
 
                                         // I-check muna natin kung may nagbago sa fields na nasa displayOrder (excluding remarks for holidays)
