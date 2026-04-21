@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\Attendance;
 use App\Models\AuditTrail;
 use App\Models\Employee;
+use App\Models\TravelOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -217,6 +218,14 @@ class DTRController extends Controller
                 return Carbon::parse($holiday->date)->day;
             });
 
+        $travels = \App\Models\TravelOrder::where('employee_id', $employee_id)
+            ->where(function($query) use ($start, $end) {
+                $query->whereBetween('date_from', [$start->toDateString(), $end->toDateString()])
+                    ->orWhereBetween('date_to', [$start->toDateString(), $end->toDateString()]);
+            })
+            ->get();
+
+
         $attendances = Attendance::where('employee_id', $employee_id)
             ->whereMonth('attendance_date', $month)
             ->whereYear('attendance_date', $year)
@@ -226,7 +235,7 @@ class DTRController extends Controller
             });
 
         // Isama ang $holidays sa compact
-        $pdf = Pdf::loadView('dtr.print.blade', compact('employee', 'period', 'attendances', 'start', 'holidays'))
+        $pdf = Pdf::loadView('dtr.print.blade', compact('employee', 'period', 'attendances', 'start', 'holidays', 'travels'))
                 ->setPaper('a4', 'portrait');
                 
         return $pdf->stream("DTR_{$employee->last_name}.pdf");

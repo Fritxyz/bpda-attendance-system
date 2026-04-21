@@ -9,7 +9,9 @@ use App\Models\Attendance;
 use App\Models\AuditTrail;
 use App\Models\Employee;
 use App\Models\Holiday;
+use App\Models\TravelOrder;
 use App\Models\User;
+use App\Services\LeaveCreditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -241,7 +243,6 @@ class EmployeeController extends Controller
                     $diffWithoutLate = $totalMinutes - $requiredMinutes;
                     $diff = $diffWithoutLate + $lateMinutes;
 
-
                     $record->salary_today = floor(($totalMinutes * $minuteRate) * 100) / 100;
 
                     $record->salary_deduction_undertime = 0;
@@ -285,6 +286,13 @@ class EmployeeController extends Controller
             $daysInMonth = $parsedMonth->daysInMonth;
             $attendance = [];
 
+            $travelOrders = \App\Models\TravelOrder::where('employee_id', $employee_id)
+                ->where(function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('date_from', [$startDate, $endDate])
+                        ->orWhereBetween('date_to', [$startDate, $endDate]);
+                })
+                ->get();
+
             for ($day = 1; $day <= $daysInMonth; $day++) {
                 $currentIterationDate = Carbon::create($parsedMonth->year, $parsedMonth->month, $day)->startOfDay();
                 $dateStr = $currentIterationDate->format('Y-m-d');
@@ -294,9 +302,12 @@ class EmployeeController extends Controller
                 $isBeforeHire = $currentIterationDate->lt($hireDate);
                 $isWeekend = in_array($currentIterationDate->format('D'), ['Sat', 'Sun']);
                 $isHoliday = isset($holidays[$dateStr]);
+                $isTravel = $travelOrders->contains(function ($order) use ($dateStr) {
+                    return $dateStr >= $order->date_from && $dateStr <= $order->date_to;
+                });
 
                 // Bagong Logic para sa Absent Deduction
-                $isAbsent = (!$attendanceRecords->has($dateStr) && !$isWeekend && !$isHoliday && !$isFuture && !$isBeforeHire);
+                $isAbsent = (!$attendanceRecords->has($dateStr) && !$isWeekend && !$isHoliday && !$isFuture && !$isBeforeHire && !$isTravel);
 
                 if ($isAbsent) {
                     // Dito lang tayo mag-a-apply ng deduction kung employed na siya at absent
@@ -312,7 +323,8 @@ class EmployeeController extends Controller
                     'is_before_hire' => $isBeforeHire, 
                     'is_holiday'     => isset($holidays[$dateStr]), 
                     'holiday_name'   => $holidays[$dateStr] ?? null, 
-                    'is_leave'      => false,          
+                    'is_leave'      => false,    
+                    'is_travel'     => $isTravel,      
                     'record'        => $attendanceRecords->get($dateStr) ?? null
                 ];
             }
@@ -325,8 +337,6 @@ class EmployeeController extends Controller
         } else if($employee_type === "Permanent") {
             $selectedMonth = $request->query('month', Carbon::now()->format('Y-m'));
             $parsedMonth = Carbon::parse($selectedMonth);
-            // 1. Kunin ang current balance mula sa database.
-            // Ito ang magiging 'Base' natin.
             $startingBalance = $employee->leave_credits;
 
             $totalMonthlyDeduction = 0;
@@ -393,7 +403,7 @@ class EmployeeController extends Controller
                 $isWeekend = in_array($currentIterationDate->format('D'), ['Sat', 'Sun']);
                 $isHoliday = isset($holidays[$dateStr]);
 
-                // Absent Logic: Employed na siya pero walang record
+                // check if absent
                 if (!$attendanceRecords->has($dateStr) && !$isWeekend && !$isHoliday && !$isFuture && !$isBeforeHire) {
                     $totalMonthlyDeduction += 1.000;
                 }
@@ -409,6 +419,19 @@ class EmployeeController extends Controller
                 ];
             }
 
+            $leaveService = app(LeaveCreditService::class);
+
+            // process ang deductions (re-computable, safe to call every view)
+            $leaveService->processMonthlyDeductions(
+                $employee, 
+                $selectedMonth,  
+                $attendance,    
+                $attendanceRecords
+            );
+
+            // summary para sa UI
+            $leaveSummary = $leaveService->getMonthSummary($employee, $selectedMonth, $attendance);
+
             // Calculation para sa UI:
             // Ang 'Current Balance' sa DB ay ang final amount. 
             // Para makuha ang 'Starting Balance' ng buwan, i-reverse natin ang deduction.
@@ -416,7 +439,7 @@ class EmployeeController extends Controller
 
             $currentStoredCredits = $endingBalance;
 
-            $viewData = compact('attendance', 'employee', 'currentStoredCredits', 'totalMonthlyDeduction', 'startingBalance', 'endingBalance', 'selectedMonth');
+            $viewData = compact('attendance', 'employee', 'currentStoredCredits', 'totalMonthlyDeduction', 'startingBalance', 'endingBalance', 'selectedMonth', 'leaveSummary');
 
             return $request->ajax() 
                 ? view('partials.admin.employees._monthly_attendance_table', $viewData)->render()

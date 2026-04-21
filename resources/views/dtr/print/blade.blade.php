@@ -157,15 +157,21 @@
                     @php 
                         $day = $date->day; 
                         $log = $attendances->get($day);
-                        $isHoliday = $holidays->has($day); // Check kung holiday ang araw na ito
+                        $isHoliday = $holidays->has($day);
+
+                        $isTravel = $travels->contains(function ($t) use ($date) {
+                            return $date >= $t->date_from && $date <= $t->date_to;
+                        });
                     @endphp
                     <tr>
                         <td>{{ $day }}</td>
                         
-                        {{-- A.M. IN: Dito natin ilalagay ang 'H' kung holiday --}}
-                        <td style="{{ $isHoliday ? 'font-weight: bold; color: red;' : '' }}">
+                        {{-- check if holiday or on travel --}}
+                        <td style="{{ ($isHoliday) ? 'font-weight: bold; color: red;' : (($isTravel ? 'font-weight: bold; color: blue;' : '')) }}">
                             @if($isHoliday)
                                 H
+                            @elseif($isTravel)
+                                T
                             @else
                                 {{ ($log && $log->am_in) ? \Carbon\Carbon::parse($log->am_in)->format('h:i') : '' }}
                             @endif

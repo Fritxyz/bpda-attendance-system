@@ -67,7 +67,7 @@
                                 $grandTotalUTOTMinutes += $isNeg ? -$m : $m;
                             }
 
-                        } elseif (!$isWeekend && !$isHoliday && !$isLeave && !$data['is_future'] && !$data['is_before_hire']) {
+                        } elseif (!$isWeekend && !$isHoliday && !$isLeave && !$data['is_future'] && !$data['is_before_hire'] && !$data['is_travel']) {
                             $absentVal = floor(($employee->salary / 22) * 100) / 100;
                             $totalUndertimeDeduction += $absentVal; // Absent is considered undertime/deduction
                             $grandTotalUTOTMinutes -= 480;
@@ -92,6 +92,8 @@
                                 <td colspan="6" class="px-2 py-3 text-center border-r border-slate-200 bg-amber-50 text-amber-700 font-bold text-[10px] tracking-widest uppercase">Holiday: {{ $data['holiday_name'] }}</td>
                             @elseif($isLeave)
                                 <td colspan="6" class="px-2 py-3 text-center border-r border-slate-200 bg-blue-50 text-blue-700 font-bold text-[10px] tracking-widest uppercase">Approved Leave</td>
+                            @elseif($data['is_travel'] ?? false) 
+                                <td colspan="6" class="px-2 py-3 text-center border-r border-slate-200 bg-emerald-50 text-emerald-700 font-bold text-[10px] tracking-widest uppercase italic">Official Travel</td>
                             @elseif($isWeekend)
                                 <td colspan="6" class="px-2 py-3 text-center border-r border-slate-200 text-blue-700 font-black tracking-[0.4em] uppercase text-[10px]">Weekend</td>
                             @elseif(!$record)
@@ -116,7 +118,7 @@
                             <td class="px-1 py-3 text-center border-r border-slate-100 text-rose-700 font-medium">
                                 @if($record)
                                     {{ $record->diff_ut_ot != '—' ? $record->diff_ut_ot : '—' }}
-                                @elseif(!$record && !$isWeekend && !$isHoliday && !$isLeave && !$data['is_future'])
+                                @elseif(!$record && !$isWeekend && !$isHoliday && !$isLeave && !$data['is_future'] && !$data['is_travel'])
                                     8h 0m
                                 @else — @endif
                             </td>
@@ -128,6 +130,8 @@
                                     <div class="font-bold border-t border-slate-100 mt-1">
                                         ₱{{ number_format($record->salary_deduction_by_late + $record->salary_deduction_undertime, 2) }}
                                     </div>
+                                @elseif($data['is_travel'] ?? false)
+                                    <span class="font-bold text-emerald-600">₱0.00</span>
                                 @elseif(!$record && !$isWeekend && !$isHoliday && !$isLeave && !$data['is_future'])
                                     <span class="font-bold text-rose-700">₱{{ number_format(floor(($employee->salary / 22) * 100) / 100, 2) }}</span>
                                 @else — @endif
@@ -201,6 +205,50 @@
         </table>
     </div> 
 @elseif ($employee->employment_type === "Permanent") 
+    <div class="grid grid-cols-5 gap-3 mb-4 p-4">
+
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-slate-400 p-4">
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Starting Balance</div>
+            <div class="text-xl font-black text-slate-700">{{ number_format($leaveSummary['starting_balance'], 3) }}</div>
+            <div class="text-[10px] text-slate-400 mt-1">days</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-emerald-500 p-4">
+            <div class="text-[10px] text-emerald-600 uppercase tracking-widest mb-1">+ Monthly Accrual</div>
+            <div class="text-xl font-black text-emerald-700">+{{ number_format($leaveSummary['accrual'], 3) }}</div>
+            <div class="text-[10px] text-slate-400 mt-1">earned this month</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-rose-500 p-4">
+            <div class="text-[10px] text-rose-500 uppercase tracking-widest mb-1">− Deductions</div>
+            <div class="text-xl font-black text-rose-700">
+                −{{ number_format($leaveSummary['late_deduction'] + $leaveSummary['ut_deduction'] + $leaveSummary['absent_deduction'], 3) }}
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                L: {{ number_format($leaveSummary['late_deduction'], 3) }} &nbsp;|&nbsp;
+                UT: {{ number_format($leaveSummary['ut_deduction'], 3) }} &nbsp;|&nbsp;
+                A: {{ number_format($leaveSummary['absent_deduction'], 3) }}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-slate-400 p-4">
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Net Change</div>
+            <div class="text-xl font-black {{ $leaveSummary['net_change'] >= 0 ? 'text-emerald-700' : 'text-rose-700' }}">
+                {{ $leaveSummary['net_change'] >= 0 ? '+' : '' }}{{ number_format($leaveSummary['net_change'], 3) }}
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">this month</div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl border border-slate-200 border-t-2 {{ $leaveSummary['ending_balance'] < 0 ? 'border-t-rose-500' : 'border-t-emerald-500' }} p-4">
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Ending Balance</div>
+            <div class="text-xl font-black {{ $leaveSummary['ending_balance'] < 0 ? 'text-rose-700' : 'text-emerald-700' }}">
+                {{ number_format($leaveSummary['ending_balance'], 3) }}
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">days remaining</div>
+        </div>
+
+    </div>
+
     <div class="overflow-x-auto selection:bg-emerald-100 shadow-lg rounded-lg border border-slate-200">
         <table class="w-full text-left border-collapse bg-white table-fixed min-w-[1000px]">
             <thead class="bg-slate-100 sticky top-0 z-10">
@@ -220,8 +268,8 @@
                     <th class="px-2 py-2 text-[9px] font-bold text-slate-600 uppercase text-center border-r border-slate-200">Out</th>
                     <th class="px-2 py-2 text-[9px] font-bold text-slate-600 uppercase text-center">In</th>
                     <th class="px-2 py-2 text-[9px] font-bold text-slate-600 uppercase text-center">Out</th>
-                    <th class="px-2 py-2 text-[9px] font-bold text-amber-700 uppercase text-center border-l border-slate-200 text-[8px]">Late (Min)</th>
-                    <th class="px-2 py-2 text-[9px] font-bold text-rose-700 uppercase text-center text-[8px]">UT (Min)</th>
+                    <th class="px-2 py-2 text-[9px] font-bold text-amber-700 uppercase text-center border-l border-slate-200">Late (Min)</th>
+                    <th class="px-2 py-2 text-[9px] font-bold text-rose-700 uppercase text-center">UT (Min)</th>
                     <th class="px-2 py-2 text-[9px] font-bold text-rose-700 uppercase text-center border-r">Deduction (Days)</th>
                 </tr>
             </thead>
@@ -348,7 +396,6 @@
                     </td>
                     <td class="px-1 py-3"></td>
                 </tr>
-
             </tfoot>
         </table>
     </div>
