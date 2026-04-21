@@ -1,4 +1,92 @@
 @if ($employee->employment_type === "Contractual") 
+
+
+    {{-- I-initialize DITO — bago pa ang stat cards --}}
+    @php 
+        $grandTotalMinutes = 0;
+        $grandTotalLateMinutes = 0;
+        $grandTotalUTOTMinutes = 0;
+        $totalLateDeduction = 0;      
+        $totalUndertimeDeduction = 0; 
+
+        // Pre-compute lahat BEFORE display
+        foreach($attendance as $dayNumber => $data) {
+            $record = $data['record'];
+            $isWeekend = in_array($data['day_name'], ['Sat', 'Sun']);
+            $isHoliday = $data['is_holiday'] ?? false;
+            $isLeave = $data['is_leave'] ?? false;
+
+            if ($record) {
+                preg_match('/(\d+)h\s+(\d+)m/', $record->computed_total_hours, $matches);
+                if(count($matches) == 3) { $grandTotalMinutes += ($matches[1] * 60) + $matches[2]; }
+
+                $totalLateDeduction += $record->salary_deduction_by_late ?? 0;
+                $totalUndertimeDeduction += $record->salary_deduction_undertime ?? 0;
+
+                if($record->computed_late) {
+                    preg_match_all('/(\d+)/', $record->computed_late, $lateMatches);
+                    $vals = $lateMatches[0];
+                    if(count($vals) == 2) { $grandTotalLateMinutes += ($vals[0] * 60) + $vals[1]; }
+                    else if(count($vals) == 1) { $grandTotalLateMinutes += $vals[0]; }
+                }
+
+                if($record->diff_ut_ot != '0h 0m' && $record->diff_ut_ot != '—') {
+                    $isNeg = str_contains($record->diff_ut_ot, '-');
+                    preg_match_all('/(\d+)/', $record->diff_ut_ot, $diffMatches);
+                    $dvals = $diffMatches[0];
+                    $m = (count($dvals) == 2) ? ($dvals[0] * 60) + $dvals[1] : $dvals[0];
+                    $grandTotalUTOTMinutes += $isNeg ? -$m : $m;
+                }
+
+            } elseif (!$isWeekend && !$isHoliday && !$isLeave && !($data['is_future'] ?? false) && !($data['is_before_hire'] ?? false) && !($data['is_travel'] ?? false)) {
+                $absentVal = floor(($employee->salary / 22) * 100) / 100;
+                $totalUndertimeDeduction += $absentVal;
+                $grandTotalUTOTMinutes -= 480;
+            }
+        }
+
+        $hasAttendance = $attendanceRecords->count() > 0;
+        $netSalary = !$hasAttendance ? 0 : $employee->salary - ($totalLateDeduction + $totalUndertimeDeduction);
+        $displaySalary = max(0, $netSalary);
+    @endphp
+
+    {{-- Stat Cards --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 p-3">
+
+        {{-- Basic Salary --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-slate-400 p-4">
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Basic Salary</div>
+            <div class="text-xl font-black text-slate-700">₱{{ number_format($employee->salary, 2) }}</div>
+            <div class="text-[10px] text-slate-400 mt-1">monthly</div>
+        </div>
+
+        {{-- Late Deduction --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-amber-400 p-4">
+            <div class="text-[10px] text-amber-600 uppercase tracking-widest mb-1">− Late Deduction</div>
+            <div class="text-xl font-black text-amber-700">₱{{ number_format($totalLateDeduction, 2) }}</div>
+            <div class="text-[10px] text-slate-400 mt-1">
+                {{ floor($grandTotalLateMinutes / 60) > 0 ? floor($grandTotalLateMinutes / 60).'h ' : '' }}{{ $grandTotalLateMinutes % 60 }}m total late
+            </div>
+        </div>
+
+        {{-- UT / Absent Deduction --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-t-2 border-t-rose-500 p-4">
+            <div class="text-[10px] text-rose-500 uppercase tracking-widest mb-1">− UT / Absent</div>
+            <div class="text-xl font-black text-rose-700">₱{{ number_format($totalUndertimeDeduction, 2) }}</div>
+            <div class="text-[10px] text-slate-400 mt-1">undertime &amp; absences</div>
+        </div>
+
+        {{-- Net Salary --}}
+        <div class="bg-slate-50 rounded-xl border border-slate-200 border-t-2 {{ $displaySalary < ($employee->salary * 0.5) ? 'border-t-rose-500' : 'border-t-emerald-500' }} p-4">
+            <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Net Salary</div>
+            <div class="text-xl font-black {{ $displaySalary < ($employee->salary * 0.5) ? 'text-rose-700' : 'text-emerald-700' }}">
+                ₱{{ number_format($displaySalary, 2) }}
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">this month</div>
+        </div>
+
+    </div>
+    
     <div class="overflow-x-auto selection:bg-emerald-100 shadow-lg rounded-lg border border-slate-200">
         <table class="w-full text-left border-collapse bg-white table-fixed min-w-[1000px]">
             <thead class="bg-slate-100 sticky top-0 z-10">

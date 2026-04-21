@@ -421,6 +421,16 @@ class EmployeeController extends Controller
 
             $leaveService = app(LeaveCreditService::class);
 
+            $viewingPeriod = Carbon::parse($selectedMonth);
+            $hireDate = Carbon::parse($employee->created_at);
+            $isCurrentOrPast = $viewingPeriod->lte(Carbon::now());
+
+            $isAlreadyEmployed = $hireDate->lte($viewingPeriod->endOfMonth());
+
+            if ($isCurrentOrPast && $isAlreadyEmployed) {
+                $leaveService->accrueMonthly($employee, $selectedMonth);
+            }
+
             // process ang deductions (re-computable, safe to call every view)
             $leaveService->processMonthlyDeductions(
                 $employee, 
@@ -432,7 +442,7 @@ class EmployeeController extends Controller
             // summary para sa UI
             $leaveSummary = $leaveService->getMonthSummary($employee, $selectedMonth, $attendance);
 
-            // Calculation para sa UI:
+            // calculation para sa UI:
             // Ang 'Current Balance' sa DB ay ang final amount. 
             // Para makuha ang 'Starting Balance' ng buwan, i-reverse natin ang deduction.
             $endingBalance = $startingBalance - $totalMonthlyDeduction;

@@ -158,6 +158,21 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">
+                            Leave Credits (upon hire)
+                        </label>
+                        <input 
+                            type="number" 
+                            name="leave_credits" 
+                            value="0" 
+                            step="0.001" 
+                            min="0.000"
+                            placeholder="0.000"
+                            class="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+                        >
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">System Role</label>
                         <select name="role" required
                                 class="w-full px-2 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none transition">
@@ -348,15 +363,29 @@
 
         if (employmentTypeSelect && salaryInput) {
             function toggleSalaryField() {
-                if (employmentTypeSelect.value === "Permanent") {
-                    salaryInput.disabled = true;
-                    salaryInput.value = '';
-                    salaryInput.classList.add('bg-gray-100', 'cursor-not-allowed');
-                    salaryInput.removeAttribute('required');  
+                const isPermanent = employmentTypeSelect.value === "Permanent";
+    
+                // Salary — enabled pag Contractual, disabled pag Permanent
+                salaryInput.disabled = isPermanent;
+                salaryInput.value = isPermanent ? '' : salaryInput.value;
+                salaryInput.classList.toggle('bg-gray-100', isPermanent);
+                salaryInput.classList.toggle('cursor-not-allowed', isPermanent);
+                salaryInput.classList.toggle('opacity-60', isPermanent);
+
+                if (isPermanent) {
+                    salaryInput.removeAttribute('required');
                 } else {
-                    salaryInput.disabled = false;
-                    salaryInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
                     salaryInput.setAttribute('required', 'required');
+                }
+
+                // Leave Credits — enabled pag Permanent, disabled pag Contractual
+                const leaveCreditsInput = document.querySelector('input[name="leave_credits"]');
+                if (leaveCreditsInput) {
+                    leaveCreditsInput.disabled = !isPermanent;
+                    leaveCreditsInput.value = !isPermanent ? '' : (leaveCreditsInput.value || '0');
+                    leaveCreditsInput.classList.toggle('bg-gray-100', !isPermanent);
+                    leaveCreditsInput.classList.toggle('cursor-not-allowed', !isPermanent);
+                    leaveCreditsInput.classList.toggle('opacity-60', !isPermanent);
                 }
             }
 

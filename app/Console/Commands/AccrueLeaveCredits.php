@@ -25,6 +25,16 @@ class AccrueLeaveCredits extends Command
         $bar = $this->output->createProgressBar($employees->count());
 
         foreach ($employees as $employee) {
+            $hireDate = Carbon::parse($employee->hire_date);
+            $periodDate = Carbon::parse($period);
+
+            // Skip kung hindi pa siya employed nung period na yun
+            if ($hireDate->gt($periodDate->endOfMonth())) {
+                $this->line(" – {$employee->name} (not yet employed in {$period}, skipped)");
+                $bar->advance();
+                continue;
+            }
+
             $result = $service->accrueMonthly($employee, $period);
             if ($result) {
                 $this->line(" ✓ {$employee->name} (+1.25 days)");

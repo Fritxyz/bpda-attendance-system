@@ -21,6 +21,7 @@ class Employee extends Model
         'position',
         'division',
         'salary',
+        'leave_credits',
         'employment_type',
         'is_active',
         'profile_picture'
